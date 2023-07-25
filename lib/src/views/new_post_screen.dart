@@ -1,16 +1,27 @@
 import 'dart:async';
+import 'dart:io';
+import 'dart:math';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/models/media_model.dart';
+import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
+import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
+import 'package:likeminds_feed_ss_fl/src/utils/analytics/analytics.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/local_preference/user_local_preference.dart';
+import 'package:likeminds_feed_ss_fl/src/utils/tagging/tagging_textfield_ta.dart';
 
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
+import 'package:overlay_support/overlay_support.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:share_plus/share_plus.dart';
 
 class NewPostScreen extends StatefulWidget {
   final String? populatePostText;
@@ -27,14 +38,20 @@ class NewPostScreen extends StatefulWidget {
 }
 
 class _NewPostScreenState extends State<NewPostScreen> {
-  TextEditingController _controller = TextEditingController();
+  final TextEditingController _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+
   NewPostBloc? newPostBloc;
   late final User user;
 
+  List<MediaModel> postMedia = [];
   List<UserTag> userTags = [];
   String? result;
+
   bool isDocumentPost = false; // flag for document or media post
   bool isMediaPost = false;
+  bool isUploading = false;
+
   String previewLink = '';
   MediaModel? linkModel;
   bool showLinkPreview =
@@ -52,76 +69,77 @@ class _NewPostScreenState extends State<NewPostScreen> {
   void initState() {
     super.initState();
     user = UserLocalPreference.instance.fetchUserData();
+    newPostBloc = BlocProvider.of<NewPostBloc>(context);
   }
 
-  // void removeAttachmenetAtIndex(int index) {
-  //   if (postMedia.isNotEmpty) {
-  //     postMedia.removeAt(index);
-  //     if (postMedia.isEmpty) {
-  //       isDocumentPost = false;
-  //       isMediaPost = false;
-  //       showLinkPreview = true;
-  //     }
-  //     setState(() {});
-  //   }
-  // }
+  void removeAttachmenetAtIndex(int index) {
+    if (postMedia.isNotEmpty) {
+      postMedia.removeAt(index);
+      if (postMedia.isEmpty) {
+        isDocumentPost = false;
+        isMediaPost = false;
+        showLinkPreview = true;
+      }
+      setState(() {});
+    }
+  }
 
-  // // this function initiliases postMedia list
-  // // with photos/videos picked by the user
-  // void setPickedMediaFiles(List<MediaModel> pickedMediaFiles) {
-  //   if (postMedia.isEmpty) {
-  //     postMedia = <MediaModel>[...pickedMediaFiles];
-  //   } else {
-  //     postMedia.addAll(pickedMediaFiles);
-  //   }
-  // }
+  // this function initiliases postMedia list
+  // with photos/videos picked by the user
+  void setPickedMediaFiles(List<MediaModel> pickedMediaFiles) {
+    if (postMedia.isEmpty) {
+      postMedia = <MediaModel>[...pickedMediaFiles];
+    } else {
+      postMedia.addAll(pickedMediaFiles);
+    }
+  }
 
-  // /* Changes state to uploading
-  // for showing a circular loader while the user is
-  // picking files */
-  // void onUploading() {
-  //   setState(() {
-  //     isUploading = true;
-  //   });
-  // }
+  /* Changes state to uploading
+  for showing a circular loader while the user is
+  picking files */
+  void onUploading() {
+    setState(() {
+      isUploading = true;
+    });
+  }
 
-  // /* Changes state to uploaded
-  // for showing the picked files */
-  // void onUploadedMedia(bool uploadResponse) {
-  //   if (uploadResponse) {
-  //     isMediaPost = true;
-  //     showLinkPreview = false;
-  //     setState(() {
-  //       isUploading = false;
-  //     });
-  //   } else {
-  //     if (postMedia.isEmpty) {
-  //       isMediaPost = false;
-  //       showLinkPreview = true;
-  //     }
-  //     setState(() {
-  //       isUploading = false;
-  //     });
-  //   }
-  // }
+  /* Changes state to uploaded
+  for showing the picked files */
+  void onUploadedMedia(bool uploadResponse) {
+    if (uploadResponse) {
+      isMediaPost = true;
+      showLinkPreview = false;
+      setState(() {
+        isUploading = false;
+      });
+    } else {
+      if (postMedia.isEmpty) {
+        isMediaPost = false;
+        showLinkPreview = true;
+      }
+      setState(() {
+        isUploading = false;
+      });
+    }
+  }
 
-  // void onUploadedDocument(bool uploadResponse) {
-  //   if (uploadResponse) {
-  //     isDocumentPost = true;
-  //     showLinkPreview = false;
-  //     setState(() {
-  //       isUploading = false;
-  //     });
-  //   } else {
-  //     if (postMedia.isEmpty) {
-  //       isDocumentPost = false;
-  //       showLinkPreview = true;
-  //     }
-  //     setState(() {
-  //       isUploading = false;
-  //     });
-  //   }
-  // }
+  void onUploadedDocument(bool uploadResponse) {
+    if (uploadResponse) {
+      isDocumentPost = true;
+      showLinkPreview = false;
+      setState(() {
+        isUploading = false;
+      });
+    } else {
+      if (postMedia.isEmpty) {
+        isDocumentPost = false;
+        showLinkPreview = true;
+      }
+      setState(() {
+        isUploading = false;
+      });
+    }
+  }
 
   // Widget getPostDocument(double width) {
   //   return ListView.builder(
@@ -192,9 +210,18 @@ class _NewPostScreenState extends State<NewPostScreen> {
   //   }
   // }
 
+  // this function initiliases postMedia list
+  // with photos/videos picked by the user
+  // void setPickedMediaFiles(List<MediaModel> pickedMediaFiles) {
+  //   if (postMedia.isEmpty) {
+  //     postMedia = <MediaModel>[...pickedMediaFiles];
+  //   } else {
+  //     postMedia.addAll(pickedMediaFiles);
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
     newPostBloc = BlocProvider.of<NewPostBloc>(context);
     return WillPopScope(
       onWillPop: () {
@@ -296,7 +323,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                               newPostBloc!.add(
                                 CreateNewPost(
                                   postText: postText,
-                                  postMedia: [],
+                                  postMedia: postMedia,
                                 ),
                               );
                               Navigator.pop(context);
@@ -333,28 +360,29 @@ class _NewPostScreenState extends State<NewPostScreen> {
                               decoration: const BoxDecoration(
                                 color: kWhiteColor,
                               ),
-                              child: LMTextInput(
-                                borderRadius: 12,
-                                backgroundColor: Colors.white,
-                                externalPadding: 0,
+                              child: TaggingAheadTextField(
+                                isDown: true,
+                                onTagSelected: (userTag) {},
                                 controller: _controller,
+                                focusNode: _focusNode,
+                                onChange: _onTextChanged,
                               ),
                             ),
                             kVerticalPaddingXLarge,
-                            // if (isUploading)
-                            //   const Padding(
-                            //     padding: EdgeInsets.only(
-                            //       top: kPaddingMedium,
-                            //       bottom: kPaddingLarge,
-                            //     ),
-                            //     child: Loader(),
-                            //   ),
+                            if (isUploading)
+                              const Padding(
+                                padding: EdgeInsets.only(
+                                  top: kPaddingMedium,
+                                  bottom: kPaddingLarge,
+                                ),
+                                child: LMLoader(),
+                              ),
                             // if (postMedia.isEmpty &&
                             //     linkModel != null &&
                             //     showLinkPreview)
                             //   Stack(
                             //     children: [
-                            //       PostLinkView(
+                            //       LMLinkPreview(
                             //           screenSize: screenSize, linkModel: linkModel),
                             //       Positioned(
                             //         top: 5,
@@ -369,23 +397,37 @@ class _NewPostScreenState extends State<NewPostScreen> {
                             //       )
                             //     ],
                             //   ),
-                            // if (postMedia.isNotEmpty)
-                            //   postMedia.first.mediaType == MediaType.document
-                            //       ? getPostDocument(screenSize!.width)
-                            //       : Container(
-                            //           padding: const EdgeInsets.only(
-                            //             top: kPaddingSmall,
-                            //           ),
-                            //           alignment: Alignment.center,
-                            //           child: PostMedia(
-                            //             height: screenSize!.width,
-                            //             removeAttachment: removeAttachmenetAtIndex,
-                            //             //min(constraints.maxHeight, screenSize!.width),
-                            //             mediaFiles: postMedia,
-                            //             postId: '',
-                            //           ),
-                            //         ),
-                            // kVerticalPaddingMedium,
+                            if (postMedia.isNotEmpty)
+                              postMedia.first.mediaType == MediaType.document
+                                  ? const SizedBox() //getPostDocument(screenSize!.width) const
+                                  : Container(
+                                      padding: const EdgeInsets.only(
+                                        top: kPaddingSmall,
+                                      ),
+                                      height: 180,
+                                      alignment: Alignment.center,
+                                      child: ListView.builder(
+                                        itemCount: postMedia.length,
+                                        scrollDirection: Axis.horizontal,
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          return Row(
+                                            children: [
+                                              LMImage(
+                                                height: 180,
+                                                width: 180,
+                                                boxFit: BoxFit.cover,
+                                                borderRadius: 18,
+                                                imageFile:
+                                                    postMedia[index].mediaFile!,
+                                              ),
+                                              const SizedBox(width: 8),
+                                            ],
+                                          );
+                                        },
+                                      ),
+                                    ),
+                            kVerticalPaddingMedium,
                           ],
                         ),
                       ),
@@ -415,7 +457,12 @@ class _NewPostScreenState extends State<NewPostScreen> {
                             color: Theme.of(context).colorScheme.secondary,
                             size: 28,
                           ),
-                          onTap: (active) {},
+                          onTap: (active) async {
+                            final result = await handlePermissions(context, 1);
+                            if (result) {
+                              pickImages(context);
+                            }
+                          },
                         ),
                         const SizedBox(width: 8),
                         LMIconButton(
@@ -447,62 +494,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
                       ],
                     ),
                   ),
-                  //   child: Column(
-                  //     children: [
-                  //       isDocumentPost
-                  //           ? const SizedBox.shrink()
-                  //           : AddAssetsButton(
-                  //               mediaType: 1, // 1 for photos
-                  //               picker: _picker,
-                  //               filePicker: _filePicker,
-                  //               uploading: onUploading,
-                  //               onUploaded: onUploadedMedia,
-                  //               postMedia: setPickedMediaFiles,
-                  //               mediaListLength: postMedia.length,
-                  //               preUploadCheck: () {
-                  //                 if (postMedia.length >= 10) {
-                  //                   return false;
-                  //                 }
-                  //                 return true;
-                  //               },
-                  //             ),
-                  //       isDocumentPost
-                  //           ? const SizedBox.shrink()
-                  //           : AddAssetsButton(
-                  //               mediaType: 2, // 2 for videos
-                  //               picker: _picker,
-                  //               filePicker: _filePicker,
-                  //               uploading: onUploading,
-                  //               onUploaded: onUploadedMedia,
-                  //               postMedia: setPickedMediaFiles,
-                  //               mediaListLength: postMedia.length,
-                  //               preUploadCheck: () {
-                  //                 if (postMedia.length >= 10) {
-                  //                   return false;
-                  //                 }
-                  //                 return true;
-                  //               },
-                  //             ),
-                  //       isMediaPost
-                  //           ? const SizedBox.shrink()
-                  //           : AddAssetsButton(
-                  //               mediaType: 3, // 2 for videos
-                  //               picker: _picker,
-                  //               filePicker: _filePicker,
-                  //               uploading: onUploading,
-                  //               onUploaded: onUploadedDocument,
-                  //               postMedia: setPickedMediaFiles,
-                  //               mediaListLength: postMedia.length,
-                  //               preUploadCheck: () {
-                  //                 if (postMedia.length >= 10) {
-                  //                   return false;
-                  //                 }
-                  //                 return true;
-                  //               },
-                  //             ),
-                  //     ],
-                  //   ),
-                  // )
                 ),
               ],
             ),
@@ -510,6 +501,178 @@ class _NewPostScreenState extends State<NewPostScreen> {
         ),
       ),
     );
+  }
+
+  String getFileSizeString({required int bytes, int decimals = 0}) {
+    const suffixes = ["b", "kb", "mb", "gb", "tb"];
+    var i = (log(bytes) / log(1024)).floor();
+    return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) + suffixes[i];
+  }
+
+// Returns file size in double in MBs
+  double getFileSizeInDouble(int bytes) {
+    return (bytes / pow(1024, 2));
+  }
+
+  void _onTextChanged(String p0) {
+    if (_debounce?.isActive ?? false) {
+      _debounce?.cancel();
+    }
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      handleTextLinks(p0);
+    });
+  }
+
+  void handleTextLinks(String text) async {
+    String link = getFirstValidLinkFromString(text);
+    if (link.isNotEmpty) {
+      previewLink = link;
+      DecodeUrlRequest request =
+          (DecodeUrlRequestBuilder()..url(previewLink)).build();
+      DecodeUrlResponse response =
+          await locator<LikeMindsService>().decodeUrl(request);
+      if (response.success == true) {
+        OgTags? responseTags = response.ogTags;
+        linkModel = MediaModel(
+          mediaType: MediaType.link,
+          link: previewLink,
+          ogTags: AttachmentMetaOgTags(
+            description: responseTags!.description,
+            image: responseTags.image,
+            title: responseTags.title,
+            url: responseTags.url,
+          ),
+        );
+        LMAnalytics.get().logEvent(
+          AnalyticsKeys.linkAttachedInPost,
+          {
+            'link': previewLink,
+          },
+        );
+        if (postMedia.isEmpty) {
+          setState(() {});
+        }
+      }
+    } else if (link.isEmpty) {
+      linkModel = null;
+      setState(() {});
+    }
+  }
+
+  Future<bool> handlePermissions(BuildContext context, int mediaType) async {
+    if (Platform.isAndroid) {
+      PermissionStatus permissionStatus;
+
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      if (androidInfo.version.sdkInt >= 33) {
+        if (mediaType == 1) {
+          permissionStatus = await Permission.photos.status;
+          if (permissionStatus == PermissionStatus.granted) {
+            return true;
+          } else if (permissionStatus == PermissionStatus.denied) {
+            permissionStatus = await Permission.photos.request();
+            if (permissionStatus == PermissionStatus.permanentlyDenied) {
+              toast(
+                'Permissions denied, change app settings',
+                duration: Toast.LENGTH_LONG,
+              );
+              return false;
+            } else if (permissionStatus == PermissionStatus.granted) {
+              return true;
+            } else {
+              return false;
+            }
+          }
+        } else {
+          permissionStatus = await Permission.videos.status;
+          if (permissionStatus == PermissionStatus.granted) {
+            return true;
+          } else if (permissionStatus == PermissionStatus.denied) {
+            permissionStatus = await Permission.videos.request();
+            if (permissionStatus == PermissionStatus.permanentlyDenied) {
+              toast(
+                'Permissions denied, change app settings',
+                duration: Toast.LENGTH_LONG,
+              );
+              return false;
+            } else if (permissionStatus == PermissionStatus.granted) {
+              return true;
+            } else {
+              return false;
+            }
+          }
+        }
+      } else {
+        permissionStatus = await Permission.storage.status;
+        if (permissionStatus == PermissionStatus.granted) {
+          return true;
+        } else {
+          permissionStatus = await Permission.storage.request();
+          if (permissionStatus == PermissionStatus.granted) {
+            return true;
+          } else if (permissionStatus == PermissionStatus.denied) {
+            return false;
+          } else if (permissionStatus == PermissionStatus.permanentlyDenied) {
+            toast(
+              'Permissions denied, change app settings',
+              duration: Toast.LENGTH_LONG,
+            );
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
+
+  void pickImages(BuildContext context) async {
+    onUploading();
+    try {
+      List<MediaModel> mediaFiles = [];
+      final List<XFile> list = await ImagePicker().pickMultiImage();
+
+      if (list.isNotEmpty) {
+        if (postMedia.length + list.length > 10) {
+          toast(
+            'A total of 10 attachments can be added to a post',
+            duration: Toast.LENGTH_LONG,
+          );
+          onUploadedDocument(false);
+          return;
+        }
+        for (XFile image in list) {
+          int fileBytes = await image.length();
+          double fileSize = getFileSizeInDouble(fileBytes);
+          if (fileSize > 100) {
+            toast(
+              'File size should be smaller than 100MB',
+              duration: Toast.LENGTH_LONG,
+            );
+            onUploadedDocument(false);
+            return;
+          } else {
+            final file = File(image.path);
+            final mediaModel = MediaModel(
+              mediaFile: file,
+              mediaType: MediaType.image,
+            );
+            mediaFiles.add(mediaModel);
+          }
+        }
+        setPickedMediaFiles(mediaFiles);
+        onUploadedDocument(true);
+      } else {
+        onUploadedDocument(false);
+      }
+    } catch (e) {
+      toast(
+        'An error occurred',
+        duration: Toast.LENGTH_LONG,
+      );
+      onUploadedDocument(false);
+      print(e.toString());
+    }
   }
 }
 
@@ -535,126 +698,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
 //     required this.postMedia,
 //     required this.preUploadCheck,
 //   });
-
-//   Future<bool> handlePermissions(BuildContext context) async {
-//     if (Platform.isAndroid) {
-//       PermissionStatus permissionStatus;
-
-//       DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-//       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-//       if (androidInfo.version.sdkInt >= 33) {
-//         if (mediaType == 1) {
-//           permissionStatus = await Permission.photos.status;
-//           if (permissionStatus == PermissionStatus.granted) {
-//             return true;
-//           } else if (permissionStatus == PermissionStatus.denied) {
-//             permissionStatus = await Permission.photos.request();
-//             if (permissionStatus == PermissionStatus.permanentlyDenied) {
-//               toast(
-//                 'Permissions denied, change app settings',
-//                 duration: Toast.LENGTH_LONG,
-//               );
-//               return false;
-//             } else if (permissionStatus == PermissionStatus.granted) {
-//               return true;
-//             } else {
-//               return false;
-//             }
-//           }
-//         } else {
-//           permissionStatus = await Permission.videos.status;
-//           if (permissionStatus == PermissionStatus.granted) {
-//             return true;
-//           } else if (permissionStatus == PermissionStatus.denied) {
-//             permissionStatus = await Permission.videos.request();
-//             if (permissionStatus == PermissionStatus.permanentlyDenied) {
-//               toast(
-//                 'Permissions denied, change app settings',
-//                 duration: Toast.LENGTH_LONG,
-//               );
-//               return false;
-//             } else if (permissionStatus == PermissionStatus.granted) {
-//               return true;
-//             } else {
-//               return false;
-//             }
-//           }
-//         }
-//       } else {
-//         permissionStatus = await Permission.storage.status;
-//         if (permissionStatus == PermissionStatus.granted) {
-//           return true;
-//         } else {
-//           permissionStatus = await Permission.storage.request();
-//           if (permissionStatus == PermissionStatus.granted) {
-//             return true;
-//           } else if (permissionStatus == PermissionStatus.denied) {
-//             return false;
-//           } else if (permissionStatus == PermissionStatus.permanentlyDenied) {
-//             toast(
-//               'Permissions denied, change app settings',
-//               duration: Toast.LENGTH_LONG,
-//             );
-//             return false;
-//           }
-//         }
-//       }
-//     }
-//     return true;
-//   }
-
-//   void pickImages(BuildContext context) async {
-//     uploading();
-//     try {
-//       final List<XFile> list = await picker.pickMultiImage();
-
-//       if (list.isNotEmpty) {
-//         if (mediaListLength + list.length > 10) {
-//           toast(
-//             'A total of 10 attachments can be added to a post',
-//             duration: Toast.LENGTH_LONG,
-//           );
-//           onUploaded(false);
-//           return;
-//         }
-//         for (XFile image in list) {
-//           int fileBytes = await image.length();
-//           double fileSize = getFileSizeInDouble(fileBytes);
-//           if (fileSize > 100) {
-//             toast(
-//               'File size should be smaller than 100MB',
-//               duration: Toast.LENGTH_LONG,
-//             );
-//             onUploaded(false);
-//             return;
-//           }
-//         }
-//         MultiImageCrop.startCropping(
-//           context: context,
-//           activeColor: kWhiteColor,
-//           aspectRatio: 1,
-//           files: list.map((e) => File(e.path)).toList(),
-//           callBack: (List<File> images) {
-//             List<MediaModel> mediaFiles = images
-//                 .map((e) => MediaModel(
-//                     mediaFile: File(e.path), mediaType: MediaType.image))
-//                 .toList();
-//             postMedia(mediaFiles);
-//             onUploaded(true);
-//           },
-//         );
-//       } else {
-//         onUploaded(false);
-//       }
-//     } catch (e) {
-//       toast(
-//         'An error occurred',
-//         duration: Toast.LENGTH_LONG,
-//       );
-//       onUploaded(false);
-//       print(e.toString());
-//     }
-//   }
 
 //   void pickVideos() async {
 //     uploading();

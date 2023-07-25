@@ -34,6 +34,7 @@ class _FeedScreenState extends State<FeedScreen> {
     super.initState();
     // Bloc.observer = SimpleBlocObserver();
     _feedBloc = UniversalFeedBloc();
+    _feedBloc.add(GetUniversalFeed(offset: _page, forLoadMore: false));
   }
 
   @override
@@ -83,7 +84,6 @@ class _FeedScreenState extends State<FeedScreen> {
   @override
   Widget build(BuildContext context) {
     _addPaginationListener();
-    _feedBloc.add(GetUniversalFeed(offset: _page, forLoadMore: false));
     return Scaffold(
       backgroundColor: kWhiteColor.withOpacity(0.95),
       appBar: AppBar(
@@ -100,137 +100,147 @@ class _FeedScreenState extends State<FeedScreen> {
         ),
         elevation: 1,
       ),
-      body: BlocConsumer(
-        bloc: _feedBloc,
-        buildWhen: (prev, curr) {
-          // Prevents changin the state while paginating the feed
-          if (prev is UniversalFeedLoaded && curr is UniversalFeedLoading) {
-            return false;
-          }
-          return true;
+      body: RefreshIndicator(
+        onRefresh: () async {
+          refresh();
         },
-        listener: (context, state) => updatePagingControllers(state),
-        builder: ((context, state) {
-          if (state is UniversalFeedLoaded) {
-            GetFeedResponse feedResponse = state.feed;
-            return PagedListView<int, Post>(
-              pagingController: _pagingController,
-              builderDelegate: PagedChildBuilderDelegate<Post>(
-                noItemsFoundIndicatorBuilder: (context) => Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const LMIcon(
-                        icon: Icons.post_add,
-                        size: 48,
-                      ),
-                      const SizedBox(height: 12),
-                      const Text("No posts to show",
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          )),
-                      const SizedBox(height: 12),
-                      const Text("Be the first one to post here",
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w300,
-                              color: kGrey2Color)),
-                      const SizedBox(height: 28),
-                      LMTextButton(
-                        height: 48,
-                        width: 142,
-                        borderRadius: 28,
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        text: LMTextView(
-                          text: "Create Post",
-                          textStyle: TextStyle(
-                            color: Theme.of(context).colorScheme.onPrimary,
-                            fontWeight: FontWeight.bold,
+        child: BlocConsumer(
+          bloc: _feedBloc,
+          buildWhen: (prev, curr) {
+            // Prevents changin the state while paginating the feed
+            if (prev is UniversalFeedLoaded && curr is UniversalFeedLoading) {
+              return false;
+            }
+            return true;
+          },
+          listener: (context, state) => updatePagingControllers(state),
+          builder: ((context, state) {
+            if (state is UniversalFeedLoaded) {
+              GetFeedResponse feedResponse = state.feed;
+              return PagedListView<int, Post>(
+                pagingController: _pagingController,
+                builderDelegate: PagedChildBuilderDelegate<Post>(
+                  noItemsFoundIndicatorBuilder: (context) => Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const LMIcon(
+                          icon: Icons.post_add,
+                          size: 48,
+                        ),
+                        const SizedBox(height: 12),
+                        const Text("No posts to show",
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            )),
+                        const SizedBox(height: 12),
+                        const Text("Be the first one to post here",
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w300,
+                                color: kGrey2Color)),
+                        const SizedBox(height: 28),
+                        LMTextButton(
+                          height: 48,
+                          width: 142,
+                          borderRadius: 28,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary,
+                          text: LMTextView(
+                            text: "Create Post",
+                            textStyle: TextStyle(
+                              color: Theme.of(context).colorScheme.onPrimary,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
+                          icon: LMIcon(
+                            icon: Icons.add,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                          ),
+                          onTap: (active) {
+                            if (!postUploading.value) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      BlocProvider<NewPostBloc>(
+                                    create: (context) => NewPostBloc(),
+                                    child: const NewPostScreen(),
+                                  ),
+                                ),
+                              );
+                            } else {
+                              toast(
+                                'A post is already uploading.',
+                                duration: Toast.LENGTH_LONG,
+                              );
+                            }
+                          },
                         ),
-                        icon: LMIcon(
-                          icon: Icons.add,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
-                        onTap: (active) {
-                          if (!postUploading.value) {
+                      ],
+                    ),
+                  ),
+                  itemBuilder: (context, item, index) {
+                    Post rebuildPostData = item;
+                    return Column(
+                      children: [
+                        const SizedBox(height: 8),
+                        SSPostWidget(
+                          post: item,
+                          user: feedResponse.users[item.userId]!,
+                          onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => BlocProvider<NewPostBloc>(
                                   create: (context) => NewPostBloc(),
-                                  child: const NewPostScreen(),
+                                  child: PostDetailScreen(
+                                    postId: item.id,
+                                  ),
                                 ),
                               ),
                             );
-                          } else {
-                            toast(
-                              'A post is already uploading.',
-                              duration: Toast.LENGTH_LONG,
-                            );
-                          }
-                        },
-                      ),
-                    ],
-                  ),
+                          },
+                          isFeed: true,
+                          refresh: (bool isDeleted) async {
+                            if (!isDeleted) {
+                              final GetPostResponse updatedPostDetails =
+                                  await locator<LikeMindsService>().getPost(
+                                (GetPostRequestBuilder()
+                                      ..postId(item.id)
+                                      ..page(1)
+                                      ..pageSize(10))
+                                    .build(),
+                              );
+                              item = updatedPostDetails.post!;
+                              rebuildPostData = updatedPostDetails.post!;
+                              List<Post>? feedRoomItemList =
+                                  _pagingController.itemList;
+                              feedRoomItemList?[index] =
+                                  updatedPostDetails.post!;
+                              _pagingController.itemList = feedRoomItemList;
+                              rebuildPostWidget.value =
+                                  !rebuildPostWidget.value;
+                            } else {
+                              List<Post>? feedRoomItemList =
+                                  _pagingController.itemList;
+                              feedRoomItemList!.removeAt(index);
+                              _pagingController.itemList = feedRoomItemList;
+                              rebuildPostWidget.value =
+                                  !rebuildPostWidget.value;
+                            }
+                          },
+                        ),
+                      ],
+                    );
+                  },
                 ),
-                itemBuilder: (context, item, index) {
-                  Post rebuildPostData = item;
-                  return Column(
-                    children: [
-                      const SizedBox(height: 8),
-                      SSPostWidget(
-                        post: item,
-                        user: feedResponse.users[item.userId]!,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => BlocProvider<NewPostBloc>(
-                                create: (context) => NewPostBloc(),
-                                child: PostDetailScreen(
-                                  postId: item.id,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                        isFeed: true,
-                        refresh: (bool isDeleted) async {
-                          if (!isDeleted) {
-                            final GetPostResponse updatedPostDetails =
-                                await locator<LikeMindsService>().getPost(
-                              (GetPostRequestBuilder()
-                                    ..postId(item.id)
-                                    ..page(1)
-                                    ..pageSize(10))
-                                  .build(),
-                            );
-                            item = updatedPostDetails.post!;
-                            rebuildPostData = updatedPostDetails.post!;
-                            List<Post>? feedRoomItemList =
-                                _pagingController.itemList;
-                            feedRoomItemList?[index] = updatedPostDetails.post!;
-                            _pagingController.itemList = feedRoomItemList;
-                            rebuildPostWidget.value = !rebuildPostWidget.value;
-                          } else {
-                            List<Post>? feedRoomItemList =
-                                _pagingController.itemList;
-                            feedRoomItemList!.removeAt(index);
-                            _pagingController.itemList = feedRoomItemList;
-                            rebuildPostWidget.value = !rebuildPostWidget.value;
-                          }
-                        },
-                      ),
-                    ],
-                  );
-                },
-              ),
-            );
-          }
-          return const Center(child: CircularProgressIndicator());
-        }),
+              );
+            }
+            return const Center(child: CircularProgressIndicator());
+          }),
+        ),
       ),
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
       // floatingActionButton: ValueListenableBuilder(

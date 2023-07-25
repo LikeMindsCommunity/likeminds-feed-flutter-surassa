@@ -24,11 +24,19 @@ dependencies:
   overlay_support: 
   lazy_load_scrollview: 
   infinite_scroll_pagination: 
+  device_info_plus: 
+  permission_handler: 
+  image_picker: 
+  open_filex: 
+
+  flutter_typeahead_mm: 
+    path: lib/packages/flutter_typeahead-4.3.7
 
   likeminds_feed_ui_fl: 
-    path: ../likeminds_feed_ui_fl
+    path: ../LikeMinds-Flutter-Feed-UI
 
   likeminds_feed: 
+    path: ../LikeMinds-Flutter-Feed-SDK
 
 dev_dependencies:
   flutter_test:

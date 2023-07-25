@@ -5,6 +5,7 @@ import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/add_comment/add_comment_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/add_comment_reply/add_comment_reply_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/all_comments/all_comments_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/comment/toggle_like_comment/toggle_like_comment_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
@@ -28,6 +29,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   late final AllCommentsBloc _allCommentsBloc;
   late final AddCommentBloc _addCommentBloc;
   late final AddCommentReplyBloc _addCommentReplyBloc;
+  late final ToggleLikeCommentBloc _toggleLikeCommentBloc;
   final FocusNode focusNode = FocusNode();
   TextEditingController? _commentController;
   ValueNotifier<bool> rebuildButton = ValueNotifier(false);
@@ -84,6 +86,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         forLoadMore: false));
     _addCommentBloc = AddCommentBloc();
     _addCommentReplyBloc = AddCommentReplyBloc();
+    _toggleLikeCommentBloc = ToggleLikeCommentBloc();
     _addPaginationListener();
     if (focusNode.canRequestFocus) {
       focusNode.requestFocus();
@@ -265,9 +268,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
               child: BlocConsumer<AddCommentReplyBloc, AddCommentReplyState>(
                 bloc: _addCommentReplyBloc,
                 listener: (context, state) {
-                  // if (state is AddCommentSuccess) {
-                  //   addCommentToList(state.props.);
-                  // }
                   if (state is CommentDeleted) {
                     removeCommentFromList(state.commentId);
                   }
@@ -285,6 +285,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                     selectCommentToEdit(state.commentId, null, state.text);
                   }
                   if (state is AddCommentReplySuccess) {
+                    debugPrint("AddCommentReplySuccess");
                     _commentController!.clear();
                     addReplyToList(state);
                     deselectCommentToReply();
@@ -326,9 +327,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                               ? "Editing ${selectedReplyId != null ? 'reply' : 'comment'}"
                                               : "Replying to",
                                           textStyle: const TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500,
-                                              color: kHeadingColor),
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            color: kGrey1Color,
+                                          ),
                                         ),
                                         const SizedBox(
                                           width: 8,
@@ -338,9 +340,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                             : LMTextView(
                                                 text: selectedUsername!,
                                                 textStyle: const TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: kPrimaryColor),
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: kLinkColor,
+                                                ),
                                               ),
                                         const Spacer(),
                                         LMIconButton(
@@ -383,40 +386,227 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                           externalPadding: 4,
                           borderRadius: 24,
                           fieldColor: kGrey3Color.withOpacity(0.3),
-                          sendButton: LMIconButton(
-                            icon: LMIcon(
-                              icon: Icons.send,
-                              color: Theme.of(context).colorScheme.onPrimary,
+                          sendButton: Padding(
+                            padding: const EdgeInsets.only(
+                              right: 12.0,
+                              bottom: 16,
                             ),
-                            containerSize: 48,
-                            backgroundColor: Theme.of(context).primaryColor,
-                            borderRadius: 24,
-                            onTap: (active) {
-                              if (isEditing) {
-                                // if (selectedReplyId != null) {
-                                //   _addCommentReplyBloc.add(EditReply(
-                                //       commentId: selectedCommentId!,
-                                //       replyId: selectedReplyId!,
-                                //       text: _commentController!.text));
-                                // } else {
-                                //   _addCommentReplyBloc.add(EditComment(
-                                //       commentId: selectedCommentId!,
-                                //       text: _commentController!.text));
-                                // }
-                              } else {
-                                _addCommentBloc.add(
-                                  AddComment(
-                                      addCommentRequest:
-                                          (AddCommentRequestBuilder()
-                                                ..postId(postData!.id)
-                                                ..text(
-                                                    _commentController!.text))
-                                              .build()),
-                                );
-                                _commentController!.clear();
-                              }
-                            },
+                            child: ValueListenableBuilder(
+                              valueListenable: rebuildReplyWidget,
+                              builder: (context, _, __) => isReplying ||
+                                      isEditing
+                                  ? BlocConsumer<AddCommentReplyBloc,
+                                      AddCommentReplyState>(
+                                      bloc: _addCommentReplyBloc,
+                                      listener: (context, state) {},
+                                      buildWhen: (previous, current) {
+                                        if (current is ReplyEditingStarted) {
+                                          return false;
+                                        }
+                                        if (current is EditReplyLoading) {
+                                          return false;
+                                        }
+                                        if (current is CommentEditingStarted) {
+                                          return false;
+                                        }
+                                        if (current is EditCommentLoading) {
+                                          return false;
+                                        }
+                                        return true;
+                                      },
+                                      builder: (context, state) {
+                                        if (state is AddCommentReplyLoading) {
+                                          return const Padding(
+                                            padding: EdgeInsets.all(16),
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                            ),
+                                          );
+                                        }
+                                        return ValueListenableBuilder(
+                                            valueListenable: rebuildButton,
+                                            builder: (
+                                              context,
+                                              s,
+                                              a,
+                                            ) {
+                                              return LMIconButton(
+                                                onTap: (bool active) {
+                                                  final commentText =
+                                                      TaggingHelper.encodeString(
+                                                          _commentController!
+                                                              .text,
+                                                          userTags);
+
+                                                  if (isEditing) {
+                                                    if (selectedReplyId !=
+                                                        null) {
+                                                      _addCommentReplyBloc.add(
+                                                        EditReply(
+                                                          editCommentReplyRequest:
+                                                              (EditCommentReplyRequestBuilder()
+                                                                    ..postId(widget
+                                                                        .postId)
+                                                                    ..text(
+                                                                        commentText)
+                                                                    ..commentId(
+                                                                        selectedCommentId!)
+                                                                    ..replyId(
+                                                                        selectedReplyId!))
+                                                                  .build(),
+                                                        ),
+                                                      );
+                                                    } else {
+                                                      _addCommentReplyBloc.add(
+                                                        EditComment(
+                                                          editCommentRequest:
+                                                              (EditCommentRequestBuilder()
+                                                                    ..postId(widget
+                                                                        .postId)
+                                                                    ..text(
+                                                                        commentText)
+                                                                    ..commentId(
+                                                                        selectedCommentId!))
+                                                                  .build(),
+                                                        ),
+                                                      );
+                                                    }
+                                                  } else {
+                                                    _addCommentReplyBloc.add(
+                                                        AddCommentReply(
+                                                            addCommentRequest:
+                                                                (AddCommentReplyRequestBuilder()
+                                                                      ..postId(
+                                                                          widget
+                                                                              .postId)
+                                                                      ..text(
+                                                                          commentText)
+                                                                      ..commentId(
+                                                                          selectedCommentId!))
+                                                                    .build()));
+
+                                                    _commentController?.clear();
+                                                  }
+                                                },
+                                                icon: LMIcon(
+                                                  icon: Icons.send,
+                                                  color: _commentController!
+                                                          .text.isNotEmpty
+                                                      ? kPrimaryColor
+                                                      : kGreyColor,
+                                                  size: 32,
+                                                ),
+                                              );
+                                            });
+                                      },
+                                    )
+                                  : BlocConsumer<AddCommentBloc,
+                                      AddCommentState>(
+                                      bloc: _addCommentBloc,
+                                      listener: (context, state) {
+                                        if (state is AddCommentSuccess) {
+                                          addCommentToList(state);
+                                        }
+                                        if (state is AddCommentLoading) {
+                                          deselectCommentToEdit();
+                                        }
+                                      },
+                                      builder: (context, state) {
+                                        if (state is AddCommentLoading) {
+                                          return const Padding(
+                                            padding: EdgeInsets.all(16),
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                            ),
+                                          );
+                                        }
+                                        return ValueListenableBuilder(
+                                            valueListenable: rebuildButton,
+                                            builder: (context, s, a) {
+                                              return LMIconButton(
+                                                onTap: (bool active) {
+                                                  final commentText =
+                                                      TaggingHelper
+                                                          .encodeString(
+                                                    _commentController!.text,
+                                                    userTags,
+                                                  );
+
+                                                  _addCommentBloc.add(
+                                                    AddComment(
+                                                      addCommentRequest:
+                                                          (AddCommentRequestBuilder()
+                                                                ..postId(widget
+                                                                    .postId)
+                                                                ..text(
+                                                                    commentText))
+                                                              .build(),
+                                                    ),
+                                                  );
+
+                                                  closeOnScreenKeyboard();
+                                                  _commentController?.clear();
+                                                },
+                                                icon: LMIcon(
+                                                  icon: Icons.send,
+                                                  color: _commentController!
+                                                          .text.isNotEmpty
+                                                      ? kPrimaryColor
+                                                      : kGreyColor,
+                                                  size: 32,
+                                                ),
+                                              );
+                                            });
+                                      },
+                                    ),
+                            ),
                           ),
+                          // sendButton: LMIconButton(
+                          //   icon: LMIcon(
+                          //     icon: Icons.send,
+                          //     color: Theme.of(context).colorScheme.onPrimary,
+                          //   ),
+                          //   containerSize: 48,
+                          //   backgroundColor: Theme.of(context).primaryColor,
+                          //   borderRadius: 24,
+                          //   onTap: (active) {
+                          //     if (isEditing) {
+                          //       // if (selectedReplyId != null) {
+                          //       //   _addCommentReplyBloc.add(EditReply(
+                          //       //       commentId: selectedCommentId!,
+                          //       //       replyId: selectedReplyId!,
+                          //       //       text: _commentController!.text));
+                          //       // } else {
+                          //       //   _addCommentReplyBloc.add(EditComment(
+                          //       //       commentId: selectedCommentId!,
+                          //       //       text: _commentController!.text));
+                          //       // }
+                          //     } else {
+                          //       if (selectedCommentId == null) {
+                          //         _addCommentBloc.add(
+                          //           AddComment(
+                          //               addCommentRequest:
+                          //                   (AddCommentRequestBuilder()
+                          //                         ..postId(postData!.id)
+                          //                         ..text(
+                          //                             _commentController!.text))
+                          //                       .build()),
+                          //         );
+                          //         _commentController!.clear();
+                          //       } else {
+                          //         _addCommentReplyBloc.add(AddCommentReply(
+                          //             addCommentRequest:
+                          //                 (AddCommentReplyRequestBuilder()
+                          //                       ..postId(widget.postId)
+                          //                       ..text(_commentController!.text)
+                          //                       ..commentId(selectedCommentId!))
+                          //                     .build()));
+
+                          //         _commentController?.clear();
+                          //       }
+                          //     }
+                          //   },
+                          // ),
                         ),
                       ),
                       kVerticalPaddingLarge,
@@ -439,39 +629,14 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                 containerSize: 48,
               ),
               backgroundColor: kWhiteColor,
-              title: LMTextView(
+              title: const LMTextView(
                 text: "Comments",
-                textStyle: const TextStyle(
+                textStyle: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w500,
                   color: kHeadingColor,
                 ),
               ),
-              // centerTitle: false,
-              // title: ValueListenableBuilder(
-              //   valueListenable: rebuildPostWidget,
-              //   builder: (context, _, __) {
-              //     return Column(
-              //       crossAxisAlignment: CrossAxisAlignment.start,
-              //       children: [
-              //         const Text(
-              //           'Post',
-              //           style: TextStyle(
-              //               fontSize: 20,
-              //               fontWeight: FontWeight.w500,
-              //               color: kHeadingColor),
-              //         ),
-              //         Text(
-              //           ' ${postData == null ? '--' : postData!.commentCount} ${postData == null ? 'Comment' : postData!.commentCount > 1 ? 'Comments' : 'Comment'}',
-              //           style: const TextStyle(
-              //               fontSize: 13,
-              //               fontWeight: FontWeight.w500,
-              //               color: kHeadingColor),
-              //         ),
-              //       ],
-              //     );
-              //   },
-              // ),
               elevation: 1,
             ),
             body: BlocConsumer<AllCommentsBloc, AllCommentsState>(
@@ -551,23 +716,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                       ),
                               ),
                               const SliverPadding(
-                                  padding: EdgeInsets.only(bottom: 12)),
-                              // SliverToBoxAdapter(
-                              //     child: postData == null
-                              //         ? const SizedBox.shrink()
-                              //         : postData!.commentCount >= 1
-                              //             ? Container(
-                              //                 color: kWhiteColor,
-                              //                 padding: const EdgeInsets.only(
-                              //                     left: 15, top: 15),
-                              //                 child: Text(
-                              //                   '${postData!.commentCount} ${postData!.commentCount > 1 ? 'Comments' : 'Comment'}',
-                              //                   style: const TextStyle(
-                              //                       fontWeight:
-                              //                           FontWeight.w600),
-                              //                 ),
-                              //               )
-                              //             : const SizedBox.shrink()),
+                                padding: EdgeInsets.only(bottom: 12),
+                              ),
                               PagedSliverList(
                                 pagingController: _pagingController,
                                 builderDelegate:
@@ -609,7 +759,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                       ),
                                       subtitleText: LMTextView(
                                         text:
-                                            "@${postDetailResponse.users![item.userId]!.name.toLowerCase()}",
+                                            "@${postDetailResponse.users![item.userId]!.name.toLowerCase().split(' ').join()}",
                                         textStyle: const TextStyle(
                                           fontSize: 12,
                                           fontWeight: FontWeight.w400,
@@ -633,7 +783,16 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                 fontSize: 12),
                                           ),
                                           onTap: (active) {
-                                            print("Like Comment");
+                                            _toggleLikeCommentBloc.add(
+                                              ToggleLikeComment(
+                                                toggleLikeCommentRequest:
+                                                    (ToggleLikeCommentRequestBuilder()
+                                                          ..commentId(item.id)
+                                                          ..postId(
+                                                              widget.postId))
+                                                        .build(),
+                                              ),
+                                            );
                                           },
                                           icon: const LMIcon(
                                             icon: Icons.thumb_up_alt_outlined,
@@ -646,12 +805,17 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                 .colorScheme
                                                 .secondary,
                                           ),
+                                          isActive: item.isLiked,
                                         ),
                                         const SizedBox(width: 8),
                                         LMTextButton(
                                           text: const LMTextView(text: "Reply"),
                                           onTap: (active) {
-                                            print("Reply to a comment");
+                                            selectCommentToReply(
+                                              item.id,
+                                              postDetailResponse
+                                                  .users![item.userId]!.name,
+                                            );
                                           },
                                           icon: const LMIcon(
                                             icon: Icons.message_outlined,

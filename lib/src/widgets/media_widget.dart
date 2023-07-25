@@ -34,7 +34,7 @@ class _SSPostMediaState extends State<SSPostMedia> {
     } else {
       return LMCarousel(
         attachments: attachments,
-        borderRadius: 16,
+        borderRadius: 18,
         activeIndicator: Container(
           width: 12.0,
           height: 8.0,

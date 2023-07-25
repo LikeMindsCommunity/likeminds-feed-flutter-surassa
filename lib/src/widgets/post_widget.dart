@@ -84,9 +84,16 @@ class SSPostWidget extends StatelessWidget {
                       color: kGreyColor,
                     ),
                   ),
+                  menu: LMPostMenu(
+                    menuItems: postDetails!.menuItems,
+                    children: {},
+                  ),
                 ),
                 const SizedBox(height: 8),
                 const LMPostContent(),
+                postDetails!.attachments != null
+                    ? const SizedBox(height: 12)
+                    : const SizedBox(),
                 postDetails!.attachments != null &&
                         postDetails!.attachments!.isNotEmpty
                     ? LMPostMedia(

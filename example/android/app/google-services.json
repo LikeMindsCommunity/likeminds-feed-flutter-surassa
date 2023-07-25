@@ -1,0 +1,478 @@
+{
+  "project_info": {
+    "project_number": "317419981427",
+    "project_id": "likeminds-sdk-app",
+    "storage_bucket": "likeminds-sdk-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317419981427:android:4757825d0545cff4d2f806",
+        "android_client_info": {
+          "package_name": "com.example.likeminds_chat_ss_sample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCp2HimWufInSMnLc7ndFBEpeSDTj7Fxsw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "317419981427-gnran5rufkt5cl27jaqa5k2qncs2r498.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.likeminds.flutterfeed.ios"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317419981427:android:d40f25139f5b51a1d2f806",
+        "android_client_info": {
+          "package_name": "com.example.likeminds_feed_ss_sample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCp2HimWufInSMnLc7ndFBEpeSDTj7Fxsw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "317419981427-gnran5rufkt5cl27jaqa5k2qncs2r498.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.likeminds.flutterfeed.ios"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317419981427:android:90ba16020e5710eed2f806",
+        "android_client_info": {
+          "package_name": "com.example.testchoiceconnect"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCp2HimWufInSMnLc7ndFBEpeSDTj7Fxsw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "317419981427-gnran5rufkt5cl27jaqa5k2qncs2r498.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.likeminds.flutterfeed.ios"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317419981427:android:3d43f34bdf73d2f5d2f806",
+        "android_client_info": {
+          "package_name": "com.likeminds.chat.sx"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCp2HimWufInSMnLc7ndFBEpeSDTj7Fxsw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "317419981427-gnran5rufkt5cl27jaqa5k2qncs2r498.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.likeminds.flutterfeed.ios"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317419981427:android:164a8ccb63a70ab9d2f806",
+        "android_client_info": {
+          "package_name": "com.likeminds.chatsample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCp2HimWufInSMnLc7ndFBEpeSDTj7Fxsw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "317419981427-gnran5rufkt5cl27jaqa5k2qncs2r498.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.likeminds.flutterfeed.ios"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317419981427:android:1121d9f691545267d2f806",
+        "android_client_info": {
+          "package_name": "com.likeminds.chatsampleapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCp2HimWufInSMnLc7ndFBEpeSDTj7Fxsw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "317419981427-gnran5rufkt5cl27jaqa5k2qncs2r498.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.likeminds.flutterfeed.ios"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317419981427:android:39193e779135e11cd2f806",
+        "android_client_info": {
+          "package_name": "com.likeminds.feedsample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCp2HimWufInSMnLc7ndFBEpeSDTj7Fxsw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "317419981427-gnran5rufkt5cl27jaqa5k2qncs2r498.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.likeminds.flutterfeed.ios"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317419981427:android:363c6b0cb7755690d2f806",
+        "android_client_info": {
+          "package_name": "com.likeminds.feedsampleapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCp2HimWufInSMnLc7ndFBEpeSDTj7Fxsw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "317419981427-gnran5rufkt5cl27jaqa5k2qncs2r498.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.likeminds.flutterfeed.ios"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317419981427:android:33393a75c63147b5d2f806",
+        "android_client_info": {
+          "package_name": "com.likeminds.feedsampleapp.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCp2HimWufInSMnLc7ndFBEpeSDTj7Fxsw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "317419981427-gnran5rufkt5cl27jaqa5k2qncs2r498.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.likeminds.flutterfeed.ios"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317419981427:android:3c0f5b02b0f00c08d2f806",
+        "android_client_info": {
+          "package_name": "com.likeminds.feedsx"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCp2HimWufInSMnLc7ndFBEpeSDTj7Fxsw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "317419981427-gnran5rufkt5cl27jaqa5k2qncs2r498.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.likeminds.flutterfeed.ios"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317419981427:android:41d628b711423e93d2f806",
+        "android_client_info": {
+          "package_name": "com.likeminds.likemindschat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCp2HimWufInSMnLc7ndFBEpeSDTj7Fxsw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "317419981427-gnran5rufkt5cl27jaqa5k2qncs2r498.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.likeminds.flutterfeed.ios"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317419981427:android:5f22dafa3d28d37bd2f806",
+        "android_client_info": {
+          "package_name": "com.likeminds.sampleapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCp2HimWufInSMnLc7ndFBEpeSDTj7Fxsw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "317419981427-gnran5rufkt5cl27jaqa5k2qncs2r498.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.likeminds.flutterfeed.ios"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317419981427:android:57cb52869617d6e2d2f806",
+        "android_client_info": {
+          "package_name": "com.likeminds.sampleapp.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCp2HimWufInSMnLc7ndFBEpeSDTj7Fxsw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "317419981427-2ephdi4q8i78sn2envf4aacob8o8d24a.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "317419981427-gnran5rufkt5cl27jaqa5k2qncs2r498.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.likeminds.flutterfeed.ios"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
