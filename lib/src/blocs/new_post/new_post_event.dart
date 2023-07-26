@@ -52,3 +52,16 @@ class UpdatePost extends NewPostEvents {
   @override
   List<Object> get props => [postId];
 }
+
+class TogglePinPost extends NewPostEvents {
+  final String postId;
+  final bool isPinned;
+
+  TogglePinPost({
+    required this.postId,
+    required this.isPinned,
+  });
+
+  @override
+  List<Object> get props => [postId, isPinned];
+}

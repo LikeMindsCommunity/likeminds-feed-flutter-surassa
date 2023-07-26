@@ -20,7 +20,9 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
     on<EditPost>(mapEditPostHandler);
     on<DeletePost>(mapDeletePostHandler);
     on<UpdatePost>(mapUpdatePostHandler);
+    on<TogglePinPost>(mapTogglePinPostHandler);
   }
+
   mapNewPostHandler(CreateNewPost event, Emitter<NewPostState> emit) async {
     try {
       List<MediaModel>? postMedia = event.postMedia;
@@ -222,6 +224,24 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
         await locator<LikeMindsService>().getPost(request);
     if (response.success) {
       emit(PostUpdateState(post: response.post!));
+    }
+  }
+
+  mapTogglePinPostHandler(
+      TogglePinPost event, Emitter<NewPostState> emit) async {
+    PinPostRequest request =
+        (PinPostRequestBuilder()..postId(event.postId)).build();
+
+    PinPostResponse response =
+        await locator<LikeMindsService>().pinPost(request);
+
+    if (response.success) {
+      emit(PostPinnedState(isPinned: event.isPinned, postId: event.postId));
+    } else {
+      emit(PostPinError(
+          message: response.errorMessage ?? "An error occurred",
+          isPinned: !event.isPinned,
+          postId: event.postId));
     }
   }
 }

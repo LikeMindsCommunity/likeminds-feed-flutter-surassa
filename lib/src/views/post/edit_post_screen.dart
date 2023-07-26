@@ -11,6 +11,7 @@ import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/local_preference/user_local_preference.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_utils.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/tagging/tagging_textfield_ta.dart';
+import 'package:likeminds_feed_ss_fl/src/views/post/post_composer_header.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:overlay_support/overlay_support.dart';
 
@@ -253,81 +254,60 @@ class _EditPostScreenState extends State<EditPostScreen> {
   Widget postEditWidget() {
     return Column(
       children: <Widget>[
-        SizedBox(
-          height: 48,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              BackButton(
-                onPressed: () {
-                  if (textEditingController!.text != convertedPostText) {
-                    showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                              title: const Text('Discard Post'),
-                              content: const Text(
-                                  'Are you sure want to discard the current post?'),
-                              actions: <Widget>[
-                                TextButton(
-                                  child: const Text('No'),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                                TextButton(
-                                  child: const Text('Yes'),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
-                            ));
-                  } else {
-                    Navigator.of(context).pop();
-                  }
-                },
-              ),
-              const Text(
-                'Edit Post',
-                style: TextStyle(fontSize: 18, color: kGrey1Color),
-              ),
-              TextButton(
-                onPressed: () async {
-                  if (textEditingController!.text.isNotEmpty ||
-                      (postDetails!.attachments != null &&
-                          postDetails!.attachments!.isNotEmpty)) {
-                    checkTextLinks();
-                    userTags = TaggingHelper.matchTags(
-                        textEditingController!.text, userTags);
-                    String result = TaggingHelper.encodeString(
-                        textEditingController!.text, userTags);
-                    newPostBloc?.add(EditPost(
-                      postText: result,
-                      attachments: attachments,
-                      postId: postId,
-                    ));
-                    Navigator.of(context).pop();
-                  } else {
-                    toast(
-                      "Can't save a post without text or attachments",
-                      duration: Toast.LENGTH_LONG,
-                    );
-                  }
-                },
-                child: const Text(
-                  'Save',
-                  style: TextStyle(
-                    color: kPrimaryColor,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
+        PostComposerHeader(
+          onPressedBack: () {
+            if (textEditingController!.text != convertedPostText) {
+              showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                        title: const Text('Discard Post'),
+                        content: const Text(
+                            'Are you sure want to discard the current post?'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: const Text('No'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          TextButton(
+                            child: const Text('Yes'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      ));
+            } else {
+              Navigator.of(context).pop();
+            }
+          },
+          title: "Edit Post",
+          onTap: () async {
+            if (textEditingController!.text.isNotEmpty ||
+                (postDetails!.attachments != null &&
+                    postDetails!.attachments!.isNotEmpty)) {
+              checkTextLinks();
+              userTags = TaggingHelper.matchTags(
+                  textEditingController!.text, userTags);
+              String result = TaggingHelper.encodeString(
+                  textEditingController!.text, userTags);
+              newPostBloc?.add(EditPost(
+                postText: result,
+                attachments: attachments,
+                postId: postId,
+              ));
+              Navigator.of(context).pop();
+            } else {
+              toast(
+                "Can't save a post without text or attachments",
+                duration: Toast.LENGTH_LONG,
+              );
+            }
+          },
         ),
-        kVerticalPaddingLarge,
+        kVerticalPaddingMedium,
         Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: 16.0,
@@ -340,24 +320,9 @@ class _EditPostScreenState extends State<EditPostScreen> {
                 fallbackText: user!.name,
               ),
               kHorizontalPaddingLarge,
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    user!.name,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: kGrey1Color,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
             ],
           ),
         ),
-        kVerticalPaddingLarge,
         Expanded(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16),

@@ -64,3 +64,32 @@ class PostUpdateState extends NewPostState {
   @override
   List<Object> get props => [post];
 }
+
+class PostPinnedState extends NewPostState {
+  final String postId;
+  final bool isPinned;
+
+  const PostPinnedState({required this.postId, required this.isPinned});
+
+  @override
+  List<Object> get props => [postId, isPinned];
+}
+
+class PostPinError extends NewPostState {
+  final String message;
+  final bool isPinned;
+  final String postId;
+
+  const PostPinError({
+    required this.message,
+    required this.isPinned,
+    required this.postId,
+  });
+
+  @override
+  List<Object> get props => [
+        message,
+        isPinned,
+        postId,
+      ];
+}

@@ -18,6 +18,7 @@ import 'package:likeminds_feed_ss_fl/src/utils/local_preference/user_local_prefe
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_media_picker.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_utils.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/tagging/tagging_textfield_ta.dart';
+import 'package:likeminds_feed_ss_fl/src/views/post/post_composer_header.dart';
 
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -224,74 +225,30 @@ class _NewPostScreenState extends State<NewPostScreen> {
           body: SafeArea(
             child: Column(
               children: [
-                SizedBox(
-                  height: 48,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 18.0,
-                      vertical: 4.0,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        LMIconButton(
-                          icon: LMIcon(
-                            type: LMIconType.icon,
-                            icon: Icons.chevron_left,
-                            color: Theme.of(context).primaryColor,
-                            size: 42,
+                PostComposerHeader(
+                  title: "Create Post",
+                  onTap: () {
+                    if ((_controller.text.isNotEmpty || postMedia.isNotEmpty)) {
+                      String postText = _controller.text;
+                      checkTextLinks();
+                      if (postText.isNotEmpty) {
+                        newPostBloc!.add(
+                          CreateNewPost(
+                            postText: postText,
+                            postMedia: postMedia,
                           ),
-                          containerSize: 42,
-                          onTap: (active) {
-                            Navigator.pop(context);
-                          },
-                        ),
-                        const Spacer(),
-                        const LMTextView(
-                          text: 'Create a Post',
-                          textStyle:
-                              TextStyle(fontSize: 18, color: kGrey1Color),
-                        ),
-                        const Spacer(),
-                        LMTextButton(
-                          text: LMTextView(
-                            text: "Post",
-                            textStyle: TextStyle(
-                              color: Theme.of(context).colorScheme.onPrimary,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          width: 48,
-                          borderRadius: 6,
-                          backgroundColor: Theme.of(context).primaryColor,
-                          onTap: () {
-                            if ((_controller.text.isNotEmpty ||
-                                postMedia.isNotEmpty)) {
-                              String postText = _controller.text;
-                              checkTextLinks();
-                              if (postText.isNotEmpty) {
-                                newPostBloc!.add(
-                                  CreateNewPost(
-                                    postText: postText,
-                                    postMedia: postMedia,
-                                  ),
-                                );
-                                Navigator.pop(context);
-                              }
-                            } else {
-                              toast(
-                                "Can't create a post without text or attachments",
-                                duration: Toast.LENGTH_LONG,
-                              );
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
+                        );
+                        Navigator.pop(context);
+                      }
+                    } else {
+                      toast(
+                        "Can't create a post without text or attachments",
+                        duration: Toast.LENGTH_LONG,
+                      );
+                    }
+                  },
                 ),
-                kVerticalPaddingLarge,
+                kVerticalPaddingMedium,
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16.0,
@@ -436,10 +393,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
                             type: LMIconType.svg,
                             assetPath: kAssetGalleryIcon,
                             color: Theme.of(context).colorScheme.secondary,
-                            boxSize: 50,
+                            boxPadding: 0,
                             size: 44,
                           ),
-                          containerSize: 50,
                           onTap: (active) async {
                             final result = await handlePermissions(context, 1);
                             if (result) {
@@ -453,10 +409,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
                             type: LMIconType.svg,
                             assetPath: kAssetVideoIcon,
                             color: Theme.of(context).colorScheme.secondary,
-                            boxSize: 50,
+                            boxPadding: 0,
                             size: 44,
                           ),
-                          containerSize: 50,
                           onTap: (active) async {
                             onUploading();
                             List<MediaModel>? pickedMediaFiles =
@@ -476,10 +431,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
                             type: LMIconType.svg,
                             assetPath: kAssetDocPDFIcon,
                             color: Theme.of(context).colorScheme.secondary,
-                            boxSize: 50,
+                            boxPadding: 0,
                             size: 44,
                           ),
-                          containerSize: 50,
                           onTap: (active) async {
                             onUploading();
                             List<MediaModel>? pickedMediaFiles =
@@ -494,17 +448,16 @@ class _NewPostScreenState extends State<NewPostScreen> {
                           },
                         ),
                         const SizedBox(width: 8),
-                        LMIconButton(
-                          icon: LMIcon(
-                            type: LMIconType.svg,
-                            assetPath: kAssetPollIcon,
-                            color: Theme.of(context).colorScheme.secondary,
-                            boxSize: 50,
-                            size: 44,
-                          ),
-                          containerSize: 50,
-                          onTap: (active) {},
-                        ),
+                        // LMIconButton(
+                        //   icon: LMIcon(
+                        //     type: LMIconType.svg,
+                        //     assetPath: kAssetPollIcon,
+                        //     color: Theme.of(context).colorScheme.secondary,
+                        //     boxPadding: 0,
+                        //     size: 44,
+                        //   ),
+                        //   onTap: (active) {},
+                        // ),
                       ],
                     ),
                   ),

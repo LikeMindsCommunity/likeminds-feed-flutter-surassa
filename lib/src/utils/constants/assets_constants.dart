@@ -6,5 +6,13 @@ const String kAssetVideoIcon =
     'packages/likeminds_feed_ss_fl/assets/icons/video.svg';
 const String kAssetPollIcon =
     'packages/likeminds_feed_ss_fl/assets/icons/poll.svg';
-    const String kAssetPinIcon =
+const String kAssetPinIcon =
     'packages/likeminds_feed_ss_fl/assets/icons/pin.svg';
+const String kAssetLikeIcon =
+    "packages/likeminds_feed_ss_fl/assets/icons/like.svg";
+const String kAssetLikeFilledIcon =
+    "packages/likeminds_feed_ss_fl/assets/icons/like_filled.svg";
+const String kAssetCommentIcon =
+    "packages/likeminds_feed_ss_fl/assets/icons/comment.svg";
+const String kAssetShareIcon =
+    "packages/likeminds_feed_ss_fl/assets/icons/share.svg";

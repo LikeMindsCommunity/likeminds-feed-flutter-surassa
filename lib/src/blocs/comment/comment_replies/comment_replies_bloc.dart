@@ -22,6 +22,11 @@ class CommentRepliesBloc
         );
       }
     });
+    on<ClearCommentReplies>(
+      (event, emit) {
+        emit(ClearedCommentReplies());
+      },
+    );
   }
 
   FutureOr<void> _mapGetCommentRepliesToState(
@@ -31,16 +36,19 @@ class CommentRepliesBloc
     // if (!hasReachedMax(state, forLoadMore)) {
     Map<String, User> users = {};
     List<CommentReply> comments = [];
-    if (state is CommentRepliesLoaded && forLoadMore) {
+    if (state is CommentRepliesLoaded &&
+        forLoadMore &&
+        commentDetailRequest.commentId ==
+            (state as CommentRepliesLoaded).commentId) {
       comments =
           (state as CommentRepliesLoaded).commentDetails.postReplies!.replies;
       users = (state as CommentRepliesLoaded).commentDetails.users!;
       emit(PaginatedCommentRepliesLoading(
+          commentId: commentDetailRequest.commentId,
           prevCommentDetails: (state as CommentRepliesLoaded).commentDetails));
     } else {
-      emit(CommentRepliesLoading());
+      emit(CommentRepliesLoading(commentId: commentDetailRequest.commentId));
     }
-    print("hellobook");
 
     GetCommentResponse response =
         await lmService.getComment(commentDetailRequest);
@@ -51,6 +59,7 @@ class CommentRepliesBloc
       response.users!.addAll(users);
       emit(CommentRepliesLoaded(
           commentDetails: response,
+          commentId: commentDetailRequest.commentId,
           hasReachedMax: response.postReplies!.replies.isEmpty));
     }
   }

@@ -28,7 +28,7 @@ class UniversalFeedBloc extends Bloc<UniversalFeedEvent, UniversalFeedState> {
       required Emitter<UniversalFeedState> emit}) async {
     // if (!hasReachedMax(state, forLoadMore)) {
     Map<String, User> users = {};
-    if (offset > 1 && state is UniversalFeedLoaded) {
+    if (state is UniversalFeedLoaded) {
       users = (state as UniversalFeedLoaded).feed.users;
       emit(PaginatedUniversalFeedLoading(
           prevFeed: (state as UniversalFeedLoaded).feed));

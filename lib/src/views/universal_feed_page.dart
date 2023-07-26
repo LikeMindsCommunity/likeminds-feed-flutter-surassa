@@ -295,6 +295,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                     feedRoomItemList.length > 10) {
                   feedRoomItemList.removeLast();
                 }
+                widget.feedResponse.users.addAll(curr.userData);
                 widget.feedRoomPagingController.itemList = feedRoomItemList;
                 postUploading.value = false;
                 rebuildPostWidget.value = !rebuildPostWidget.value;
@@ -309,6 +310,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                 if (index != -1) {
                   feedRoomItemList?[index] = item;
                 }
+                widget.feedResponse.users.addAll(curr.userData);
                 postUploading.value = false;
                 rebuildPostWidget.value = !rebuildPostWidget.value;
               }

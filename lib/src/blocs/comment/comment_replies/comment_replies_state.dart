@@ -13,23 +13,35 @@ class CommentRepliesInitial extends CommentRepliesState {
 
 class CommentRepliesLoaded extends CommentRepliesState {
   final GetCommentResponse commentDetails;
+  final String commentId;
   final bool hasReachedMax;
   const CommentRepliesLoaded(
-      {required this.commentDetails, required this.hasReachedMax});
+      {required this.commentDetails,
+      required this.commentId,
+      required this.hasReachedMax});
 
   @override
   List<Object?> get props => [commentDetails, hasReachedMax];
 }
 
 class CommentRepliesLoading extends CommentRepliesState {
+  final String commentId;
+
+  const CommentRepliesLoading({
+    required this.commentId,
+  });
+
   @override
   List<Object?> get props => [];
 }
 
 class PaginatedCommentRepliesLoading extends CommentRepliesState {
   final GetCommentResponse prevCommentDetails;
+  final String commentId;
+
   const PaginatedCommentRepliesLoading({
     required this.prevCommentDetails,
+    required this.commentId,
   });
   @override
   List<Object?> get props => [];
@@ -43,4 +55,10 @@ class CommentRepliesError extends CommentRepliesState {
 
   @override
   List<Object?> get props => [message];
+}
+
+class ClearedCommentReplies extends CommentRepliesState {
+  final int time = DateTime.now().millisecondsSinceEpoch;
+  @override
+  List<Object?> get props => [time];
 }

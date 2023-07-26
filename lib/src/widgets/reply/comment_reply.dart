@@ -2,9 +2,13 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
+import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/add_comment_reply/add_comment_reply_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/comment_replies/comment_replies_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/comment/toggle_like_comment/toggle_like_comment_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
+import 'package:likeminds_feed_ss_fl/src/widgets/delete_dialog.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 
 class CommentReplyWidget extends StatefulWidget {
@@ -28,17 +32,21 @@ class CommentReplyWidget extends StatefulWidget {
 }
 
 class _CommentReplyWidgetState extends State<CommentReplyWidget> {
-  late final CommentRepliesBloc _commentRepliesBloc;
+  CommentRepliesBloc? _commentRepliesBloc;
+  AddCommentReplyBloc? addCommentReplyBloc;
   ValueNotifier<bool> rebuildLikeButton = ValueNotifier(false);
   ValueNotifier<bool> rebuildReplyList = ValueNotifier(false);
   ValueNotifier<bool> rebuildReplyButton = ValueNotifier(false);
+  List<CommentReply> replies = [];
+  Map<String, User> users = {};
+  List<Widget> repliesW = [];
 
   Reply? reply;
   late final User user;
   late final String postId;
   Function()? refresh;
   int? likeCount;
-  bool isLiked = false, _replyVisible = true;
+  bool isLiked = false;
   int replyCount = 0;
 
   void initialiseReply() {
@@ -51,51 +59,179 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     postId = widget.postId;
     user = widget.user;
-    _commentRepliesBloc = CommentRepliesBloc();
     initialiseReply();
-    _commentRepliesBloc.add(GetCommentReplies(
-        commentDetailRequest: (GetCommentRequestBuilder()
-              ..commentId(reply!.id)
-              ..postId(postId)
-              ..page(1))
-            .build(),
-        forLoadMore: true));
   }
 
   int page = 1;
 
+  List<Widget> mapRepliesToWidget(
+      List<CommentReply> replies, Map<String, User> users) {
+    ToggleLikeCommentBloc _toggleLikeCommentBloc =
+        BlocProvider.of<ToggleLikeCommentBloc>(context);
+    return replies.mapIndexed((index, element) {
+      User user = users[element.userId]!;
+      return StatefulBuilder(builder: (context, setReplyState) {
+        return LMReplyTile(
+            comment: element,
+            user: user,
+            profilePicture: LMProfilePicture(
+              imageUrl: user.imageUrl,
+              fallbackText: user.name,
+              size: 32,
+            ),
+            subtitleText: LMTextView(
+              text: "@${user.name.toLowerCase().split(' ').join()}",
+              textStyle: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                color: kGreyColor,
+              ),
+            ),
+            onMenuTap: (value) {
+              if (value == 6) {
+                showDialog(
+                    context: context,
+                    builder: (childContext) => deleteConfirmationDialog(
+                            childContext,
+                            title: 'Delete Comment',
+                            userId: element.userId,
+                            content:
+                                'Are you sure you want to delete this comment. This action can not be reversed.',
+                            action: (String reason) async {
+                          Navigator.of(childContext).pop();
+                          //Implement delete post analytics tracking
+                          LMAnalytics.get().track(
+                            AnalyticsKeys.commentDeleted,
+                            {
+                              "post_id": postId,
+                              "comment_id": element.id,
+                            },
+                          );
+                          addCommentReplyBloc!.add(DeleteCommentReply(
+                              (DeleteCommentRequestBuilder()
+                                    ..postId(postId)
+                                    ..commentId(element.id)
+                                    ..reason(reason.isEmpty
+                                        ? "Reason for deletion"
+                                        : reason))
+                                  .build()));
+                        }, actionText: 'Delete'));
+              } else if (value == 8) {
+                addCommentReplyBloc!.add(EditReplyCancel());
+                addCommentReplyBloc!.add(
+                  EditingReply(
+                    commentId: reply!.id,
+                    text: element.text,
+                    replyId: element.id,
+                  ),
+                );
+              }
+            },
+            commentActions: [
+              LMTextButton(
+                text: const LMTextView(
+                  text: "Like",
+                  textStyle: TextStyle(fontSize: 12),
+                ),
+                activeText: LMTextView(
+                  text: "Like",
+                  textStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.secondary,
+                      fontSize: 12),
+                ),
+                onTap: () {
+                  _toggleLikeCommentBloc.add(
+                    ToggleLikeComment(
+                      toggleLikeCommentRequest:
+                          (ToggleLikeCommentRequestBuilder()
+                                ..commentId(element.id)
+                                ..postId(widget.postId))
+                              .build(),
+                    ),
+                  );
+                  setReplyState(() {
+                    element.isLiked = !element.isLiked;
+                  });
+                },
+                icon: const LMIcon(
+                  type: LMIconType.icon,
+                  icon: Icons.thumb_up_alt_outlined,
+                  size: 18,
+                ),
+                activeIcon: const LMIcon(
+                  type: LMIconType.svg,
+                  assetPath: kAssetLikeFilledIcon,
+                  size: 20,
+                ),
+                isActive: element.isLiked,
+              ),
+              const SizedBox(width: 8),
+            ]);
+      });
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
-    AddCommentReplyBloc addCommentReplyBloc =
-        BlocProvider.of<AddCommentReplyBloc>(context);
+    addCommentReplyBloc = BlocProvider.of<AddCommentReplyBloc>(context);
+    _commentRepliesBloc = BlocProvider.of<CommentRepliesBloc>(context);
     initialiseReply();
     return ValueListenableBuilder(
       valueListenable: rebuildReplyList,
       builder: (context, _, __) {
         return BlocConsumer(
           bloc: _commentRepliesBloc,
+          buildWhen: (previous, current) {
+            if (current is CommentRepliesLoaded &&
+                current.commentId != reply!.id) {
+              return false;
+            }
+            if (current is PaginatedCommentRepliesLoading &&
+                current.commentId != reply!.id) {
+              return false;
+            }
+            if (current is CommentRepliesLoading &&
+                current.commentId != widget.reply.id) {
+              return false;
+            }
+            return true;
+          },
           builder: ((context, state) {
+            if (state is ClearedCommentReplies) {
+              replies = [];
+              users = {};
+              repliesW = [];
+              return const SizedBox();
+            }
             if (state is CommentRepliesLoading) {
-              return const Padding(
-                padding: EdgeInsets.only(top: 8.0),
-                child: Center(
-                  child: SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(),
+              if (state.commentId == widget.reply.id) {
+                return const Padding(
+                  padding: EdgeInsets.only(top: 8.0),
+                  child: Center(
+                    child: SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(),
+                    ),
                   ),
-                ),
-              );
+                );
+              }
             }
             if (state is CommentRepliesLoaded ||
                 state is PaginatedCommentRepliesLoading) {
               // replies.addAll(state.commentDetails.postReplies.replies);
-              List<CommentReply> replies = [];
-              Map<String, User> users = {};
+              if (state is CommentRepliesLoaded &&
+                  state.commentId != reply!.id) {
+                return const SizedBox();
+              }
+              if (state is PaginatedCommentRepliesLoading &&
+                  state.commentId != reply!.id) {
+                return const SizedBox();
+              }
+
               if (state is CommentRepliesLoaded) {
                 replies = state.commentDetails.postReplies!.replies;
                 users = state.commentDetails.users!;
@@ -104,59 +240,56 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                 users = state.prevCommentDetails.users!;
               }
 
-              List<Widget> repliesW = [];
-              if (_replyVisible) {
-                repliesW = replies.mapIndexed((index, element) {
-                  return LMReplyTile(
-                    comment: element,
-                    user: users[element.userId]!,
-                    onMenuTap: (value) {},
-                  );
-                }).toList();
-              } else {
-                repliesW = [];
-              }
+              repliesW = mapRepliesToWidget(replies, users);
 
               if (replies.length % 10 == 0 &&
-                  _replyVisible &&
                   replies.length != reply!.repliesCount) {
                 repliesW = [
                   ...repliesW,
                   replies.isEmpty
                       ? const SizedBox()
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            TextButton(
-                              onPressed: () {
-                                page++;
-                                _commentRepliesBloc.add(
-                                  GetCommentReplies(
-                                      commentDetailRequest:
-                                          (GetCommentRequestBuilder()
-                                                ..commentId(reply!.id)
-                                                ..page(page)
-                                                ..postId(postId))
-                                              .build(),
-                                      forLoadMore: true),
-                                );
-                              },
-                              child: const Text(
-                                'View more replies',
-                                style: TextStyle(
-                                  color: kBlueGreyColor,
-                                  fontSize: 14,
+                      : Padding(
+                          padding:
+                              const EdgeInsets.only(bottom: 15.0, left: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  page++;
+                                  _commentRepliesBloc!.add(
+                                    GetCommentReplies(
+                                        commentDetailRequest:
+                                            (GetCommentRequestBuilder()
+                                                  ..commentId(reply!.id)
+                                                  ..page(page)
+                                                  ..postId(postId))
+                                                .build(),
+                                        forLoadMore: true),
+                                  );
+                                },
+                                child: LMTextView(
+                                  text: 'View more replies',
+                                  textStyle: TextStyle(
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                    fontSize: 14,
+                                  ),
                                 ),
                               ),
-                            ),
-                            Text(
-                              ' ${replies.length} of ${reply!.repliesCount}',
-                              style: const TextStyle(
-                                fontSize: 11,
-                                color: kGrey3Color,
+                              Padding(
+                                padding: const EdgeInsets.only(right: 15.0),
+                                child: LMTextView(
+                                  text:
+                                      ' ${replies.length} of ${reply!.repliesCount}',
+                                  textStyle: const TextStyle(
+                                    fontSize: 11,
+                                    color: kGrey3Color,
+                                  ),
+                                ),
                               ),
-                            )
-                          ],
+                            ],
+                          ),
                         )
                 ];
                 // replies.add();
@@ -167,18 +300,10 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                   if (state is AddCommentReplySuccess) {
                     replies.insert(0, state.addCommentResponse.reply!);
 
-                    repliesW = replies.mapIndexed(
-                      (index, element) {
-                        return LMReplyTile(
-                          comment: element,
-                          user: users[element.userId]!,
-                          onMenuTap: (value) {},
-                        );
-                      },
-                    ).toList();
+                    repliesW = mapRepliesToWidget(replies, users);
+
                     if (replies.isNotEmpty &&
                         replies.length % 10 == 0 &&
-                        _replyVisible &&
                         replies.length != reply!.repliesCount) {
                       repliesW = [
                         ...repliesW,
@@ -188,7 +313,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                             TextButton(
                               onPressed: () {
                                 page++;
-                                _commentRepliesBloc.add(GetCommentReplies(
+                                _commentRepliesBloc!.add(GetCommentReplies(
                                     commentDetailRequest:
                                         (GetCommentRequestBuilder()
                                               ..commentId(reply!.id)
@@ -224,21 +349,10 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                     if (index != -1) {
                       replies[index] = state.editCommentReplyResponse.reply!;
 
-                      if (_replyVisible) {
-                        repliesW = replies.mapIndexed((index, element) {
-                          return LMReplyTile(
-                            comment: element,
-                            user: users[element.userId]!,
-                            onMenuTap: (value) {},
-                          );
-                        }).toList();
-                      } else {
-                        repliesW = [];
-                      }
+                      repliesW = mapRepliesToWidget(replies, users);
 
                       if (replies.isNotEmpty &&
                           replies.length % 10 == 0 &&
-                          _replyVisible &&
                           replies.length != reply!.repliesCount) {
                         repliesW = [
                           ...repliesW,
@@ -248,7 +362,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                               TextButton(
                                 onPressed: () {
                                   page++;
-                                  _commentRepliesBloc.add(GetCommentReplies(
+                                  _commentRepliesBloc!.add(GetCommentReplies(
                                       commentDetailRequest:
                                           (GetCommentRequestBuilder()
                                                 ..commentId(reply!.id)
@@ -287,21 +401,11 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                       reply!.repliesCount -= 1;
                       replyCount = reply!.repliesCount;
                       rebuildReplyButton.value = !rebuildReplyButton.value;
-                      if (_replyVisible) {
-                        repliesW = replies.mapIndexed((index, element) {
-                          return LMReplyTile(
-                            comment: element,
-                            user: users[element.userId]!,
-                            onMenuTap: (value) {},
-                          );
-                        }).toList();
-                      } else {
-                        repliesW = [];
-                      }
+
+                      repliesW = mapRepliesToWidget(replies, users);
 
                       if (replies.isNotEmpty &&
                           replies.length % 10 == 0 &&
-                          _replyVisible &&
                           replies.length != reply!.repliesCount) {
                         repliesW = [
                           ...repliesW,
@@ -311,7 +415,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                               TextButton(
                                 onPressed: () {
                                   page++;
-                                  _commentRepliesBloc.add(GetCommentReplies(
+                                  _commentRepliesBloc!.add(GetCommentReplies(
                                       commentDetailRequest:
                                           (GetCommentRequestBuilder()
                                                 ..commentId(reply!.id)
