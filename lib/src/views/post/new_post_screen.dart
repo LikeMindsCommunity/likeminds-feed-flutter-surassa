@@ -149,6 +149,11 @@ class _NewPostScreenState extends State<NewPostScreen> {
       itemBuilder: (context, index) => LMDocument(
         size: getFileSizeString(bytes: postMedia[index].size!),
         type: postMedia[index].format!,
+        documentIcon: const LMIcon(
+          type: LMIconType.svg,
+          assetPath: kAssetPDFIcon,
+          size: 20,
+        ),
         documentFile: postMedia[index].mediaFile,
         onRemove: () => removeAttachmenetAtIndex(index),
       ),
@@ -276,7 +281,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
                               ),
                               child: TaggingAheadTextField(
                                 isDown: true,
-                                onTagSelected: (userTag) {},
+                                onTagSelected: (tag) {
+                                  userTags.add(tag);
+                                },
                                 controller: _controller,
                                 focusNode: _focusNode,
                                 onChange: _onTextChanged,

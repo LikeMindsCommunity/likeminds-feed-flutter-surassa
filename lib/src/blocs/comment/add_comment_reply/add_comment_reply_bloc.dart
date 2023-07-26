@@ -15,6 +15,7 @@ part 'add_comment_reply_state.dart';
 class AddCommentReplyBloc
     extends Bloc<AddCommentReplyEvent, AddCommentReplyState> {
   AddCommentReplyBloc() : super(AddCommentReplyInitial()) {
+    on<ReplyCommentCancel>((event, emit) => emit(ReplyCommentCanceled()));
     on<AddCommentReply>(
       (event, emit) async {
         await _mapAddCommentReplyToState(

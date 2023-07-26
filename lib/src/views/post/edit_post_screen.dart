@@ -7,6 +7,7 @@ import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
+import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/local_preference/user_local_preference.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_utils.dart';
@@ -73,6 +74,11 @@ class _EditPostScreenState extends State<EditPostScreen> {
         size:
             getFileSizeString(bytes: attachments![index].attachmentMeta.size!),
         type: attachments![index].attachmentMeta.format!,
+        documentIcon: const LMIcon(
+          type: LMIconType.svg,
+          assetPath: kAssetPDFIcon,
+          size: 20,
+        ),
         documentUrl: attachments![index].attachmentMeta.url,
       ),
     );

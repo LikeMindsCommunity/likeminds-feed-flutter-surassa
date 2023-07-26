@@ -90,8 +90,10 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                 color: kGreyColor,
               ),
             ),
-            onMenuTap: (value) {
+            onMenuTap: (value) async {
               if (value == 6) {
+                addCommentReplyBloc!.add(EditCommentCancel());
+                addCommentReplyBloc!.add(ReplyCommentCancel());
                 showDialog(
                     context: context,
                     builder: (childContext) => deleteConfirmationDialog(
@@ -132,12 +134,20 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
             },
             commentActions: [
               LMTextButton(
-                text: const LMTextView(
-                  text: "Like",
+                text: LMTextView(
+                  text: element.likesCount == 0
+                      ? "Like"
+                      : element.likesCount == 1
+                          ? "1 Like"
+                          : "${element.likesCount} Likes",
                   textStyle: TextStyle(fontSize: 12),
                 ),
                 activeText: LMTextView(
-                  text: "Like",
+                  text: element.likesCount == 0
+                      ? "Like"
+                      : element.likesCount == 1
+                          ? "1 Like"
+                          : "${element.likesCount} Likes",
                   textStyle: TextStyle(
                       color: Theme.of(context).colorScheme.secondary,
                       fontSize: 12),
@@ -153,6 +163,11 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                     ),
                   );
                   setReplyState(() {
+                    if (element.isLiked) {
+                      element.likesCount -= 1;
+                    } else {
+                      element.likesCount += 1;
+                    }
                     element.isLiked = !element.isLiked;
                   });
                 },

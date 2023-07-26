@@ -21,9 +21,11 @@ import 'package:overlay_support/overlay_support.dart';
 
 class PostDetailScreen extends StatefulWidget {
   final String postId;
+  final bool fromCommentButton;
   const PostDetailScreen({
     super.key,
     required this.postId,
+    this.fromCommentButton = false,
   });
 
   @override
@@ -95,7 +97,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     _toggleLikeCommentBloc = ToggleLikeCommentBloc();
     _commentRepliesBloc = CommentRepliesBloc();
     _addPaginationListener();
-    if (focusNode.canRequestFocus) {
+    if (widget.fromCommentButton && focusNode.canRequestFocus) {
       focusNode.requestFocus();
     }
   }
@@ -281,6 +283,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
               child: BlocConsumer<AddCommentReplyBloc, AddCommentReplyState>(
                 bloc: _addCommentReplyBloc,
                 listener: (context, state) {
+                  if (state is ReplyCommentCanceled) {
+                    deselectCommentToReply();
+                  }
+                  if (state is EditCommentCanceled) {
+                    deselectCommentToEdit();
+                  }
                   if (state is CommentDeleted) {
                     removeCommentFromList(state.commentId);
                   }
@@ -401,6 +409,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                             imageUrl: currentUser.imageUrl,
                             size: 36,
                           ),
+                          focusNode: focusNode,
                           controller: _commentController,
                           internalPadding: 8,
                           externalPadding: 4,
@@ -742,6 +751,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                 key: ValueKey(item.id),
                                                 onMenuTap: (id) {
                                                   if (id == 6) {
+                                                    deselectCommentToEdit();
+                                                    deselectCommentToReply();
                                                     // Delete post
                                                     showDialog(
                                                         context: context,
@@ -828,13 +839,22 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                         left: 48),
                                                 commentActions: [
                                                   LMTextButton(
-                                                    text: const LMTextView(
-                                                      text: "Like",
-                                                      textStyle: TextStyle(
-                                                          fontSize: 12),
+                                                    text: LMTextView(
+                                                      text: item.likesCount == 0
+                                                          ? "Like"
+                                                          : item.likesCount == 1
+                                                              ? "1 Like"
+                                                              : "${item.likesCount} Likes",
+                                                      textStyle:
+                                                          const TextStyle(
+                                                              fontSize: 12),
                                                     ),
                                                     activeText: LMTextView(
-                                                      text: "Like",
+                                                      text: item.likesCount == 0
+                                                          ? "Like"
+                                                          : item.likesCount == 1
+                                                              ? "1 Like"
+                                                              : "${item.likesCount} Likes",
                                                       textStyle: TextStyle(
                                                           color:
                                                               Theme.of(context)
@@ -856,6 +876,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                         ),
                                                       );
                                                       setCommentState(() {
+                                                        if (item.isLiked) {
+                                                          item.likesCount -= 1;
+                                                        } else {
+                                                          item.likesCount += 1;
+                                                        }
                                                         item.isLiked =
                                                             !item.isLiked;
                                                       });

@@ -36,6 +36,8 @@ class EditComment extends AddCommentReplyEvent {
 
 class EditCommentCancel extends AddCommentReplyEvent {}
 
+class ReplyCommentCancel extends AddCommentReplyEvent {}
+
 class EditingComment extends AddCommentReplyEvent {
   final String commentId;
   final String text;

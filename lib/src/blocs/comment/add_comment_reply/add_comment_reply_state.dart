@@ -56,6 +56,8 @@ class EditReplyLoading extends AddCommentReplyState {}
 
 class EditReplyCanceled extends AddCommentReplyState {}
 
+class ReplyCommentCanceled extends AddCommentReplyState {}
+
 class EditReplySuccess extends AddCommentReplyState {
   final EditCommentReplyResponse editCommentReplyResponse;
 

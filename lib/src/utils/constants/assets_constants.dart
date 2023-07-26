@@ -16,3 +16,18 @@ const String kAssetCommentIcon =
     "packages/likeminds_feed_ss_fl/assets/icons/comment.svg";
 const String kAssetShareIcon =
     "packages/likeminds_feed_ss_fl/assets/icons/share.svg";
+const String kAssetPDFIcon =
+    "packages/likeminds_feed_ss_fl/assets/icons/pdf.svg";
+
+const List<String> svgAssets = [
+  kAssetDocPDFIcon,
+  kAssetGalleryIcon,
+  kAssetVideoIcon,
+  kAssetPollIcon,
+  kAssetPinIcon,
+  kAssetLikeIcon,
+  kAssetLikeFilledIcon,
+  kAssetCommentIcon,
+  kAssetShareIcon,
+  kAssetPDFIcon,
+];

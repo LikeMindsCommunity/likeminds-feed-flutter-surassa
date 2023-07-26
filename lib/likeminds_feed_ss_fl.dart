@@ -3,6 +3,7 @@ library likeminds_feed_ss_fl;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
+import 'package:likeminds_feed_ss_fl/src/utils/icons.dart';
 import 'package:likeminds_feed_ss_fl/src/views/universal_feed_page.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 
@@ -69,6 +70,7 @@ class _LMFeedState extends State<LMFeed> {
   @override
   void initState() {
     super.initState();
+    loadSvgIntoCache();
     isProd = prodFlag;
     userId = widget.userId!.isEmpty
         ? isProd
@@ -76,6 +78,7 @@ class _LMFeedState extends State<LMFeed> {
             : CredsDev.botId
         : widget.userId!;
     userName = widget.userName!.isEmpty ? "Test username" : widget.userName!;
+
     // firebase();
   }
 

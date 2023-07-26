@@ -10,6 +10,7 @@ import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/simple_bloc_observer.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/universal_feed/universal_feed_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
+import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/utils.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post/new_post_screen.dart';
@@ -210,13 +211,11 @@ class _FeedRoomViewState extends State<FeedRoomView> {
           fit: BoxFit.cover,
         );
       } else if (media.mediaType == MediaType.document) {
-        // return SvgPicture.asset(
-        //   kAssetDocPDFIcon,
-        //   height: 35,
-        //   width: 35,
-        //   fit: BoxFit.cover,
-        // );
-        return const SizedBox();
+        return const LMIcon(
+          type: LMIconType.svg,
+          assetPath: kAssetPDFIcon,
+          size: 35,
+        );
       } else {
         return const SizedBox.shrink();
       }

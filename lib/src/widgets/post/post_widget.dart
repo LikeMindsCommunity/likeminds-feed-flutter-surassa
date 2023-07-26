@@ -50,7 +50,6 @@ class SSPostWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     setPostDetails();
-
     NewPostBloc newPostBloc = BlocProvider.of<NewPostBloc>(context);
     timeago.setLocaleMessages('en', SSCustomMessages());
     return InheritedPostProvider(
@@ -60,10 +59,23 @@ class SSPostWidget extends StatelessWidget {
         child: BlocListener(
           bloc: newPostBloc,
           listener: (context, state) {
-            if (state is PostPinnedState) {
+            if (state is PostPinnedState && state.postId == post.id) {
               isPinned = state.isPinned;
+              int? itemIndex = postDetails?.menuItems.indexWhere((element) {
+                return (isPinned! && element.id == 2) ||
+                    (!isPinned! && element.id == 3);
+              });
+              if (itemIndex != null && itemIndex != -1) {
+                if (postDetails!.menuItems[itemIndex].id == 2) {
+                  postDetails!.menuItems[itemIndex] =
+                      PopupMenuItemModel(title: "Unpin this Post", id: 3);
+                } else if (postDetails!.menuItems[itemIndex].id == 3) {
+                  postDetails!.menuItems[itemIndex] =
+                      PopupMenuItemModel(title: "Pin this Post", id: 2);
+                }
+              }
               rebuildPostWidget.value = !rebuildPostWidget.value;
-            } else if (state is PostPinError) {
+            } else if (state is PostPinError && state.postId == post.id) {
               isPinned = state.isPinned;
               rebuildPostWidget.value = !rebuildPostWidget.value;
             }
@@ -120,89 +132,93 @@ class SSPostWidget extends StatelessWidget {
                           )
                         : const SizedBox(),
                   ),
-                  LMPostHeader(
-                    user: user,
-                    isFeed: isFeed,
-                    titleText: LMTextView(
-                      text: user.name,
-                      textStyle: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    subText: LMTextView(
-                      text: "@${user.name.toLowerCase().split(" ").join("")}",
-                      textStyle: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400,
-                        color: kGreyColor,
-                      ),
-                    ),
-                    createdAt: LMTextView(
-                      text: timeago.format(post.createdAt),
-                      textStyle: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400,
-                        color: kGreyColor,
-                      ),
-                    ),
-                    menu: LMPostMenu(
-                      menuItems: postDetails!.menuItems,
-                      onSelected: (id) {
-                        if (id == 1) {
-                          // Delete post
-                          showDialog(
-                              context: context,
-                              builder: (childContext) =>
-                                  deleteConfirmationDialog(
-                                    childContext,
-                                    title: 'Delete Post',
-                                    userId: postDetails!.userId,
-                                    content:
-                                        'Are you sure you want to delete this post. This action can not be reversed.',
-                                    action: (String reason) async {
-                                      Navigator.of(childContext).pop();
-                                      final res =
-                                          await locator<LikeMindsService>()
-                                              .getMemberState();
-                                      //Implement delete post analytics tracking
-                                      LMAnalytics.get().track(
-                                        AnalyticsKeys.postDeleted,
-                                        {
-                                          "user_state":
-                                              res.state == 1 ? "CM" : "member",
-                                          "post_id": postDetails!.id,
-                                          "user_id": postDetails!.userId,
-                                        },
-                                      );
-                                      newPostBloc.add(
-                                        DeletePost(
-                                          postId: postDetails!.id,
-                                          reason: reason ?? 'Self Post',
-                                        ),
-                                      );
-                                      if (!isFeed) {
-                                        Navigator.of(context).pop();
-                                      }
-                                    },
-                                    actionText: 'Delete',
-                                  ));
-                        } else if (id == 2) {
-                          newPostBloc.add(TogglePinPost(
-                              postId: postDetails!.id, isPinned: true));
-                        } else if (id == 3) {
-                          newPostBloc.add(TogglePinPost(
-                              postId: postDetails!.id, isPinned: false));
-                        } else if (id == 5) {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => EditPostScreen(
+                  ValueListenableBuilder(
+                      valueListenable: rebuildPostWidget,
+                      builder: (context, _, __) {
+                        return LMPostHeader(
+                          user: user,
+                          isFeed: isFeed,
+                          titleText: LMTextView(
+                            text: user.name,
+                            textStyle: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          subText: LMTextView(
+                            text:
+                                "@${user.name.toLowerCase().split(" ").join("")}",
+                            textStyle: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                              color: kGreyColor,
+                            ),
+                          ),
+                          createdAt: LMTextView(
+                            text: timeago.format(post.createdAt),
+                            textStyle: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                              color: kGreyColor,
+                            ),
+                          ),
+                          menu: LMPostMenu(
+                            menuItems: postDetails!.menuItems,
+                            onSelected: (id) {
+                              if (id == 1) {
+                                // Delete post
+                                showDialog(
+                                    context: context,
+                                    builder: (childContext) =>
+                                        deleteConfirmationDialog(
+                                          childContext,
+                                          title: 'Delete Post',
+                                          userId: postDetails!.userId,
+                                          content:
+                                              'Are you sure you want to delete this post. This action can not be reversed.',
+                                          action: (String reason) async {
+                                            Navigator.of(childContext).pop();
+                                            final res = await locator<
+                                                    LikeMindsService>()
+                                                .getMemberState();
+                                            //Implement delete post analytics tracking
+                                            LMAnalytics.get().track(
+                                              AnalyticsKeys.postDeleted,
+                                              {
+                                                "user_state": res.state == 1
+                                                    ? "CM"
+                                                    : "member",
+                                                "post_id": postDetails!.id,
+                                                "user_id": postDetails!.userId,
+                                              },
+                                            );
+                                            newPostBloc.add(
+                                              DeletePost(
+                                                postId: postDetails!.id,
+                                                reason: reason ?? 'Self Post',
+                                              ),
+                                            );
+                                            if (!isFeed) {
+                                              Navigator.of(context).pop();
+                                            }
+                                          },
+                                          actionText: 'Delete',
+                                        ));
+                              } else if (id == 2 || id == 3) {
+                                newPostBloc.add(TogglePinPost(
                                     postId: postDetails!.id,
-                                  )));
-                        }
-                      },
-                      isFeed: isFeed,
-                    ),
-                  ),
+                                    isPinned: !isPinned!));
+                              } else if (id == 5) {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => EditPostScreen(
+                                          postId: postDetails!.id,
+                                        )));
+                              }
+                            },
+                            isFeed: isFeed,
+                          ),
+                        );
+                      }),
                   const SizedBox(height: 8),
                   const LMPostContent(),
                   postDetails!.attachments != null
@@ -212,6 +228,12 @@ class SSPostWidget extends StatelessWidget {
                           postDetails!.attachments!.isNotEmpty
                       ? LMPostMedia(
                           attachments: postDetails!.attachments!,
+                          borderRadius: 16.0,
+                          documentIcon: const LMIcon(
+                            type: LMIconType.svg,
+                            assetPath: kAssetPDFIcon,
+                            size: 20,
+                          ),
                           // postId: postDetails!.id,
                         )
                       : const SizedBox(),
@@ -320,6 +342,7 @@ class SSPostWidget extends StatelessWidget {
                               MaterialPageRoute(
                                 builder: (context) => PostDetailScreen(
                                   postId: post.id,
+                                  fromCommentButton: true,
                                 ),
                               ),
                             );
@@ -350,13 +373,6 @@ class SSPostWidget extends StatelessWidget {
 
                     // ],
                   ),
-                  // showActions!
-                  // ? PostActions(
-                  //     postDetails: postDetails!,
-                  //     refresh: refresh!,
-                  //     isFeed: isFeed!,
-                  //   )
-                  // : const SizedBox.shrink()
                 ],
               ),
             ),

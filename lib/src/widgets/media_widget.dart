@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
+import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -68,6 +69,11 @@ class _SSPostMediaState extends State<SSPostMedia> {
               Uri fileUrl = Uri.parse(e.attachmentMeta.url!);
               launchUrl(fileUrl, mode: LaunchMode.platformDefault);
             },
+            documentIcon: const LMIcon(
+              type: LMIconType.svg,
+              assetPath: kAssetPDFIcon,
+              size: 20,
+            ),
             size: PostHelper.getFileSizeString(bytes: e.attachmentMeta.size!),
             documentUrl: e.attachmentMeta.url,
             type: e.attachmentMeta.format!,
