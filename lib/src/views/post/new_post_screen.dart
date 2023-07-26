@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 
@@ -10,18 +9,19 @@ import 'package:image_picker/image_picker.dart';
 
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
-import 'package:likeminds_feed_ss_fl/src/models/media_model.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/analytics/analytics.dart';
+import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/local_preference/user_local_preference.dart';
+import 'package:likeminds_feed_ss_fl/src/utils/post/post_media_picker.dart';
+import 'package:likeminds_feed_ss_fl/src/utils/post/post_utils.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/tagging/tagging_textfield_ta.dart';
 
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:share_plus/share_plus.dart';
 
 class NewPostScreen extends StatefulWidget {
   final String? populatePostText;
@@ -60,7 +60,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
 
   @override
   void dispose() {
-    _controller.dispose();
     _debounce?.cancel();
     super.dispose();
   }
@@ -141,20 +140,19 @@ class _NewPostScreenState extends State<NewPostScreen> {
     }
   }
 
-  // Widget getPostDocument(double width) {
-  //   return ListView.builder(
-  //     itemCount: postMedia.length,
-  //     shrinkWrap: true,
-  //     physics: const NeverScrollableScrollPhysics(),
-  //     itemBuilder: (context, index) => PostDocument(
-  //       size: getFileSizeString(bytes: postMedia[index].size!),
-  //       type: postMedia[index].format!,
-  //       docFile: postMedia[index].mediaFile,
-  //       removeAttachment: (index) => removeAttachmenetAtIndex(index),
-  //       index: index,
-  //     ),
-  //   );
-  // }
+  Widget getPostDocument(double width) {
+    return ListView.builder(
+      itemCount: postMedia.length,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemBuilder: (context, index) => LMDocument(
+        size: getFileSizeString(bytes: postMedia[index].size!),
+        type: postMedia[index].format!,
+        documentFile: postMedia[index].mediaFile,
+        onRemove: () => removeAttachmenetAtIndex(index),
+      ),
+    );
+  }
 
   // void _onTextChanged(String p0) {
   //   if (_debounce?.isActive ?? false) {
@@ -165,110 +163,59 @@ class _NewPostScreenState extends State<NewPostScreen> {
   //   });
   // }
 
-  // void handleTextLinks(String text) async {
-  //   String link = getFirstValidLinkFromString(text);
-  //   if (link.isNotEmpty) {
-  //     previewLink = link;
-  //     DecodeUrlRequest request =
-  //         (DecodeUrlRequestBuilder()..url(previewLink)).build();
-  //     DecodeUrlResponse response =
-  //         await locator<LikeMindsService>().decodeUrl(request);
-  //     if (response.success == true) {
-  //       OgTags? responseTags = response.ogTags;
-  //       linkModel = MediaModel(
-  //         mediaType: MediaType.link,
-  //         link: previewLink,
-  //         ogTags: AttachmentMetaOgTags(
-  //           description: responseTags!.description,
-  //           image: responseTags.image,
-  //           title: responseTags.title,
-  //           url: responseTags.url,
-  //         ),
-  //       );
-  //       LMAnalytics.get().logEvent(
-  //         AnalyticsKeys.linkAttachedInPost,
-  //         {
-  //           'link': previewLink,
-  //         },
-  //       );
-  //       if (postMedia.isEmpty) {
-  //         setState(() {});
-  //       }
-  //     }
-  //   } else if (link.isEmpty) {
-  //     linkModel = null;
-  //     setState(() {});
-  //   }
-  // }
+  void handleTextLinks(String text) async {
+    String link = getFirstValidLinkFromString(text);
+    if (link.isNotEmpty) {
+      previewLink = link;
+      DecodeUrlRequest request =
+          (DecodeUrlRequestBuilder()..url(previewLink)).build();
+      DecodeUrlResponse response =
+          await locator<LikeMindsService>().decodeUrl(request);
+      if (response.success == true) {
+        OgTags? responseTags = response.ogTags;
+        linkModel = MediaModel(
+          mediaType: MediaType.link,
+          link: previewLink,
+          ogTags: AttachmentMetaOgTags(
+            description: responseTags!.description,
+            image: responseTags.image,
+            title: responseTags.title,
+            url: responseTags.url,
+          ),
+        );
+        LMAnalytics.get().logEvent(
+          AnalyticsKeys.linkAttachedInPost,
+          {
+            'link': previewLink,
+          },
+        );
+        if (postMedia.isEmpty) {
+          setState(() {});
+        }
+      }
+    } else if (link.isEmpty) {
+      linkModel = null;
+      setState(() {});
+    }
+  }
 
-  // void checkTextLinks() {
-  //   String link = getFirstValidLinkFromString(_controller!.text);
-  //   if (link.isEmpty) {
-  //     linkModel = null;
-  //   } else if (linkModel != null && postMedia.isEmpty && showLinkPreview) {
-  //     postMedia.add(linkModel!);
-  //   }
-  // }
-
-  // this function initiliases postMedia list
-  // with photos/videos picked by the user
-  // void setPickedMediaFiles(List<MediaModel> pickedMediaFiles) {
-  //   if (postMedia.isEmpty) {
-  //     postMedia = <MediaModel>[...pickedMediaFiles];
-  //   } else {
-  //     postMedia.addAll(pickedMediaFiles);
-  //   }
-  // }
+  void checkTextLinks() {
+    String link = getFirstValidLinkFromString(_controller.text);
+    if (link.isEmpty) {
+      linkModel = null;
+    } else if (linkModel != null && postMedia.isEmpty && showLinkPreview) {
+      postMedia.add(linkModel!);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     newPostBloc = BlocProvider.of<NewPostBloc>(context);
+    Size screenSize = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () {
-        return Future.value(true);
-        // if (postMedia.isNotEmpty ||
-        //     (_controller != null && _controller!.text.isNotEmpty)) {
-        //   showDialog(
-        //       context: context,
-        //       builder: (context) => AlertDialog(
-        //             title: const Text('Discard Post'),
-        //             content: const Text(
-        //                 'Are you sure want to discard the current post?'),
-        //             actions: <Widget>[
-        //               TextButton(
-        //                 child: const Text(
-        //                   'NO',
-        //                   style: TextStyle(fontSize: 14),
-        //                 ),
-        //                 onPressed: () {
-        //                   Navigator.of(context).pop();
-        //                 },
-        //               ),
-        //               TextButton(
-        //                 child: const Text('Yes'),
-        //                 onPressed: () {
-        //                   Navigator.of(context).pop();
-        //                   locator<NavigationService>().goBack(
-        //                     result: {
-        //                       "feedroomId": feedRoomId,
-        //                       "isBack": false,
-        //                       "feedRoomIds": feedRoomIds.isEmpty,
-        //                     },
-        //                   );
-        //                 },
-        //               ),
-        //             ],
-        //           ));
-        // } else {
-        //   locator<NavigationService>().goBack(
-        //     result: {
-        //       "feedroomId": feedRoomId,
-        //       "isBack": false,
-        //       "feedRoomIds": feedRoomIds,
-        //     },
-        //   );
-        // }
-        // return Future(() => false);
+        Navigator.pop(context);
+        return Future.value(false);
       },
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.dark,
@@ -289,6 +236,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                       children: [
                         LMIconButton(
                           icon: LMIcon(
+                            type: LMIconType.icon,
                             icon: Icons.chevron_left,
                             color: Theme.of(context).primaryColor,
                             size: 42,
@@ -298,13 +246,13 @@ class _NewPostScreenState extends State<NewPostScreen> {
                             Navigator.pop(context);
                           },
                         ),
-                        Spacer(),
+                        const Spacer(),
                         const LMTextView(
                           text: 'Create a Post',
                           textStyle:
                               TextStyle(fontSize: 18, color: kGrey1Color),
                         ),
-                        Spacer(),
+                        const Spacer(),
                         LMTextButton(
                           text: LMTextView(
                             text: "Post",
@@ -317,16 +265,25 @@ class _NewPostScreenState extends State<NewPostScreen> {
                           width: 48,
                           borderRadius: 6,
                           backgroundColor: Theme.of(context).primaryColor,
-                          onTap: (active) {
-                            String postText = _controller!.text;
-                            if (postText.isNotEmpty) {
-                              newPostBloc!.add(
-                                CreateNewPost(
-                                  postText: postText,
-                                  postMedia: postMedia,
-                                ),
+                          onTap: () {
+                            if ((_controller.text.isNotEmpty ||
+                                postMedia.isNotEmpty)) {
+                              String postText = _controller.text;
+                              checkTextLinks();
+                              if (postText.isNotEmpty) {
+                                newPostBloc!.add(
+                                  CreateNewPost(
+                                    postText: postText,
+                                    postMedia: postMedia,
+                                  ),
+                                );
+                                Navigator.pop(context);
+                              }
+                            } else {
+                              toast(
+                                "Can't create a post without text or attachments",
+                                duration: Toast.LENGTH_LONG,
                               );
-                              Navigator.pop(context);
                             }
                           },
                         ),
@@ -377,29 +334,28 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                 ),
                                 child: LMLoader(),
                               ),
-                            // if (postMedia.isEmpty &&
-                            //     linkModel != null &&
-                            //     showLinkPreview)
-                            //   Stack(
-                            //     children: [
-                            //       LMLinkPreview(
-                            //           screenSize: screenSize, linkModel: linkModel),
-                            //       Positioned(
-                            //         top: 5,
-                            //         right: 5,
-                            //         child: GestureDetector(
-                            //           onTap: () {
-                            //             showLinkPreview = false;
-                            //             setState(() {});
-                            //           },
-                            //           child: const CloseIcon(),
-                            //         ),
-                            //       )
-                            //     ],
-                            //   ),
+                            if (postMedia.isEmpty &&
+                                linkModel != null &&
+                                showLinkPreview)
+                              Stack(
+                                children: [
+                                  LMLinkPreview(linkModel: linkModel),
+                                  Positioned(
+                                    top: 5,
+                                    right: 5,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        showLinkPreview = false;
+                                        setState(() {});
+                                      },
+                                      child: const CloseButtonIcon(),
+                                    ),
+                                  )
+                                ],
+                              ),
                             if (postMedia.isNotEmpty)
                               postMedia.first.mediaType == MediaType.document
-                                  ? const SizedBox() //getPostDocument(screenSize!.width) const
+                                  ? getPostDocument(screenSize.width)
                                   : Container(
                                       padding: const EdgeInsets.only(
                                         top: kPaddingSmall,
@@ -413,13 +369,37 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                             (BuildContext context, int index) {
                                           return Row(
                                             children: [
-                                              LMImage(
+                                              SizedBox(
                                                 height: 180,
-                                                width: 180,
-                                                boxFit: BoxFit.cover,
-                                                borderRadius: 18,
-                                                imageFile:
-                                                    postMedia[index].mediaFile!,
+                                                width: postMedia[index]
+                                                            .mediaType ==
+                                                        MediaType.video
+                                                    ? 300
+                                                    : 180,
+                                                child: Stack(
+                                                  children: [
+                                                    postMedia[index]
+                                                                .mediaType ==
+                                                            MediaType.video
+                                                        ? LMVideo(
+                                                            videoFile:
+                                                                postMedia[index]
+                                                                    .mediaFile!,
+                                                            height: 180,
+                                                            width: 300,
+                                                          )
+                                                        : LMImage(
+                                                            height: 180,
+                                                            width: 180,
+                                                            boxFit:
+                                                                BoxFit.cover,
+                                                            borderRadius: 18,
+                                                            imageFile:
+                                                                postMedia[index]
+                                                                    .mediaFile!,
+                                                          ),
+                                                  ],
+                                                ),
                                               ),
                                               const SizedBox(width: 8),
                                             ],
@@ -434,7 +414,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                     ],
                   ),
                 ),
-                Spacer(),
+                const Spacer(),
                 Container(
                   decoration: BoxDecoration(
                     color: kWhiteColor,
@@ -453,10 +433,13 @@ class _NewPostScreenState extends State<NewPostScreen> {
                       children: [
                         LMIconButton(
                           icon: LMIcon(
-                            icon: Icons.photo_album_outlined,
+                            type: LMIconType.svg,
+                            assetPath: kAssetGalleryIcon,
                             color: Theme.of(context).colorScheme.secondary,
-                            size: 28,
+                            boxSize: 50,
+                            size: 44,
                           ),
+                          containerSize: 50,
                           onTap: (active) async {
                             final result = await handlePermissions(context, 1);
                             if (result) {
@@ -467,28 +450,59 @@ class _NewPostScreenState extends State<NewPostScreen> {
                         const SizedBox(width: 8),
                         LMIconButton(
                           icon: LMIcon(
-                            icon: Icons.videocam_outlined,
+                            type: LMIconType.svg,
+                            assetPath: kAssetVideoIcon,
                             color: Theme.of(context).colorScheme.secondary,
-                            size: 28,
+                            boxSize: 50,
+                            size: 44,
                           ),
-                          onTap: (active) {},
+                          containerSize: 50,
+                          onTap: (active) async {
+                            onUploading();
+                            List<MediaModel>? pickedMediaFiles =
+                                await PostMediaPicker.pickVideos(
+                                    postMedia.length);
+                            if (pickedMediaFiles != null) {
+                              setPickedMediaFiles(pickedMediaFiles);
+                              onUploadedMedia(true);
+                            } else {
+                              onUploadedMedia(false);
+                            }
+                          },
                         ),
                         const SizedBox(width: 8),
                         LMIconButton(
                           icon: LMIcon(
-                            icon: Icons.insert_drive_file_outlined,
+                            type: LMIconType.svg,
+                            assetPath: kAssetDocPDFIcon,
                             color: Theme.of(context).colorScheme.secondary,
-                            size: 28,
+                            boxSize: 50,
+                            size: 44,
                           ),
-                          onTap: (active) {},
+                          containerSize: 50,
+                          onTap: (active) async {
+                            onUploading();
+                            List<MediaModel>? pickedMediaFiles =
+                                await PostMediaPicker.pickDocuments(
+                                    postMedia.length);
+                            if (pickedMediaFiles != null) {
+                              setPickedMediaFiles(pickedMediaFiles);
+                              onUploadedMedia(true);
+                            } else {
+                              onUploadedMedia(false);
+                            }
+                          },
                         ),
                         const SizedBox(width: 8),
                         LMIconButton(
                           icon: LMIcon(
-                            icon: Icons.checklist_outlined,
+                            type: LMIconType.svg,
+                            assetPath: kAssetPollIcon,
                             color: Theme.of(context).colorScheme.secondary,
-                            size: 28,
+                            boxSize: 50,
+                            size: 44,
                           ),
+                          containerSize: 50,
                           onTap: (active) {},
                         ),
                       ],
@@ -503,17 +517,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
     );
   }
 
-  String getFileSizeString({required int bytes, int decimals = 0}) {
-    const suffixes = ["b", "kb", "mb", "gb", "tb"];
-    var i = (log(bytes) / log(1024)).floor();
-    return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) + suffixes[i];
-  }
-
-// Returns file size in double in MBs
-  double getFileSizeInDouble(int bytes) {
-    return (bytes / pow(1024, 2));
-  }
-
   void _onTextChanged(String p0) {
     if (_debounce?.isActive ?? false) {
       _debounce?.cancel();
@@ -521,42 +524,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
     _debounce = Timer(const Duration(milliseconds: 500), () {
       handleTextLinks(p0);
     });
-  }
-
-  void handleTextLinks(String text) async {
-    String link = getFirstValidLinkFromString(text);
-    if (link.isNotEmpty) {
-      previewLink = link;
-      DecodeUrlRequest request =
-          (DecodeUrlRequestBuilder()..url(previewLink)).build();
-      DecodeUrlResponse response =
-          await locator<LikeMindsService>().decodeUrl(request);
-      if (response.success == true) {
-        OgTags? responseTags = response.ogTags;
-        linkModel = MediaModel(
-          mediaType: MediaType.link,
-          link: previewLink,
-          ogTags: AttachmentMetaOgTags(
-            description: responseTags!.description,
-            image: responseTags.image,
-            title: responseTags.title,
-            url: responseTags.url,
-          ),
-        );
-        LMAnalytics.get().logEvent(
-          AnalyticsKeys.linkAttachedInPost,
-          {
-            'link': previewLink,
-          },
-        );
-        if (postMedia.isEmpty) {
-          setState(() {});
-        }
-      }
-    } else if (link.isEmpty) {
-      linkModel = null;
-      setState(() {});
-    }
   }
 
   Future<bool> handlePermissions(BuildContext context, int mediaType) async {

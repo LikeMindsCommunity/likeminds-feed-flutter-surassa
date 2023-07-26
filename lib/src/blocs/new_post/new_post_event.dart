@@ -26,3 +26,29 @@ class EditPost extends NewPostEvents {
     required this.postId,
   });
 }
+
+class DeletePost extends NewPostEvents {
+  final String postId;
+  final String reason;
+  final int? feedRoomId;
+
+  DeletePost({
+    required this.postId,
+    required this.reason,
+    this.feedRoomId,
+  });
+
+  @override
+  List<Object> get props => [postId, reason];
+}
+
+class UpdatePost extends NewPostEvents {
+  final String postId;
+
+  UpdatePost({
+    required this.postId,
+  });
+
+  @override
+  List<Object> get props => [postId];
+}

@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
+import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/add_comment/add_comment_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/add_comment_reply/add_comment_reply_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/all_comments/all_comments_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/toggle_like_comment/toggle_like_comment_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/local_preference/user_local_preference.dart';
-import 'package:likeminds_feed_ss_fl/src/widgets/post_widget.dart';
+import 'package:likeminds_feed_ss_fl/src/widgets/delete_dialog.dart';
+import 'package:likeminds_feed_ss_fl/src/widgets/post/post_widget.dart';
+import 'package:likeminds_feed_ss_fl/src/widgets/reply/comment_reply.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:overlay_support/overlay_support.dart';
 
@@ -116,10 +120,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     isEditing = true;
     selectedReplyId = replyId;
     isReplying = false;
-    // Map<String, dynamic> decodedComment =
-    //     TaggingHelper.convertRouteToTagAndUserMap(text);
-    // userTags = decodedComment['userTags'];
-    // _commentController?.value = TextEditingValue(text: decodedComment['text']);
+    Map<String, dynamic> decodedComment =
+        TaggingHelper.convertRouteToTagAndUserMap(text);
+    userTags = decodedComment['userTags'];
+    _commentController?.value = TextEditingValue(text: decodedComment['text']);
     openOnScreenKeyboard();
     rebuildReplyWidget.value = !rebuildReplyWidget.value;
   }
@@ -135,7 +139,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   selectCommentToReply(String commentId, String username) {
     selectedCommentId = commentId;
-    print(commentId);
+    debugPrint(commentId);
     selectedUsername = username;
     isReplying = true;
     isEditing = false;
@@ -241,7 +245,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final right = checkCommentRights();
+    NewPostBloc newPostBloc = BlocProvider.of<NewPostBloc>(context);
     return WillPopScope(
       onWillPop: () {
         if (Navigator.of(context).canPop()) {
@@ -362,6 +366,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                             }
                                           },
                                           icon: const LMIcon(
+                                            type: LMIconType.icon,
                                             icon: Icons.close,
                                             color: kGreyColor,
                                             size: 24,
@@ -489,6 +494,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                   }
                                                 },
                                                 icon: LMIcon(
+                                                  type: LMIconType.icon,
                                                   icon: Icons.send,
                                                   color: _commentController!
                                                           .text.isNotEmpty
@@ -548,6 +554,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                   _commentController?.clear();
                                                 },
                                                 icon: LMIcon(
+                                                  type: LMIconType.icon,
                                                   icon: Icons.send,
                                                   color: _commentController!
                                                           .text.isNotEmpty
@@ -619,6 +626,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
             appBar: AppBar(
               leading: LMIconButton(
                 icon: LMIcon(
+                  type: LMIconType.icon,
                   icon: Icons.arrow_back_ios,
                   color: Theme.of(context).primaryColor,
                   size: 28,
@@ -658,12 +666,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                     state is PaginatedAllCommentsLoading) {
                   late PostDetailResponse postDetailResponse;
                   if (state is AllCommentsLoaded) {
-                    print("AllCommentsLoaded$state");
+                    debugPrint("AllCommentsLoaded$state");
                     postDetailResponse = state.postDetails;
                     postDetailResponse.users!.putIfAbsent(
                         currentUser.userUniqueId, () => currentUser);
                   } else {
-                    print("PaginatedAllCommentsLoading$state");
+                    debugPrint("PaginatedAllCommentsLoading$state");
                     postDetailResponse =
                         (state as PaginatedAllCommentsLoading).prevPostDetails;
                     postDetailResponse.users!.putIfAbsent(
@@ -678,156 +686,249 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                     child: ValueListenableBuilder(
                         valueListenable: rebuildPostWidget,
                         builder: (context, _, __) {
-                          return CustomScrollView(
-                            slivers: [
-                              const SliverPadding(
-                                  padding: EdgeInsets.only(top: 16)),
-                              SliverToBoxAdapter(
-                                child: postData == null
-                                    ? const LMPostShimmer()
-                                    : SSPostWidget(
-                                        post: postData!,
-                                        user: postDetailResponse.users![
-                                            postDetailResponse
-                                                .postReplies!.userId]!,
-                                        onTap: () {},
-                                        isFeed: false,
-                                        refresh: (bool isDeleted) async {
-                                          // if (!isDeleted) {
-                                          //   final GetPostResponse
-                                          //       updatedPostDetails =
-                                          //       await locator<
-                                          //               LikeMindsService>()
-                                          //           .getPost(
-                                          //     (GetPostRequestBuilder()
-                                          //           ..postId(widget.postId)
-                                          //           ..page(1)
-                                          //           ..pageSize(10))
-                                          //         .build(),
-                                          //   );
-                                          //   postData =
-                                          //       updatedPostDetails.post;
-                                          //   rebuildPostWidget.value =
-                                          //       !rebuildPostWidget.value;
-                                          // } else {
-                                          //   Navigator.pop(context);
-                                          // }
-                                        },
-                                      ),
-                              ),
-                              const SliverPadding(
-                                padding: EdgeInsets.only(bottom: 12),
-                              ),
-                              PagedSliverList(
-                                pagingController: _pagingController,
-                                builderDelegate:
-                                    PagedChildBuilderDelegate<Reply>(
-                                  noMoreItemsIndicatorBuilder: (context) =>
-                                      const SizedBox(height: 75),
-                                  noItemsFoundIndicatorBuilder: (context) =>
-                                      const Column(
-                                    children: <Widget>[
-                                      SizedBox(height: 42),
-                                      Text(
-                                        'No comment found',
-                                        style: TextStyle(
-                                          fontSize: kFontMedium,
-                                        ),
-                                      ),
-                                      SizedBox(height: 12),
-                                      Text(
-                                        'Be the first one to comment',
-                                        style: TextStyle(
-                                          fontSize: kFontSmall,
-                                        ),
-                                      ),
-                                      SizedBox(height: 180),
-                                    ],
-                                  ),
-                                  itemBuilder: (context, item, index) {
-                                    return LMCommentTile(
-                                      key: ValueKey(item.id),
-                                      comment: item,
-                                      user: postDetailResponse
-                                          .users![item.userId]!,
-                                      profilePicture: LMProfilePicture(
-                                        fallbackText: postDetailResponse
-                                            .users![item.userId]!.name,
-                                        imageUrl: postDetailResponse
-                                            .users![item.userId]!.imageUrl,
-                                        size: 36,
-                                      ),
-                                      subtitleText: LMTextView(
-                                        text:
-                                            "@${postDetailResponse.users![item.userId]!.name.toLowerCase().split(' ').join()}",
-                                        textStyle: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w400,
-                                          color: kGreyColor,
-                                        ),
-                                      ),
-                                      actionsPadding:
-                                          const EdgeInsets.only(left: 48),
-                                      commentActions: [
-                                        LMTextButton(
-                                          text: const LMTextView(
-                                            text: "Like",
-                                            textStyle: TextStyle(fontSize: 12),
-                                          ),
-                                          activeText: LMTextView(
-                                            text: "Like",
-                                            textStyle: TextStyle(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .secondary,
-                                                fontSize: 12),
-                                          ),
-                                          onTap: (active) {
-                                            _toggleLikeCommentBloc.add(
-                                              ToggleLikeComment(
-                                                toggleLikeCommentRequest:
-                                                    (ToggleLikeCommentRequestBuilder()
-                                                          ..commentId(item.id)
-                                                          ..postId(
-                                                              widget.postId))
-                                                        .build(),
-                                              ),
-                                            );
-                                          },
-                                          icon: const LMIcon(
-                                            icon: Icons.thumb_up_alt_outlined,
-                                            size: 18,
-                                          ),
-                                          activeIcon: LMIcon(
-                                            icon: Icons.thumb_up_alt_sharp,
-                                            size: 18,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                          ),
-                                          isActive: item.isLiked,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        LMTextButton(
-                                          text: const LMTextView(text: "Reply"),
-                                          onTap: (active) {
-                                            selectCommentToReply(
-                                              item.id,
+                          return BlocListener<NewPostBloc, NewPostState>(
+                            bloc: newPostBloc,
+                            listener: (context, state) {
+                              if (state is EditPostUploaded) {
+                                postData = state.postData;
+                                rebuildPostWidget.value =
+                                    !rebuildPostWidget.value;
+                              }
+                            },
+                            child: CustomScrollView(
+                              slivers: [
+                                const SliverPadding(
+                                    padding: EdgeInsets.only(top: 16)),
+                                SliverToBoxAdapter(
+                                  child: postData == null
+                                      ? const LMPostShimmer()
+                                      : SSPostWidget(
+                                          post: postData!,
+                                          user: postDetailResponse.users![
                                               postDetailResponse
-                                                  .users![item.userId]!.name,
-                                            );
+                                                  .postReplies!.userId]!,
+                                          onTap: () {},
+                                          isFeed: false,
+                                          refresh: (bool isDeleted) async {
+                                            // if (!isDeleted) {
+                                            //   final GetPostResponse
+                                            //       updatedPostDetails =
+                                            //       await locator<
+                                            //               LikeMindsService>()
+                                            //           .getPost(
+                                            //     (GetPostRequestBuilder()
+                                            //           ..postId(widget.postId)
+                                            //           ..page(1)
+                                            //           ..pageSize(10))
+                                            //         .build(),
+                                            //   );
+                                            //   postData =
+                                            //       updatedPostDetails.post;
+                                            //   rebuildPostWidget.value =
+                                            //       !rebuildPostWidget.value;
+                                            // } else {
+                                            //   Navigator.pop(context);
+                                            // }
                                           },
-                                          icon: const LMIcon(
-                                            icon: Icons.message_outlined,
-                                            size: 18,
+                                        ),
+                                ),
+                                const SliverPadding(
+                                  padding: EdgeInsets.only(bottom: 12),
+                                ),
+                                PagedSliverList(
+                                  pagingController: _pagingController,
+                                  builderDelegate:
+                                      PagedChildBuilderDelegate<Reply>(
+                                    noMoreItemsIndicatorBuilder: (context) =>
+                                        const SizedBox(height: 75),
+                                    noItemsFoundIndicatorBuilder: (context) =>
+                                        const Column(
+                                      children: <Widget>[
+                                        SizedBox(height: 42),
+                                        Text(
+                                          'No comment found',
+                                          style: TextStyle(
+                                            fontSize: kFontMedium,
                                           ),
                                         ),
+                                        SizedBox(height: 12),
+                                        Text(
+                                          'Be the first one to comment',
+                                          style: TextStyle(
+                                            fontSize: kFontSmall,
+                                          ),
+                                        ),
+                                        SizedBox(height: 180),
                                       ],
-                                    );
-                                  },
+                                    ),
+                                    itemBuilder: (context, item, index) {
+                                      return Column(
+                                        children: [
+                                          LMCommentTile(
+                                            key: ValueKey(item.id),
+                                            onMenuTap: (id) {
+                                              if (id == 6) {
+                                                // Delete post
+                                                showDialog(
+                                                    context: context,
+                                                    builder: (childContext) =>
+                                                        deleteConfirmationDialog(
+                                                          childContext,
+                                                          title:
+                                                              'Delete Comment',
+                                                          userId: item.userId,
+                                                          content:
+                                                              'Are you sure you want to delete this post. This action can not be reversed.',
+                                                          action: (String
+                                                              reason) async {
+                                                            Navigator.of(
+                                                                    childContext)
+                                                                .pop();
+                                                            //Implement delete post analytics tracking
+                                                            LMAnalytics.get()
+                                                                .track(
+                                                              AnalyticsKeys
+                                                                  .commentDeleted,
+                                                              {
+                                                                "post_id":
+                                                                    widget
+                                                                        .postId,
+                                                                "comment_id":
+                                                                    item.id,
+                                                              },
+                                                            );
+                                                            _addCommentReplyBloc.add(DeleteComment(
+                                                                (DeleteCommentRequestBuilder()
+                                                                      ..postId(
+                                                                          widget
+                                                                              .postId)
+                                                                      ..commentId(
+                                                                          item.id)
+                                                                      ..reason(reason
+                                                                              .isEmpty
+                                                                          ? "Reason for deletion"
+                                                                          : reason))
+                                                                    .build()));
+                                                          },
+                                                          actionText: 'Delete',
+                                                        ));
+                                              } else if (id == 8) {
+                                                debugPrint(
+                                                    'Editing functionality');
+                                                _addCommentReplyBloc
+                                                    .add(EditCommentCancel());
+                                                _addCommentReplyBloc.add(
+                                                  EditingComment(
+                                                    commentId: item.id,
+                                                    text: item.text,
+                                                  ),
+                                                );
+                                              }
+                                            },
+                                            comment: item,
+                                            user: postDetailResponse
+                                                .users![item.userId]!,
+                                            profilePicture: LMProfilePicture(
+                                              fallbackText: postDetailResponse
+                                                  .users![item.userId]!.name,
+                                              imageUrl: postDetailResponse
+                                                  .users![item.userId]!
+                                                  .imageUrl,
+                                              size: 36,
+                                            ),
+                                            subtitleText: LMTextView(
+                                              text:
+                                                  "@${postDetailResponse.users![item.userId]!.name.toLowerCase().split(' ').join()}",
+                                              textStyle: const TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w400,
+                                                color: kGreyColor,
+                                              ),
+                                            ),
+                                            actionsPadding:
+                                                const EdgeInsets.only(left: 48),
+                                            commentActions: [
+                                              LMTextButton(
+                                                text: const LMTextView(
+                                                  text: "Like",
+                                                  textStyle:
+                                                      TextStyle(fontSize: 12),
+                                                ),
+                                                activeText: LMTextView(
+                                                  text: "Like",
+                                                  textStyle: TextStyle(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .secondary,
+                                                      fontSize: 12),
+                                                ),
+                                                onTap: () {
+                                                  _toggleLikeCommentBloc.add(
+                                                    ToggleLikeComment(
+                                                      toggleLikeCommentRequest:
+                                                          (ToggleLikeCommentRequestBuilder()
+                                                                ..commentId(
+                                                                    item.id)
+                                                                ..postId(widget
+                                                                    .postId))
+                                                              .build(),
+                                                    ),
+                                                  );
+                                                },
+                                                icon: const LMIcon(
+                                                  type: LMIconType.icon,
+                                                  icon: Icons
+                                                      .thumb_up_alt_outlined,
+                                                  size: 18,
+                                                ),
+                                                activeIcon: LMIcon(
+                                                  type: LMIconType.icon,
+                                                  icon:
+                                                      Icons.thumb_up_alt_sharp,
+                                                  size: 18,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary,
+                                                ),
+                                                isActive: item.isLiked,
+                                              ),
+                                              const SizedBox(width: 8),
+                                              LMTextButton(
+                                                text: const LMTextView(
+                                                    text: "Reply"),
+                                                onTap: () {
+                                                  selectCommentToReply(
+                                                    item.id,
+                                                    postDetailResponse
+                                                        .users![item.userId]!
+                                                        .name,
+                                                  );
+                                                },
+                                                icon: const LMIcon(
+                                                  type: LMIconType.icon,
+                                                  icon: Icons.message_outlined,
+                                                  size: 18,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          CommentReplyWidget(
+                                            onReply: selectCommentToReply,
+                                            refresh: () {
+                                              _pagingController.refresh();
+                                            },
+                                            postId: widget.postId,
+                                            reply: item,
+                                            user: postDetailResponse
+                                                .users![item.userId]!,
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           );
                         }),
                   );

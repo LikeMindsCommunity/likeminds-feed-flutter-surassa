@@ -28,12 +28,13 @@ class UniversalFeedBloc extends Bloc<UniversalFeedEvent, UniversalFeedState> {
       required Emitter<UniversalFeedState> emit}) async {
     // if (!hasReachedMax(state, forLoadMore)) {
     Map<String, User> users = {};
-    if (state is UniversalFeedLoaded) {
+    if (offset > 1 && state is UniversalFeedLoaded) {
       users = (state as UniversalFeedLoaded).feed.users;
       emit(PaginatedUniversalFeedLoading(
           prevFeed: (state as UniversalFeedLoaded).feed));
+    } else {
+      emit(UniversalFeedLoading());
     }
-    emit(UniversalFeedLoading());
     GetFeedResponse? response = await locator<LikeMindsService>().getFeed(
       (GetFeedRequestBuilder()
             ..page(offset)

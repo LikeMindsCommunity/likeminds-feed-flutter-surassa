@@ -3,13 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
-import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/universal_feed/universal_feed_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
-import 'package:likeminds_feed_ss_fl/src/views/new_post_screen.dart';
+import 'package:likeminds_feed_ss_fl/src/views/post/new_post_screen.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post_detail_screen.dart';
-import 'package:likeminds_feed_ss_fl/src/widgets/post_widget.dart';
+import 'package:likeminds_feed_ss_fl/src/widgets/post/post_widget.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:overlay_support/overlay_support.dart';
 
@@ -34,7 +33,7 @@ class _FeedScreenState extends State<FeedScreen> {
     super.initState();
     // Bloc.observer = SimpleBlocObserver();
     _feedBloc = UniversalFeedBloc();
-    _feedBloc.add(GetUniversalFeed(offset: _page, forLoadMore: false));
+    _feedBloc.add(const GetUniversalFeed(offset: 1, forLoadMore: false));
   }
 
   @override
@@ -75,12 +74,6 @@ class _FeedScreenState extends State<FeedScreen> {
     }
   }
 
-  // refresh() => () {
-  //       setState(() {});
-  //     };
-
-  int _page = 0;
-
   @override
   Widget build(BuildContext context) {
     _addPaginationListener();
@@ -103,12 +96,15 @@ class _FeedScreenState extends State<FeedScreen> {
       body: RefreshIndicator(
         onRefresh: () async {
           refresh();
+          clearPagingController();
         },
         child: BlocConsumer(
           bloc: _feedBloc,
           buildWhen: (prev, curr) {
             // Prevents changin the state while paginating the feed
-            if (prev is UniversalFeedLoaded && curr is UniversalFeedLoading) {
+            if (prev is UniversalFeedLoaded &&
+                (curr is PaginatedUniversalFeedLoading ||
+                    curr is UniversalFeedLoading)) {
               return false;
             }
             return true;
@@ -125,6 +121,7 @@ class _FeedScreenState extends State<FeedScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const LMIcon(
+                          type: LMIconType.icon,
                           icon: Icons.post_add,
                           size: 48,
                         ),
@@ -155,19 +152,16 @@ class _FeedScreenState extends State<FeedScreen> {
                             ),
                           ),
                           icon: LMIcon(
+                            type: LMIconType.icon,
                             icon: Icons.add,
                             color: Theme.of(context).colorScheme.onPrimary,
                           ),
-                          onTap: (active) {
+                          onTap: () {
                             if (!postUploading.value) {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      BlocProvider<NewPostBloc>(
-                                    create: (context) => NewPostBloc(),
-                                    child: const NewPostScreen(),
-                                  ),
+                                  builder: (context) => const NewPostScreen(),
                                 ),
                               );
                             } else {
@@ -182,7 +176,6 @@ class _FeedScreenState extends State<FeedScreen> {
                     ),
                   ),
                   itemBuilder: (context, item, index) {
-                    Post rebuildPostData = item;
                     return Column(
                       children: [
                         const SizedBox(height: 8),
@@ -193,11 +186,8 @@ class _FeedScreenState extends State<FeedScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => BlocProvider<NewPostBloc>(
-                                  create: (context) => NewPostBloc(),
-                                  child: PostDetailScreen(
-                                    postId: item.id,
-                                  ),
+                                builder: (context) => PostDetailScreen(
+                                  postId: item.id,
                                 ),
                               ),
                             );
@@ -214,7 +204,6 @@ class _FeedScreenState extends State<FeedScreen> {
                                     .build(),
                               );
                               item = updatedPostDetails.post!;
-                              rebuildPostData = updatedPostDetails.post!;
                               List<Post>? feedRoomItemList =
                                   _pagingController.itemList;
                               feedRoomItemList?[index] =
@@ -262,17 +251,15 @@ class _FeedScreenState extends State<FeedScreen> {
           ),
         ),
         icon: LMIcon(
+          type: LMIconType.icon,
           icon: Icons.add,
           color: Theme.of(context).colorScheme.onPrimary,
         ),
-        onTap: (active) {
+        onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => BlocProvider<NewPostBloc>(
-                create: (context) => NewPostBloc(),
-                child: const NewPostScreen(),
-              ),
+              builder: (context) => const NewPostScreen(),
             ),
           );
         },

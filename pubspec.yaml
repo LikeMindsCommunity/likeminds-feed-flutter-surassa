@@ -5,37 +5,41 @@ publish_to: none
 homepage: "https://likeminds.community/"
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: ">=3.0.0 <4.0.0"
   flutter: ">=1.17.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
-  get_it: 
-  share_plus: 
+  get_it:
+  share_plus:
   envied:
   url_launcher:
-  shared_preferences: 
-  simple_s3: 
+  shared_preferences:
+  simple_s3:
   flutter_bloc:
-  firebase_core: 
-  firebase_messaging: 
-  overlay_support: 
-  lazy_load_scrollview: 
-  infinite_scroll_pagination: 
-  device_info_plus: 
-  permission_handler: 
-  image_picker: 
-  open_filex: 
+  firebase_core:
+  firebase_messaging:
+  overlay_support:
+  lazy_load_scrollview:
+  infinite_scroll_pagination:
+  device_info_plus:
+  permission_handler:
+  image_picker:
+  file_picker:
+  video_player:
+  open_filex:
+  timeago:
+  collection: 
 
-  flutter_typeahead_mm: 
+  flutter_typeahead_mm:
     path: lib/packages/flutter_typeahead-4.3.7
 
-  likeminds_feed_ui_fl: 
+  likeminds_feed_ui_fl:
     path: ../LikeMinds-Flutter-Feed-UI
 
-  likeminds_feed: 
+  likeminds_feed:
     path: ../LikeMinds-Flutter-Feed-SDK
 
 dev_dependencies:
@@ -50,9 +54,13 @@ dev_dependencies:
 flutter:
 
   # To add assets to your package, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+    assets:
+    - packages/likeminds_feed_ss_fl/assets/icons/document.svg
+    - packages/likeminds_feed_ss_fl/assets/icons/gallery.svg
+    - packages/likeminds_feed_ss_fl/assets/icons/poll.svg
+    - packages/likeminds_feed_ss_fl/assets/icons/video.svg
+    - packages/likeminds_feed_ss_fl/assets/icons/pin.svg
+
   #
   # For details regarding assets in packages, see
   # https://flutter.dev/assets-and-images/#from-packages

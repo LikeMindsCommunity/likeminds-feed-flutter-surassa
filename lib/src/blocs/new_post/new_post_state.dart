@@ -37,3 +37,30 @@ class NewPostError extends NewPostState {
 
   const NewPostError({required this.message});
 }
+
+class PostDeletionError extends NewPostState {
+  final String message;
+
+  const PostDeletionError({required this.message});
+
+  @override
+  List<Object> get props => [message];
+}
+
+class PostDeleted extends NewPostState {
+  final String postId;
+
+  const PostDeleted({required this.postId});
+
+  @override
+  List<Object> get props => [postId];
+}
+
+class PostUpdateState extends NewPostState {
+  final Post post;
+
+  const PostUpdateState({required this.post});
+
+  @override
+  List<Object> get props => [post];
+}

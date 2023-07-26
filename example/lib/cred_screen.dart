@@ -143,7 +143,7 @@ class _CredScreenState extends State<CredScreen> {
             children: [
               const SizedBox(height: 72),
               const Text(
-                "Koshiqa Beta\nSample App",
+                "LikeMinds Feed\nSample App",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white,

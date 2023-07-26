@@ -3,6 +3,7 @@ library likeminds_feed_ss_fl;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
+import 'package:likeminds_feed_ss_fl/src/views/universal_feed_page.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 
 import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
@@ -11,7 +12,6 @@ import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/credentials/credentials.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/local_preference/user_local_preference.dart';
-import 'package:likeminds_feed_ss_fl/src/views/feed_page.dart';
 
 export 'src/services/service_locator.dart';
 export 'src/utils/analytics/analytics.dart';
@@ -217,7 +217,7 @@ class _LMFeedState extends State<LMFeed> {
                       final MemberStateResponse response = snapshot.data;
                       UserLocalPreference.instance.storeMemberRights(response);
 
-                      return const FeedScreen();
+                      return const UniversalFeedScreen();
                     }
 
                     return Container(
