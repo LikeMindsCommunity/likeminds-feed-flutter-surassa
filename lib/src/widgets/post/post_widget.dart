@@ -226,15 +226,20 @@ class SSPostWidget extends StatelessWidget {
                       : const SizedBox(),
                   postDetails!.attachments != null &&
                           postDetails!.attachments!.isNotEmpty
-                      ? LMPostMedia(
-                          attachments: postDetails!.attachments!,
-                          borderRadius: 16.0,
-                          documentIcon: const LMIcon(
-                            type: LMIconType.svg,
-                            assetPath: kAssetPDFIcon,
-                            size: 20,
+                      ? SizedBox(
+                          child: LMPostMedia(
+                            attachments: postDetails!.attachments!,
+                            borderRadius: 16.0,
+                            documentIcon: const LMIcon(
+                              type: LMIconType.svg,
+                              assetPath: kAssetDocPDFIcon,
+                              size: 50,
+                              boxPadding: 0,
+                              fit: BoxFit.cover,
+                              color: Colors.red,
+                            ),
+                            // postId: postDetails!.id,
                           ),
-                          // postId: postDetails!.id,
                         )
                       : const SizedBox(),
                   const SizedBox(height: 18),
