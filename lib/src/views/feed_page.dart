@@ -161,7 +161,7 @@ class _FeedScreenState extends State<FeedScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const NewPostScreen(),
+                                  builder: (context) => NewPostScreen(),
                                 ),
                               );
                             } else {
@@ -259,7 +259,7 @@ class _FeedScreenState extends State<FeedScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const NewPostScreen(),
+              builder: (context) => NewPostScreen(),
             ),
           );
         },

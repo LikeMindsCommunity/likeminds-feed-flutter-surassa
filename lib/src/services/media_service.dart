@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/credentials/credentials.dart';
 import 'package:path/path.dart';
 
@@ -29,7 +30,8 @@ class MediaService {
       );
       return result;
     } on SimpleS3Errors catch (e) {
-      print(e.toString());
+      debugPrint(e.name);
+      debugPrint(e.index.toString());
       return null;
     }
   }

@@ -30,6 +30,7 @@ class EditPostScreen extends StatefulWidget {
 
 class _EditPostScreenState extends State<EditPostScreen> {
   late Future<GetPostResponse> postFuture;
+  final FocusNode _focusNode = FocusNode();
   TextEditingController? textEditingController;
   ValueNotifier<bool> rebuildAttachments = ValueNotifier(false);
   late String postId;
@@ -124,6 +125,9 @@ class _EditPostScreenState extends State<EditPostScreen> {
           ..page(1)
           ..pageSize(10))
         .build());
+    if (_focusNode.canRequestFocus) {
+      _focusNode.requestFocus();
+    }
   }
 
   void checkTextLinks() {
@@ -317,89 +321,131 @@ class _EditPostScreenState extends State<EditPostScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: 16.0,
-            vertical: 4.0,
+            vertical: 6.0,
           ),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              LMProfilePicture(
-                imageUrl: user!.imageUrl,
-                fallbackText: user!.name,
-              ),
-              kHorizontalPaddingLarge,
-            ],
-          ),
-        ),
-        Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: [
-                Container(
-                  constraints: const BoxConstraints(
-                    minHeight: 72,
-                  ),
-                  decoration: const BoxDecoration(
-                    color: kWhiteColor,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: TaggingAheadTextField(
-                      focusNode: FocusNode(),
-                      isDown: true,
-                      controller: textEditingController!,
-                      onTagSelected: (tag) {
-                        print(tag);
-                        userTags.add(tag);
-                      },
-                      onChange: (p0) {
-                        _onTextChanged(p0);
-                      },
-                    ),
-                  ),
+              Padding(
+                padding: const EdgeInsets.only(top: 4.0),
+                child: LMProfilePicture(
+                  fallbackText: user!.name,
+                  imageUrl: user!.imageUrl,
+                  size: 36,
                 ),
-                kVerticalPaddingXLarge,
-                ValueListenableBuilder(
-                    valueListenable: rebuildAttachments,
-                    builder: (context, _, __) {
-                      if (linkModel != null && showLinkPreview) {
-                        return Stack(children: [
-                          // PostLinkView(
-                          //     screenSize: screenSize, linkModel: linkModel),
-                          Positioned(
-                            top: 5,
-                            right: 5,
-                            child: GestureDetector(
-                              onTap: () {
-                                showLinkPreview = false;
-                                attachments?.clear();
-                                rebuildAttachments.value =
-                                    !rebuildAttachments.value;
-                              },
-                              child: const CloseButtonIcon(),
+              ),
+              kHorizontalPaddingMedium,
+              Expanded(
+                child: Column(
+                  children: [
+                    Container(
+                      decoration: const BoxDecoration(
+                        color: kWhiteColor,
+                      ),
+                      child: TaggingAheadTextField(
+                        isDown: true,
+                        onTagSelected: (tag) {
+                          userTags.add(tag);
+                        },
+                        controller: textEditingController!,
+                        focusNode: _focusNode,
+                        onChange: _onTextChanged,
+                      ),
+                    ),
+                    kVerticalPaddingXLarge,
+                    ValueListenableBuilder(
+                        valueListenable: rebuildAttachments,
+                        builder: (context, value, child) =>
+                            ((attachments == null || attachments!.isEmpty) &&
+                                    linkModel != null &&
+                                    showLinkPreview)
+                                ? Stack(
+                                    children: [
+                                      LMLinkPreview(linkModel: linkModel),
+                                      Positioned(
+                                        top: 5,
+                                        right: 5,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            showLinkPreview = false;
+                                            rebuildAttachments.value =
+                                                !rebuildAttachments.value;
+                                          },
+                                          child: const CloseButtonIcon(),
+                                        ),
+                                      )
+                                    ],
+                                  )
+                                : const SizedBox()),
+                    if (attachments != null && attachments!.isNotEmpty)
+                      mapIntToMediaType(attachments!.first.attachmentType) ==
+                              MediaType.document
+                          ? getPostDocument(screenSize!.width)
+                          : Container(
+                              padding: const EdgeInsets.only(
+                                top: kPaddingSmall,
+                              ),
+                              height: 180,
+                              alignment: Alignment.center,
+                              child: ListView.builder(
+                                itemCount: attachments!.length,
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return ClipRRect(
+                                    borderRadius: BorderRadius.circular(18.0),
+                                    clipBehavior: Clip.hardEdge,
+                                    child: Row(
+                                      children: [
+                                        SizedBox(
+                                          height: 180,
+                                          width: mapIntToMediaType(
+                                                      attachments![index]
+                                                          .attachmentType) ==
+                                                  MediaType.video
+                                              ? 300
+                                              : 180,
+                                          child: Stack(
+                                            children: [
+                                              mapIntToMediaType(attachments![
+                                                              index]
+                                                          .attachmentType) ==
+                                                      MediaType.video
+                                                  ? LMVideo(
+                                                      videoUrl:
+                                                          attachments![index]
+                                                              .attachmentMeta
+                                                              .url!,
+                                                      height: 180,
+                                                      boxFit: BoxFit.cover,
+                                                      showControls: false,
+                                                      width: 300,
+                                                    )
+                                                  : LMImage(
+                                                      height: 180,
+                                                      width: 180,
+                                                      boxFit: BoxFit.cover,
+                                                      borderRadius: 18,
+                                                      imageUrl:
+                                                          attachments![index]
+                                                              .attachmentMeta
+                                                              .url!,
+                                                    ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
-                          )
-                        ]);
-                      } else {
-                        return const SizedBox();
-                      }
-                    }),
-                if (attachments != null && attachments!.isNotEmpty)
-                  attachments!.first.attachmentType == 3
-                      ? getPostDocument(screenSize!.width)
-                      : Container(
-                          padding: const EdgeInsets.only(
-                            top: kPaddingSmall,
-                          ),
-                          alignment: Alignment.center,
-                          // child: PostMedia(
-                          //   height: screenSize!.width,
-                          //   attachments: attachments,
-                          //   postId: postId,
-                          // ),
-                        ),
-                kVerticalPaddingMedium,
-              ],
-            ),
+                    kVerticalPaddingMedium,
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ],

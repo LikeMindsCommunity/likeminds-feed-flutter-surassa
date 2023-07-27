@@ -88,8 +88,8 @@ class PostMediaPicker {
         allowMultiple: true,
         type: FileType.custom,
         dialogTitle: 'Select files',
+        allowCompression: true,
         allowedExtensions: [
-          '3gp',
           'mp4',
         ],
       );
@@ -111,8 +111,12 @@ class PostMediaPicker {
               );
             } else {
               File video = File(pickedFile.path!);
-              VideoPlayerController controller =
-                  VideoPlayerController.file(video);
+              VideoPlayerController controller = VideoPlayerController.file(
+                video,
+                videoPlayerOptions: VideoPlayerOptions(
+                  mixWithOthers: false,
+                ),
+              );
               await controller.initialize();
               Duration videoDuration = controller.value.duration;
               MediaModel videoFile = MediaModel(
@@ -122,6 +126,7 @@ class PostMediaPicker {
                 size: pickedFile.size,
               );
               videoFiles.add(videoFile);
+              controller.dispose();
             }
           }
           return videoFiles;

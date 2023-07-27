@@ -323,8 +323,9 @@ class LikesTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (user != null) {
-      return Padding(
+      return Container(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        margin: const EdgeInsets.only(bottom: 20.0),
         child: user!.isDeleted != null && user!.isDeleted!
             ? const DeletedLikesTile()
             : LMUserTile(

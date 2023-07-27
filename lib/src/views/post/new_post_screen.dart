@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart';
@@ -71,6 +72,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
     super.initState();
     user = UserLocalPreference.instance.fetchUserData();
     newPostBloc = BlocProvider.of<NewPostBloc>(context);
+    if (_focusNode.canRequestFocus) {
+      _focusNode.requestFocus();
+    }
   }
 
   void removeAttachmenetAtIndex(int index) {
@@ -152,8 +156,10 @@ class _NewPostScreenState extends State<NewPostScreen> {
         type: postMedia[index].format!,
         documentIcon: const LMIcon(
           type: LMIconType.svg,
-          assetPath: kAssetPDFIcon,
-          size: 20,
+          assetPath: kAssetDocPDFIcon,
+          color: Colors.red,
+          size: 45,
+          boxPadding: 0,
         ),
         documentFile: postMedia[index].mediaFile,
         onRemove: () => removeAttachmenetAtIndex(index),
@@ -234,18 +240,20 @@ class _NewPostScreenState extends State<NewPostScreen> {
                 PostComposerHeader(
                   title: "Create Post",
                   onTap: () {
-                    if ((_controller.text.isNotEmpty || postMedia.isNotEmpty)) {
+                    if (_controller.text.isNotEmpty || postMedia.isNotEmpty) {
                       String postText = _controller.text;
                       checkTextLinks();
-                      if (postText.isNotEmpty) {
-                        newPostBloc!.add(
-                          CreateNewPost(
-                            postText: postText,
-                            postMedia: postMedia,
-                          ),
-                        );
-                        Navigator.pop(context);
-                      }
+                      userTags =
+                          TaggingHelper.matchTags(_controller.text, userTags);
+                      result = TaggingHelper.encodeString(
+                          _controller.text, userTags);
+                      newPostBloc!.add(
+                        CreateNewPost(
+                          postText: result!,
+                          postMedia: postMedia,
+                        ),
+                      );
+                      Navigator.pop(context);
                     } else {
                       toast(
                         "Can't create a post without text or attachments",
@@ -341,47 +349,65 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                             borderRadius:
                                                 BorderRadius.circular(18.0),
                                             clipBehavior: Clip.hardEdge,
-                                            child: Row(
+                                            child: Stack(
                                               children: [
-                                                SizedBox(
-                                                  height: 180,
-                                                  width: postMedia[index]
-                                                              .mediaType ==
-                                                          MediaType.video
-                                                      ? 300
-                                                      : 180,
-                                                  child: Stack(
-                                                    children: [
-                                                      postMedia[index]
+                                                Row(
+                                                  children: [
+                                                    SizedBox(
+                                                      height: 180,
+                                                      width: postMedia[index]
                                                                   .mediaType ==
                                                               MediaType.video
-                                                          ? LMVideo(
-                                                              videoFile:
-                                                                  postMedia[
+                                                          ? 300
+                                                          : 180,
+                                                      child: Stack(
+                                                        children: [
+                                                          postMedia[index]
+                                                                      .mediaType ==
+                                                                  MediaType
+                                                                      .video
+                                                              ? LMVideo(
+                                                                  videoFile: postMedia[
                                                                           index]
                                                                       .mediaFile!,
-                                                              height: 180,
-                                                              boxFit:
-                                                                  BoxFit.cover,
-                                                              showControls:
-                                                                  false,
-                                                              width: 300,
-                                                            )
-                                                          : LMImage(
-                                                              height: 180,
-                                                              width: 180,
-                                                              boxFit:
-                                                                  BoxFit.cover,
-                                                              borderRadius: 18,
-                                                              imageFile:
-                                                                  postMedia[
+                                                                  height: 180,
+                                                                  boxFit: BoxFit
+                                                                      .cover,
+                                                                  showControls:
+                                                                      false,
+                                                                  width: 300,
+                                                                )
+                                                              : LMImage(
+                                                                  height: 180,
+                                                                  width: 180,
+                                                                  boxFit: BoxFit
+                                                                      .cover,
+                                                                  borderRadius:
+                                                                      18,
+                                                                  imageFile: postMedia[
                                                                           index]
                                                                       .mediaFile!,
-                                                            ),
-                                                    ],
-                                                  ),
+                                                                ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                  ],
                                                 ),
-                                                const SizedBox(width: 8),
+                                                Positioned(
+                                                  top: -8,
+                                                  right: 0,
+                                                  child: IconButton(
+                                                      onPressed: () =>
+                                                          removeAttachmenetAtIndex(
+                                                              index),
+                                                      icon: Icon(
+                                                        CupertinoIcons
+                                                            .xmark_circle_fill,
+                                                        color: kWhiteColor
+                                                            .withOpacity(0.5),
+                                                      )),
+                                                )
                                               ],
                                             ),
                                           );
@@ -412,7 +438,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        isDocumentPost
+                        isMediaPost
                             ? const SizedBox.shrink()
                             : LMIconButton(
                                 icon: LMIcon(
@@ -431,10 +457,10 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                   }
                                 },
                               ),
-                        isDocumentPost
+                        isMediaPost
                             ? const SizedBox.shrink()
                             : const SizedBox(width: 8),
-                        isDocumentPost
+                        isMediaPost
                             ? const SizedBox.shrink()
                             : LMIconButton(
                                 icon: LMIcon(
@@ -458,10 +484,10 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                   }
                                 },
                               ),
-                        isMediaPost
+                        isDocumentPost
                             ? const SizedBox.shrink()
                             : const SizedBox(width: 8),
-                        isMediaPost
+                        isDocumentPost
                             ? const SizedBox.shrink()
                             : LMIconButton(
                                 icon: LMIcon(
@@ -633,207 +659,3 @@ class _NewPostScreenState extends State<NewPostScreen> {
     }
   }
 }
-
-// class AddAssetsButton extends StatelessWidget {
-//   final ImagePicker picker;
-//   final FilePicker filePicker;
-//   final int mediaListLength;
-//   final int mediaType; // 1 for photo 2 for video
-//   final Function(bool uploadResponse) onUploaded;
-//   final Function() uploading;
-//   final Function() preUploadCheck;
-//   final Function(List<MediaModel>)
-//       postMedia; // only return in List<File> format
-
-//   const AddAssetsButton({
-//     super.key,
-//     required this.mediaType,
-//     required this.filePicker,
-//     required this.mediaListLength,
-//     required this.picker,
-//     required this.onUploaded,
-//     required this.uploading,
-//     required this.postMedia,
-//     required this.preUploadCheck,
-//   });
-
-//   void pickVideos() async {
-//     uploading();
-//     try {
-//       final pickedFiles = await filePicker.pickFiles(
-//         allowMultiple: true,
-//         type: FileType.custom,
-//         dialogTitle: 'Select files',
-//         allowedExtensions: [
-//           '3gp',
-//           'mp4',
-//         ],
-//       );
-//       if (pickedFiles != null) {
-//         if (mediaListLength + pickedFiles.files.length > 10) {
-//           toast(
-//             'A total of 10 attachments can be added to a post',
-//             duration: Toast.LENGTH_LONG,
-//           );
-//           onUploaded(false);
-//           return;
-//         }
-//         List<MediaModel> videoFiles = [];
-//         for (var pickedFile in pickedFiles.files) {
-//           if (getFileSizeInDouble(pickedFile.size) > 100) {
-//             toast(
-//               'File size should be smaller than 100MB',
-//               duration: Toast.LENGTH_LONG,
-//             );
-//             onUploaded(false);
-//             return;
-//           } else {
-//             File video = File(pickedFile.path!);
-//             VideoPlayerController controller =
-//                 VideoPlayerController.file(video);
-//             await controller.initialize();
-//             Duration videoDuration = controller.value.duration;
-//             MediaModel videoFile = MediaModel(
-//                 mediaType: MediaType.video,
-//                 mediaFile: video,
-//                 duration: videoDuration.inSeconds);
-
-//             videoFiles.add(videoFile);
-//           }
-//         }
-//         postMedia(videoFiles);
-//         onUploaded(true);
-//         return;
-//       } else {
-//         onUploaded(false);
-//         return;
-//       }
-//     } catch (e) {
-//       onUploaded(false);
-//       toast(
-//         'An error occurred',
-//         duration: Toast.LENGTH_LONG,
-//       );
-//       print(e.toString());
-//       return;
-//     }
-//   }
-
-//   void pickFiles() async {
-//     uploading();
-//     try {
-//       final pickedFiles = await filePicker.pickFiles(
-//         allowMultiple: true,
-//         type: FileType.custom,
-//         dialogTitle: 'Select files',
-//         allowedExtensions: [
-//           'pdf',
-//         ],
-//       );
-
-//       if (pickedFiles != null) {
-//         if (mediaListLength + pickedFiles.files.length > 10) {
-//           toast(
-//             'A total of 10 attachments can be added to a post',
-//             duration: Toast.LENGTH_LONG,
-//           );
-//           onUploaded(false);
-//           return;
-//         }
-//         for (var pickedFile in pickedFiles.files) {
-//           if (getFileSizeInDouble(pickedFile.size) > 100) {
-//             toast(
-//               'File size should be smaller than 100MB',
-//               duration: Toast.LENGTH_LONG,
-//             );
-//             onUploaded(false);
-//             return;
-//           }
-//         }
-//         List<MediaModel> attachedFiles = [];
-//         attachedFiles = pickedFiles.files
-//             .map((e) => MediaModel(
-//                 mediaType: MediaType.document,
-//                 mediaFile: File(e.path!),
-//                 format: e.extension,
-//                 size: e.size))
-//             .toList();
-//         postMedia(attachedFiles);
-//         onUploaded(true);
-//       } else {
-//         onUploaded(false);
-//       }
-//     } catch (e) {
-//       onUploaded(false);
-//       toast(
-//         'An error occurred',
-//         duration: Toast.LENGTH_LONG,
-//       );
-//       print(e.toString());
-//       return;
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     Size screenSize = MediaQuery.of(context).size;
-//     return GestureDetector(
-//       onTap: () async {
-//         LMAnalytics.get().logEvent(
-//           AnalyticsKeys.clickedOnAttachment,
-//           {
-//             'type': mediaType == 1
-//                 ? 'photo'
-//                 : mediaType == 2
-//                     ? 'video'
-//                     : 'file',
-//           },
-//         );
-//         if (preUploadCheck()) {
-//           bool permissionStatus = await handlePermissions(context);
-//           if (permissionStatus) {
-//             if (mediaType == 1) {
-//               pickImages(context);
-//             } else if (mediaType == 2) {
-//               pickVideos();
-//             } else if (mediaType == 3) {
-//               pickFiles();
-//             }
-//           }
-//         } else {
-//           toast(
-//             "A total of 10 attachments can be added to a post",
-//             duration: Toast.LENGTH_LONG,
-//           );
-//         }
-//       },
-//       child: SizedBox(
-//         height: 48,
-//         width: screenSize.width,
-//         child: Padding(
-//           padding: const EdgeInsets.symmetric(
-//             horizontal: 16.0,
-//             vertical: 10,
-//           ),
-//           child: Row(
-//             children: [
-//               SvgPicture.asset(
-//                 assetButtonData[mediaType]['svg_icon'],
-//                 height: 28,
-//               ),
-//               kHorizontalPaddingLarge,
-//               Text(
-//                 assetButtonData[mediaType]['title'],
-//                 style: const TextStyle(
-//                   fontSize: 16,
-//                   fontWeight: FontWeight.w500,
-//                   color: kGreyColor,
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }

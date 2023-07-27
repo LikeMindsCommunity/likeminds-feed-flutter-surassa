@@ -28,7 +28,7 @@ dependencies:
   permission_handler:
   image_picker:
   file_picker:
-  video_player:
+  video_player: 
   open_filex:
   timeago:
   collection: 

@@ -1,8 +1,7 @@
 import 'package:collection/collection.dart';
+
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
-import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 
 class TaggingHelper {
@@ -77,7 +76,6 @@ class TaggingHelper {
     // if (!locator<LikeMindsService>().isProd) {
     //   toast('Profile call back fired');
     // }
-    locator<LikeMindsService>().routeToProfile(userId);
   }
 
   static String convertRouteToTag(String text, {bool withTilde = true}) {

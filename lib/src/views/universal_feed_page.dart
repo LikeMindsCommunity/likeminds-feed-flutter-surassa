@@ -477,8 +477,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) =>
-                                              const NewPostScreen(),
+                                          builder: (context) => NewPostScreen(),
                                         ),
                                       );
                                     } else {
@@ -582,7 +581,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const NewPostScreen(),
+                        builder: (context) => NewPostScreen(),
                       ),
                     );
                   },
