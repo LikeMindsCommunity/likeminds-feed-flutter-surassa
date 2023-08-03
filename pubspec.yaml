@@ -65,7 +65,8 @@ flutter:
     - packages/likeminds_feed_ss_fl/assets/icons/share.svg
     - packages/likeminds_feed_ss_fl/assets/icons/like_filled.svg
     - packages/likeminds_feed_ss_fl/assets/icons/pdf.svg
-    
+    - packages/likeminds_feed_ss_fl/assets/icons/chat_lines.svg
+
 
   #
   # For details regarding assets in packages, see

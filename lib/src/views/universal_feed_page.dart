@@ -21,7 +21,9 @@ import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 class UniversalFeedScreen extends StatefulWidget {
+  final Function? openChatCallback;
   const UniversalFeedScreen({
+    this.openChatCallback,
     super.key,
   });
 
@@ -120,6 +122,23 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
           ),
         ),
         elevation: 1,
+        actions: [
+          if (widget.openChatCallback != null)
+            LMIconButton(
+              containerSize: 42,
+              onTap: (active) {
+                widget.openChatCallback!();
+              },
+              icon: const LMIcon(
+                type: LMIconType.svg,
+                assetPath: kAssetChatIcon,
+                color: Colors.black,
+                size: 24,
+                boxPadding: 6,
+                boxSize: 36,
+              ),
+            ),
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: () async {
