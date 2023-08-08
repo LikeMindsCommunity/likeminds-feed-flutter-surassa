@@ -24,15 +24,15 @@ dependencies:
   overlay_support:
   lazy_load_scrollview:
   infinite_scroll_pagination:
-  device_info_plus:
+  device_info_plus: 
   permission_handler:
   image_picker:
   file_picker:
-  video_player: 
+  video_player:
   open_filex:
   timeago:
-  collection: 
-  flick_video_player: 
+  collection:
+  flick_video_player:
 
   flutter_typeahead_mm:
     path: lib/packages/flutter_typeahead-4.3.7
@@ -52,9 +52,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # To add assets to your package, add an assets section, like this:
-    assets:
+  assets:
     - packages/likeminds_feed_ss_fl/assets/icons/document.svg
     - packages/likeminds_feed_ss_fl/assets/icons/gallery.svg
     - packages/likeminds_feed_ss_fl/assets/icons/poll.svg
@@ -65,7 +64,6 @@ flutter:
     - packages/likeminds_feed_ss_fl/assets/icons/share.svg
     - packages/likeminds_feed_ss_fl/assets/icons/like_filled.svg
     - packages/likeminds_feed_ss_fl/assets/icons/pdf.svg
-    
 
   #
   # For details regarding assets in packages, see

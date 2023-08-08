@@ -115,8 +115,8 @@ class _LMFeedState extends State<LMFeed> {
                 theme: ThemeData.from(
                   colorScheme: ColorScheme.fromSeed(
                     seedColor: kPrimaryColor,
-                    primary: const Color.fromARGB(255, 70, 102, 246),
-                    secondary: const Color.fromARGB(255, 59, 130, 246),
+                    primary: kPrimaryColor,
+                    secondary: const Color.fromARGB(255, 70, 102, 246),
                   ),
                 ),
                 title: 'LM Feed',

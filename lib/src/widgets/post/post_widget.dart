@@ -81,6 +81,7 @@ class SSPostWidget extends StatelessWidget {
             }
           },
           child: GestureDetector(
+            behavior: HitTestBehavior.deferToChild,
             onTap: () {
               // Navigate to LMPostPage using material route
               if (isFeed) {

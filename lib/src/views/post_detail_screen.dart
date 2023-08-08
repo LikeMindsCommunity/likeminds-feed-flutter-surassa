@@ -914,10 +914,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                           );
                                                         },
                                                         icon: const LMIcon(
-                                                          type: LMIconType.icon,
-                                                          icon: Icons
-                                                              .message_outlined,
-                                                          size: 18,
+                                                          type: LMIconType.svg,
+                                                          assetPath:
+                                                              kAssetCommentIcon,
+                                                          boxPadding: 0,
+                                                          size: 20,
                                                         ),
                                                       ),
                                                       kHorizontalPaddingMedium,

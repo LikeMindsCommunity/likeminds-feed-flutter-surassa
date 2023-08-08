@@ -22,6 +22,7 @@ import 'package:likeminds_feed_ss_fl/src/utils/tagging/tagging_textfield_ta.dart
 import 'package:likeminds_feed_ss_fl/src/views/post/post_composer_header.dart';
 
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -153,6 +154,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) => LMDocument(
         size: getFileSizeString(bytes: postMedia[index].size!),
+        onTap: () {
+          OpenFilex.open(postMedia[index].mediaFile!.path);
+        },
         type: postMedia[index].format!,
         documentIcon: const LMIcon(
           type: LMIconType.svg,

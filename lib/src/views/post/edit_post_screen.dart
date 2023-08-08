@@ -15,6 +15,7 @@ import 'package:likeminds_feed_ss_fl/src/utils/tagging/tagging_textfield_ta.dart
 import 'package:likeminds_feed_ss_fl/src/views/post/post_composer_header.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class EditPostScreen extends StatefulWidget {
   static const String route = '/edit_post_screen';
@@ -81,6 +82,10 @@ class _EditPostScreenState extends State<EditPostScreen> {
           size: 20,
         ),
         documentUrl: attachments![index].attachmentMeta.url,
+        onTap: () {
+          Uri fileUrl = Uri.parse(attachments![index].attachmentMeta.url!);
+          launchUrl(fileUrl, mode: LaunchMode.platformDefault);
+        },
       ),
     );
   }
