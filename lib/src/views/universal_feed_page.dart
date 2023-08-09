@@ -608,13 +608,13 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                     text: "Create Post",
                     textStyle: TextStyle(
                       color: Theme.of(context).colorScheme.onPrimary,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
+                  margin: 5,
                   icon: LMIcon(
                     type: LMIconType.icon,
                     icon: Icons.add,
-                    boxSize: 30,
                     fit: BoxFit.cover,
                     size: 18,
                     color: Theme.of(context).colorScheme.onPrimary,

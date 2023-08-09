@@ -327,14 +327,14 @@ class SSPostWidget extends StatelessWidget {
                                 assetPath: kAssetLikeIcon,
                                 color:
                                     Theme.of(context).colorScheme.onSecondary,
-                                boxPadding: 0,
                                 size: 20,
+                                boxPadding: 6,
                               ),
                               activeIcon: const LMIcon(
                                 type: LMIconType.svg,
                                 assetPath: kAssetLikeFilledIcon,
-                                boxPadding: 0,
                                 size: 20,
+                                boxPadding: 6,
                               ),
                               isActive: isLiked!,
                             );
@@ -360,8 +360,8 @@ class SSPostWidget extends StatelessWidget {
                           type: LMIconType.svg,
                           assetPath: kAssetCommentIcon,
                           color: Theme.of(context).colorScheme.onSecondary,
-                          boxPadding: 0,
                           size: 20,
+                          boxPadding: 6,
                         ),
                       ),
                       LMTextButton(
@@ -373,9 +373,9 @@ class SSPostWidget extends StatelessWidget {
                         icon: LMIcon(
                           type: LMIconType.svg,
                           assetPath: kAssetShareIcon,
-                          boxPadding: 0,
                           color: Theme.of(context).colorScheme.onSecondary,
                           size: 20,
+                          boxPadding: 6,
                         ),
                       ),
                     ],

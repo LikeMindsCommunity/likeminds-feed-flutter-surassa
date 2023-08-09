@@ -914,6 +914,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                               left: 48),
                                                       commentActions: [
                                                         LMTextButton(
+                                                          margin: 10,
                                                           text: LMTextView(
                                                             text: item.likesCount ==
                                                                     0
@@ -990,7 +991,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                               item.isLiked,
                                                         ),
                                                         const SizedBox(
-                                                            width: 8),
+                                                            width: 12),
                                                         Row(
                                                           children: [
                                                             LMTextButton(
@@ -1012,7 +1013,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                     .svg,
                                                                 assetPath:
                                                                     kAssetCommentIcon,
-                                                                boxPadding: 0,
                                                                 size: 20,
                                                               ),
                                                             ),
