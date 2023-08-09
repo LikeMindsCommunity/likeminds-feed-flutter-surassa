@@ -30,6 +30,7 @@ class UniversalFeedScreen extends StatefulWidget {
 }
 
 class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
+  ScrollController _controller = ScrollController();
   late final UniversalFeedBloc _feedBloc; // bloc to fetch the feedroom data
   bool isCm = UserLocalPreference.instance
       .fetchMemberState(); // whether the logged in user is a community manager or not
@@ -73,6 +74,14 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
     super.dispose();
   }
 
+  void _scrollToTop() {
+    _controller.animateTo(
+      0,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeOut,
+    );
+  }
+
   int _pageFeed = 1; // current index of FeedRoom
 
   void _addPaginationListener() {
@@ -110,13 +119,18 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
       appBar: AppBar(
         backgroundColor: kWhiteColor,
         centerTitle: false,
-        title: const LMTextView(
-          text: "Feed",
-          textAlign: TextAlign.start,
-          textStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 28,
-            fontWeight: FontWeight.w800,
+        title: GestureDetector(
+          onTap: () {
+            _scrollToTop();
+          },
+          child: const LMTextView(
+            text: "Feed",
+            textAlign: TextAlign.start,
+            textStyle: TextStyle(
+              color: Colors.black,
+              fontSize: 28,
+              fontWeight: FontWeight.w800,
+            ),
           ),
         ),
         elevation: 1,
@@ -147,6 +161,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                 feedRoomPagingController: _pagingController,
                 user: user,
                 onRefresh: refresh,
+                scrollController: _controller,
               );
             } else if (state is UniversalFeedError) {
               return FeedRoomErrorView(message: state.message);
@@ -180,6 +195,7 @@ class FeedRoomView extends StatefulWidget {
   final User user;
   final GetFeedResponse feedResponse;
   final PagingController<int, Post> feedRoomPagingController;
+  final ScrollController scrollController;
   final VoidCallback onRefresh;
 
   const FeedRoomView({
@@ -189,6 +205,7 @@ class FeedRoomView extends StatefulWidget {
     required this.feedRoomPagingController,
     required this.user,
     required this.onRefresh,
+    required this.scrollController,
   });
 
   @override
@@ -200,6 +217,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
   final ValueNotifier postUploading = ValueNotifier(false);
   ScrollController? _controller;
   final ValueNotifier postSomethingNotifier = ValueNotifier(false);
+  bool right = true;
 
   Widget getLoaderThumbnail(MediaModel? media) {
     if (media != null) {
@@ -224,11 +242,22 @@ class _FeedRoomViewState extends State<FeedRoomView> {
     }
   }
 
+  bool checkPostCreationRights() {
+    final MemberStateResponse memberStateResponse =
+        UserLocalPreference.instance.fetchMemberRights();
+    if (memberStateResponse.state == 1) {
+      return true;
+    }
+    final memberRights = UserLocalPreference.instance.fetchMemberRight(9);
+    return memberRights;
+  }
+
   var iconContainerHeight = 90.00;
   @override
   void initState() {
     super.initState();
-    _controller = ScrollController()..addListener(_scrollListener);
+    _controller = widget.scrollController..addListener(_scrollListener);
+    right = checkPostCreationRights();
   }
 
   void _scrollListener() {
@@ -418,7 +447,9 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                       return AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           height: iconContainerHeight,
-                          child: const PostSomething());
+                          child: PostSomething(
+                            enabled: right,
+                          ));
                     }),
                 Expanded(
                   child: ValueListenableBuilder(
@@ -452,9 +483,11 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                         color: kGrey2Color)),
                                 const SizedBox(height: 28),
                                 LMTextButton(
-                                  height: 48,
-                                  width: 142,
                                   borderRadius: 28,
+                                  height: 44,
+                                  width: 153,
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 12, horizontal: 20),
                                   backgroundColor:
                                       Theme.of(context).colorScheme.primary,
                                   text: LMTextView(
@@ -466,27 +499,33 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
+                                  placement: LMIconPlacement.end,
                                   icon: LMIcon(
                                     type: LMIconType.icon,
                                     icon: Icons.add,
+                                    size: 18,
                                     color:
                                         Theme.of(context).colorScheme.onPrimary,
                                   ),
-                                  onTap: () {
-                                    if (!postUploading.value) {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => NewPostScreen(),
-                                        ),
-                                      );
-                                    } else {
-                                      toast(
-                                        'A post is already uploading.',
-                                        duration: Toast.LENGTH_LONG,
-                                      );
-                                    }
-                                  },
+                                  onTap: right
+                                      ? () {
+                                          if (!postUploading.value) {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const NewPostScreen(),
+                                              ),
+                                            );
+                                          } else {
+                                            toast(
+                                              'A post is already uploading.',
+                                              duration: Toast.LENGTH_LONG,
+                                            );
+                                          }
+                                        }
+                                      : () => toast(
+                                          "You do not have permission to create a post"),
                                 ),
                               ],
                             ),
@@ -561,30 +600,48 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                   widget.feedRoomPagingController.itemList!.isEmpty
               ? const SizedBox()
               : LMTextButton(
-                  height: 48,
-                  width: 142,
+                  height: 44,
+                  width: 153,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
                   borderRadius: 28,
-                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  backgroundColor: right
+                      ? Theme.of(context).colorScheme.primary
+                      : kGrey3Color,
+                  placement: LMIconPlacement.end,
                   text: LMTextView(
                     text: "Create Post",
                     textStyle: TextStyle(
                       color: Theme.of(context).colorScheme.onPrimary,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
+                  margin: 5,
                   icon: LMIcon(
                     type: LMIconType.icon,
                     icon: Icons.add,
+                    fit: BoxFit.cover,
+                    size: 18,
                     color: Theme.of(context).colorScheme.onPrimary,
                   ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NewPostScreen(),
-                      ),
-                    );
-                  },
+                  onTap: right
+                      ? () {
+                          if (!postUploading.value) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const NewPostScreen(),
+                              ),
+                            );
+                          } else {
+                            toast(
+                              'A post is already uploading.',
+                              duration: Toast.LENGTH_LONG,
+                            );
+                          }
+                        }
+                      : () =>
+                          toast("You do not have permission to create a post"),
                 );
         },
       ),

@@ -206,9 +206,11 @@ Dialog deleteConfirmationDialog(
                                             ? 'Reason for deletion'
                                             : reasonForDeletion!.name,
                                       ),
-                                      const Icon(
+                                      Icon(
                                         Icons.arrow_drop_down,
-                                        color: kGrey3Color,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSecondary,
                                       )
                                     ],
                                   )),

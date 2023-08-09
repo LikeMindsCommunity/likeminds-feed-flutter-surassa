@@ -19,6 +19,10 @@ migrate_working_dir/
 # VS Code
 .vscode/launch.json
 
+pubspec.lock
+example/pubspec.lock
+lib/packages/flutter_typeahead-4.3.7/pubspec.lock
+
 # Flutter/Dart/Pub related
 **/doc/api/
 **/ios/Flutter/.last_build_id

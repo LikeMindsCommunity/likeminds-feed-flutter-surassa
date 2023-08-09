@@ -10,6 +10,7 @@ import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/widgets/delete_dialog.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class CommentReplyWidget extends StatefulWidget {
   final String postId;
@@ -83,7 +84,8 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
               size: 32,
             ),
             subtitleText: LMTextView(
-              text: "@${user.name.toLowerCase().split(' ').join()}",
+              text:
+                  "@${user.name.toLowerCase().split(' ').join()} · ${timeago.format(element.createdAt)}",
               textStyle: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
@@ -250,9 +252,11 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
               if (state is CommentRepliesLoaded) {
                 replies = state.commentDetails.postReplies!.replies;
                 users = state.commentDetails.users!;
+                users.putIfAbsent(user.userUniqueId, () => user);
               } else if (state is PaginatedCommentRepliesLoading) {
                 replies = state.prevCommentDetails.postReplies!.replies;
                 users = state.prevCommentDetails.users!;
+                users.putIfAbsent(user.userUniqueId, () => user);
               }
 
               repliesW = mapRepliesToWidget(replies, users);

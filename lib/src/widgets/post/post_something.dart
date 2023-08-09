@@ -4,19 +4,23 @@ import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/local_preference/user_local_preference.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post/new_post_screen.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 class PostSomething extends StatelessWidget {
-  const PostSomething({Key? key}) : super(key: key);
+  final bool enabled;
+  const PostSomething({Key? key, required this.enabled}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     User user = UserLocalPreference.instance.fetchUserData();
     Size screenSize = MediaQuery.of(context).size;
     return GestureDetector(
-      onTap: () {
-        Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const NewPostScreen()));
-      },
+      onTap: enabled
+          ? () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => const NewPostScreen()));
+            }
+          : () => toast("You do not have permission to create a post"),
       child: Container(
         width: screenSize.width,
         height: 90,

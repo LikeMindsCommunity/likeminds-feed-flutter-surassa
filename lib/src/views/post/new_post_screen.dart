@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -22,6 +23,7 @@ import 'package:likeminds_feed_ss_fl/src/utils/tagging/tagging_textfield_ta.dart
 import 'package:likeminds_feed_ss_fl/src/views/post/post_composer_header.dart';
 
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -153,6 +155,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) => LMDocument(
         size: getFileSizeString(bytes: postMedia[index].size!),
+        onTap: () {
+          OpenFilex.open(postMedia[index].mediaFile!.path);
+        },
         type: postMedia[index].format!,
         documentIcon: const LMIcon(
           type: LMIconType.svg,
@@ -457,33 +462,33 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                   }
                                 },
                               ),
-                        isMediaPost
-                            ? const SizedBox.shrink()
-                            : const SizedBox(width: 8),
-                        isMediaPost
-                            ? const SizedBox.shrink()
-                            : LMIconButton(
-                                icon: LMIcon(
-                                  type: LMIconType.svg,
-                                  assetPath: kAssetVideoIcon,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                  boxPadding: 0,
-                                  size: 44,
-                                ),
-                                onTap: (active) async {
-                                  onUploading();
-                                  List<MediaModel>? pickedMediaFiles =
-                                      await PostMediaPicker.pickVideos(
-                                          postMedia.length);
-                                  if (pickedMediaFiles != null) {
-                                    setPickedMediaFiles(pickedMediaFiles);
-                                    onUploadedMedia(true);
-                                  } else {
-                                    onUploadedMedia(false);
-                                  }
-                                },
-                              ),
+                        // isMediaPost
+                        //     ? const SizedBox.shrink()
+                        //     : const SizedBox(width: 8),
+                        // isMediaPost
+                        //     ? const SizedBox.shrink()
+                        //     : LMIconButton(
+                        //         icon: LMIcon(
+                        //           type: LMIconType.svg,
+                        //           assetPath: kAssetVideoIcon,
+                        //           color:
+                        //               Theme.of(context).colorScheme.secondary,
+                        //           boxPadding: 0,
+                        //           size: 44,
+                        //         ),
+                        //         onTap: (active) async {
+                        //           onUploading();
+                        //           List<MediaModel>? pickedMediaFiles =
+                        //               await PostMediaPicker.pickVideos(
+                        //                   postMedia.length);
+                        //           if (pickedMediaFiles != null) {
+                        //             setPickedMediaFiles(pickedMediaFiles);
+                        //             onUploadedMedia(true);
+                        //           } else {
+                        //             onUploadedMedia(false);
+                        //           }
+                        //         },
+                        //       ),
                         isDocumentPost
                             ? const SizedBox.shrink()
                             : const SizedBox(width: 8),
@@ -614,10 +619,13 @@ class _NewPostScreenState extends State<NewPostScreen> {
     onUploading();
     try {
       List<MediaModel> mediaFiles = [];
-      final List<XFile> list = await ImagePicker().pickMultiImage();
+      final FilePickerResult? list = await FilePicker.platform.pickFiles(
+        allowMultiple: true,
+        type: FileType.image,
+      );
 
-      if (list.isNotEmpty) {
-        if (postMedia.length + list.length > 10) {
+      if (list != null && list.files.isNotEmpty) {
+        if (postMedia.length + list.files.length > 10) {
           toast(
             'A total of 10 attachments can be added to a post',
             duration: Toast.LENGTH_LONG,
@@ -625,8 +633,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
           onUploadedDocument(false);
           return;
         }
-        for (XFile image in list) {
-          int fileBytes = await image.length();
+        for (PlatformFile image in list.files) {
+          int fileBytes = image.size;
           double fileSize = getFileSizeInDouble(fileBytes);
           if (fileSize > 100) {
             toast(
@@ -636,7 +644,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
             onUploadedDocument(false);
             return;
           } else {
-            final file = File(image.path);
+            final file = File(image.path!);
             final mediaModel = MediaModel(
               mediaFile: file,
               mediaType: MediaType.image,

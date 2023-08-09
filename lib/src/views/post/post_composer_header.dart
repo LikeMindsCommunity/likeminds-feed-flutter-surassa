@@ -35,7 +35,7 @@ class PostComposerHeader extends StatelessWidget {
               text: LMTextView(
                 text: "Cancel",
                 textStyle:
-                    TextStyle(color: Theme.of(context).colorScheme.secondary),
+                    TextStyle(color: Theme.of(context).colorScheme.primary),
               ),
               onTap: onPressedBack == null
                   ? () {
