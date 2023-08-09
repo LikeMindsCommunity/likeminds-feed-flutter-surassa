@@ -462,7 +462,9 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                       return AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           height: iconContainerHeight,
-                          child: const PostSomething());
+                          child: PostSomething(
+                            enabled: right,
+                          ));
                     }),
                 Expanded(
                   child: ValueListenableBuilder(
