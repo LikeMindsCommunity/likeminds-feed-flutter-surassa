@@ -98,7 +98,7 @@ class _LMFeedState extends State<LMFeed> {
       future: locator<LikeMindsService>().initiateUser(
         (InitiateUserRequestBuilder()
               ..userId(userId)
-              ..userName(userName)
+              ..userName(userName))
             .build(),
       ),
       initialData: null,
