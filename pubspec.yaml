@@ -1,6 +1,6 @@
 name: likeminds_feed_ss_fl
 description: A new Flutter package project.
-version: 0.0.1
+version: 1.0.2
 publish_to: none
 homepage: "https://likeminds.community/"
 
@@ -40,7 +40,7 @@ dependencies:
   likeminds_feed_ui_fl:
     path: ../LikeMinds-Flutter-Feed-UI
 
-  likeminds_feed:
+  likeminds_feed: 1.3.2
 
 dev_dependencies:
   flutter_test:
