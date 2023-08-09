@@ -65,7 +65,7 @@ class LikeMindsService implements ILikeMindsService {
 
   int? get getFeedroomId => feedroomId;
 
-  LikeMindsService(LMSDKCallback sdkCallback, String apiKey) {
+  LikeMindsService(LMSDKCallback? sdkCallback, String apiKey) {
     debugPrint("UI Layer: LikeMindsService initialized");
     _mediaService = MediaService(_prodFlag);
     final String key = apiKey.isEmpty
