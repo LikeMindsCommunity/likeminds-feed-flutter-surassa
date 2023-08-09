@@ -18,6 +18,7 @@ import 'package:likeminds_feed_ss_fl/src/widgets/post/post_widget.dart';
 import 'package:likeminds_feed_ss_fl/src/widgets/reply/comment_reply.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class PostDetailScreen extends StatefulWidget {
   final String postId;
@@ -250,6 +251,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool right = checkCommentRights();
     NewPostBloc newPostBloc = BlocProvider.of<NewPostBloc>(context);
     return WillPopScope(
       onWillPop: () {
@@ -410,6 +412,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                             size: 36,
                           ),
                           focusNode: focusNode,
+                          enabled: right,
+                          hintText: right
+                              ? 'Write a comment'
+                              : "You do not have permission to comment.",
                           controller: _commentController,
                           internalPadding: 8,
                           externalPadding: 4,
@@ -420,188 +426,211 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                               right: 12.0,
                               bottom: 16,
                             ),
-                            child: ValueListenableBuilder(
-                              valueListenable: rebuildReplyWidget,
-                              builder: (context, _, __) => isReplying ||
-                                      isEditing
-                                  ? BlocConsumer<AddCommentReplyBloc,
-                                      AddCommentReplyState>(
-                                      bloc: _addCommentReplyBloc,
-                                      listener: (context, state) {},
-                                      buildWhen: (previous, current) {
-                                        if (current is ReplyEditingStarted) {
-                                          return false;
-                                        }
-                                        if (current is EditReplyLoading) {
-                                          return false;
-                                        }
-                                        if (current is CommentEditingStarted) {
-                                          return false;
-                                        }
-                                        if (current is EditCommentLoading) {
-                                          return false;
-                                        }
-                                        return true;
-                                      },
-                                      builder: (context, state) {
-                                        if (state is AddCommentReplyLoading) {
-                                          return const SizedBox(
-                                            height: 15,
-                                            width: 15,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                            ),
-                                          );
-                                        }
-                                        return ValueListenableBuilder(
-                                            valueListenable: rebuildButton,
-                                            builder: (
-                                              context,
-                                              s,
-                                              a,
-                                            ) {
-                                              return LMTextButton(
-                                                text: LMTextView(
-                                                  text: "Post",
-                                                  textStyle: TextStyle(
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .secondary),
-                                                ),
-                                                onTap: () {
-                                                  final commentText =
-                                                      TaggingHelper.encodeString(
-                                                          _commentController!
-                                                              .text,
-                                                          userTags);
-                                                  if (commentText.isEmpty) {
-                                                    toast(
-                                                        "Please write something to post");
-                                                    return;
-                                                  }
+                            child: !right
+                                ? null
+                                : ValueListenableBuilder(
+                                    valueListenable: rebuildReplyWidget,
+                                    builder:
+                                        (context, _, __) =>
+                                            isReplying || isEditing
+                                                ? BlocConsumer<
+                                                    AddCommentReplyBloc,
+                                                    AddCommentReplyState>(
+                                                    bloc: _addCommentReplyBloc,
+                                                    listener:
+                                                        (context, state) {},
+                                                    buildWhen:
+                                                        (previous, current) {
+                                                      if (current
+                                                          is ReplyEditingStarted) {
+                                                        return false;
+                                                      }
+                                                      if (current
+                                                          is EditReplyLoading) {
+                                                        return false;
+                                                      }
+                                                      if (current
+                                                          is CommentEditingStarted) {
+                                                        return false;
+                                                      }
+                                                      if (current
+                                                          is EditCommentLoading) {
+                                                        return false;
+                                                      }
+                                                      return true;
+                                                    },
+                                                    builder: (context, state) {
+                                                      if (state
+                                                          is AddCommentReplyLoading) {
+                                                        return const SizedBox(
+                                                          height: 15,
+                                                          width: 15,
+                                                          child:
+                                                              CircularProgressIndicator(
+                                                            strokeWidth: 2,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return ValueListenableBuilder(
+                                                          valueListenable:
+                                                              rebuildButton,
+                                                          builder: (
+                                                            context,
+                                                            s,
+                                                            a,
+                                                          ) {
+                                                            return LMTextButton(
+                                                              text: LMTextView(
+                                                                text: "Post",
+                                                                textStyle:
+                                                                    TextStyle(
+                                                                  color: right
+                                                                      ? Theme.of(
+                                                                              context)
+                                                                          .colorScheme
+                                                                          .secondary
+                                                                      : Colors
+                                                                          .transparent,
+                                                                  fontSize:
+                                                                      12.5,
+                                                                ),
+                                                              ),
+                                                              onTap: () {
+                                                                final commentText =
+                                                                    TaggingHelper.encodeString(
+                                                                        _commentController!
+                                                                            .text,
+                                                                        userTags);
+                                                                if (commentText
+                                                                    .isEmpty) {
+                                                                  toast(
+                                                                      "Please write something to post");
+                                                                  return;
+                                                                }
 
-                                                  if (isEditing) {
-                                                    if (selectedReplyId !=
-                                                        null) {
-                                                      _addCommentReplyBloc.add(
-                                                        EditReply(
-                                                          editCommentReplyRequest:
-                                                              (EditCommentReplyRequestBuilder()
-                                                                    ..postId(widget
-                                                                        .postId)
-                                                                    ..text(
-                                                                        commentText)
-                                                                    ..commentId(
-                                                                        selectedCommentId!)
-                                                                    ..replyId(
-                                                                        selectedReplyId!))
-                                                                  .build(),
-                                                        ),
-                                                      );
-                                                    } else {
-                                                      _addCommentReplyBloc.add(
-                                                        EditComment(
-                                                          editCommentRequest:
-                                                              (EditCommentRequestBuilder()
-                                                                    ..postId(widget
-                                                                        .postId)
-                                                                    ..text(
-                                                                        commentText)
-                                                                    ..commentId(
-                                                                        selectedCommentId!))
-                                                                  .build(),
-                                                        ),
-                                                      );
-                                                    }
-                                                  } else {
-                                                    _addCommentReplyBloc.add(
-                                                        AddCommentReply(
-                                                            addCommentRequest:
-                                                                (AddCommentReplyRequestBuilder()
-                                                                      ..postId(
-                                                                          widget
-                                                                              .postId)
-                                                                      ..text(
-                                                                          commentText)
-                                                                      ..commentId(
-                                                                          selectedCommentId!))
-                                                                    .build()));
+                                                                if (isEditing) {
+                                                                  if (selectedReplyId !=
+                                                                      null) {
+                                                                    _addCommentReplyBloc
+                                                                        .add(
+                                                                      EditReply(
+                                                                        editCommentReplyRequest: (EditCommentReplyRequestBuilder()
+                                                                              ..postId(widget.postId)
+                                                                              ..text(commentText)
+                                                                              ..commentId(selectedCommentId!)
+                                                                              ..replyId(selectedReplyId!))
+                                                                            .build(),
+                                                                      ),
+                                                                    );
+                                                                  } else {
+                                                                    _addCommentReplyBloc
+                                                                        .add(
+                                                                      EditComment(
+                                                                        editCommentRequest: (EditCommentRequestBuilder()
+                                                                              ..postId(widget.postId)
+                                                                              ..text(commentText)
+                                                                              ..commentId(selectedCommentId!))
+                                                                            .build(),
+                                                                      ),
+                                                                    );
+                                                                  }
+                                                                } else {
+                                                                  _addCommentReplyBloc.add(AddCommentReply(
+                                                                      addCommentRequest: (AddCommentReplyRequestBuilder()
+                                                                            ..postId(widget.postId)
+                                                                            ..text(commentText)
+                                                                            ..commentId(selectedCommentId!))
+                                                                          .build()));
 
-                                                    _commentController?.clear();
-                                                  }
-                                                },
-                                              );
-                                            });
-                                      },
-                                    )
-                                  : BlocConsumer<AddCommentBloc,
-                                      AddCommentState>(
-                                      bloc: _addCommentBloc,
-                                      listener: (context, state) {
-                                        if (state is AddCommentSuccess) {
-                                          addCommentToList(state);
-                                        }
-                                        if (state is AddCommentLoading) {
-                                          deselectCommentToEdit();
-                                        }
-                                      },
-                                      builder: (context, state) {
-                                        if (state is AddCommentLoading) {
-                                          return const SizedBox(
-                                            height: 15,
-                                            width: 15,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                            ),
-                                          );
-                                        }
-                                        return ValueListenableBuilder(
-                                            valueListenable: rebuildButton,
-                                            builder: (context, s, a) {
-                                              return LMTextButton(
-                                                height: 18,
-                                                text: LMTextView(
-                                                  text: "Post",
-                                                  textAlign: TextAlign.center,
-                                                  textStyle: TextStyle(
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .secondary),
-                                                ),
-                                                onTap: () {
-                                                  final commentText =
-                                                      TaggingHelper
-                                                          .encodeString(
-                                                    _commentController!.text,
-                                                    userTags,
-                                                  );
+                                                                  _commentController
+                                                                      ?.clear();
+                                                                }
+                                                              },
+                                                            );
+                                                          });
+                                                    },
+                                                  )
+                                                : BlocConsumer<AddCommentBloc,
+                                                    AddCommentState>(
+                                                    bloc: _addCommentBloc,
+                                                    listener: (context, state) {
+                                                      if (state
+                                                          is AddCommentSuccess) {
+                                                        addCommentToList(state);
+                                                      }
+                                                      if (state
+                                                          is AddCommentLoading) {
+                                                        deselectCommentToEdit();
+                                                      }
+                                                    },
+                                                    builder: (context, state) {
+                                                      if (state
+                                                          is AddCommentLoading) {
+                                                        return const SizedBox(
+                                                          height: 15,
+                                                          width: 15,
+                                                          child:
+                                                              CircularProgressIndicator(
+                                                            strokeWidth: 2,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return ValueListenableBuilder(
+                                                          valueListenable:
+                                                              rebuildButton,
+                                                          builder:
+                                                              (context, s, a) {
+                                                            return LMTextButton(
+                                                              height: 18,
+                                                              text: LMTextView(
+                                                                text: "Post",
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center,
+                                                                textStyle: TextStyle(
+                                                                    fontSize:
+                                                                        12.5,
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .secondary),
+                                                              ),
+                                                              onTap: () {
+                                                                final commentText =
+                                                                    TaggingHelper
+                                                                        .encodeString(
+                                                                  _commentController!
+                                                                      .text,
+                                                                  userTags,
+                                                                );
 
-                                                  if (commentText.isEmpty) {
-                                                    toast(
-                                                        "Please write something to post");
-                                                    return;
-                                                  }
+                                                                if (commentText
+                                                                    .isEmpty) {
+                                                                  toast(
+                                                                      "Please write something to post");
+                                                                  return;
+                                                                }
 
-                                                  _addCommentBloc.add(
-                                                    AddComment(
-                                                      addCommentRequest:
-                                                          (AddCommentRequestBuilder()
-                                                                ..postId(widget
-                                                                    .postId)
-                                                                ..text(
-                                                                    commentText))
-                                                              .build(),
-                                                    ),
-                                                  );
+                                                                _addCommentBloc
+                                                                    .add(
+                                                                  AddComment(
+                                                                    addCommentRequest:
+                                                                        (AddCommentRequestBuilder()
+                                                                              ..postId(widget.postId)
+                                                                              ..text(commentText))
+                                                                            .build(),
+                                                                  ),
+                                                                );
 
-                                                  closeOnScreenKeyboard();
-                                                  _commentController?.clear();
-                                                },
-                                              );
-                                            });
-                                      },
-                                    ),
-                            ),
+                                                                closeOnScreenKeyboard();
+                                                                _commentController
+                                                                    ?.clear();
+                                                              },
+                                                            );
+                                                          });
+                                                    },
+                                                  ),
+                                  ),
                           ),
                         ),
                       ),
@@ -827,11 +856,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                 ),
                                                 subtitleText: LMTextView(
                                                   text:
-                                                      "@${postDetailResponse.users![item.userId]!.name.toLowerCase().split(' ').join()}",
-                                                  textStyle: const TextStyle(
+                                                      "@${postDetailResponse.users![item.userId]!.name.toLowerCase().split(' ').join()} · ${timeago.format(postData!.createdAt)}",
+                                                  textStyle: TextStyle(
                                                     fontSize: 12,
                                                     fontWeight: FontWeight.w400,
-                                                    color: kGreyColor,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onSecondary,
                                                   ),
                                                 ),
                                                 actionsPadding:
@@ -845,9 +876,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                           : item.likesCount == 1
                                                               ? "1 Like"
                                                               : "${item.likesCount} Likes",
-                                                      textStyle:
-                                                          const TextStyle(
-                                                              fontSize: 12),
+                                                      textStyle: TextStyle(
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .onSecondary,
+                                                          fontSize: 12),
                                                     ),
                                                     activeText: LMTextView(
                                                       text: item.likesCount == 0

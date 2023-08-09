@@ -461,33 +461,33 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                   }
                                 },
                               ),
-                        isMediaPost
-                            ? const SizedBox.shrink()
-                            : const SizedBox(width: 8),
-                        isMediaPost
-                            ? const SizedBox.shrink()
-                            : LMIconButton(
-                                icon: LMIcon(
-                                  type: LMIconType.svg,
-                                  assetPath: kAssetVideoIcon,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                  boxPadding: 0,
-                                  size: 44,
-                                ),
-                                onTap: (active) async {
-                                  onUploading();
-                                  List<MediaModel>? pickedMediaFiles =
-                                      await PostMediaPicker.pickVideos(
-                                          postMedia.length);
-                                  if (pickedMediaFiles != null) {
-                                    setPickedMediaFiles(pickedMediaFiles);
-                                    onUploadedMedia(true);
-                                  } else {
-                                    onUploadedMedia(false);
-                                  }
-                                },
-                              ),
+                        // isMediaPost
+                        //     ? const SizedBox.shrink()
+                        //     : const SizedBox(width: 8),
+                        // isMediaPost
+                        //     ? const SizedBox.shrink()
+                        //     : LMIconButton(
+                        //         icon: LMIcon(
+                        //           type: LMIconType.svg,
+                        //           assetPath: kAssetVideoIcon,
+                        //           color:
+                        //               Theme.of(context).colorScheme.secondary,
+                        //           boxPadding: 0,
+                        //           size: 44,
+                        //         ),
+                        //         onTap: (active) async {
+                        //           onUploading();
+                        //           List<MediaModel>? pickedMediaFiles =
+                        //               await PostMediaPicker.pickVideos(
+                        //                   postMedia.length);
+                        //           if (pickedMediaFiles != null) {
+                        //             setPickedMediaFiles(pickedMediaFiles);
+                        //             onUploadedMedia(true);
+                        //           } else {
+                        //             onUploadedMedia(false);
+                        //           }
+                        //         },
+                        //       ),
                         isDocumentPost
                             ? const SizedBox.shrink()
                             : const SizedBox(width: 8),

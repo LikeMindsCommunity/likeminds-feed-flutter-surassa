@@ -220,7 +220,7 @@ class SSPostWidget extends StatelessWidget {
                           ),
                         );
                       }),
-                  const SizedBox(height: 8),
+                  SizedBox(height: post.text.isEmpty ? 0 : 8),
                   const LMPostContent(),
                   postDetails!.attachments != null
                       ? const SizedBox(height: 12)
@@ -322,9 +322,11 @@ class SSPostWidget extends StatelessWidget {
                                   }
                                 }
                               },
-                              icon: const LMIcon(
+                              icon: LMIcon(
                                 type: LMIconType.svg,
                                 assetPath: kAssetLikeIcon,
+                                color:
+                                    Theme.of(context).colorScheme.onSecondary,
                                 boxPadding: 0,
                                 size: 20,
                               ),
@@ -354,9 +356,10 @@ class SSPostWidget extends StatelessWidget {
                             );
                           }
                         },
-                        icon: const LMIcon(
+                        icon: LMIcon(
                           type: LMIconType.svg,
                           assetPath: kAssetCommentIcon,
+                          color: Theme.of(context).colorScheme.onSecondary,
                           boxPadding: 0,
                           size: 20,
                         ),
@@ -367,10 +370,11 @@ class SSPostWidget extends StatelessWidget {
                         onTap: () {
                           SharePost().sharePost(post.id);
                         },
-                        icon: const LMIcon(
+                        icon: LMIcon(
                           type: LMIconType.svg,
                           assetPath: kAssetShareIcon,
                           boxPadding: 0,
+                          color: Theme.of(context).colorScheme.onSecondary,
                           size: 20,
                         ),
                       ),

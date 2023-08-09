@@ -56,6 +56,42 @@
       "languageVersion": "2.14"
     },
     {
+      "name": "build_daemon",
+      "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/build_daemon-4.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
+    },
+    {
+      "name": "build_resolvers",
+      "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/build_resolvers-2.2.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.19"
+    },
+    {
+      "name": "build_runner",
+      "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/build_runner-2.4.6",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
+      "name": "build_runner_core",
+      "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/build_runner_core-7.2.10",
+      "packageUri": "lib/",
+      "languageVersion": "2.19"
+    },
+    {
+      "name": "built_collection",
+      "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/built_collection-5.1.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "built_value",
+      "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/built_value-8.6.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "cached_network_image",
       "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/cached_network_image-3.2.3",
       "packageUri": "lib/",
@@ -108,6 +144,12 @@
       "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/clock-1.1.1",
       "packageUri": "lib/",
       "languageVersion": "2.12"
+    },
+    {
+      "name": "code_builder",
+      "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/code_builder-4.5.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.19"
     },
     {
       "name": "collection",
@@ -284,6 +326,12 @@
       "languageVersion": "2.18"
     },
     {
+      "name": "fixnum",
+      "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/fixnum-1.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.19"
+    },
+    {
       "name": "flick_video_player",
       "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/flick_video_player-0.5.0",
       "packageUri": "lib/",
@@ -386,6 +434,12 @@
       "languageVersion": "3.0"
     },
     {
+      "name": "frontend_server_client",
+      "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/frontend_server_client-3.2.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "get_it",
       "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/get_it-7.6.0",
       "packageUri": "lib/",
@@ -398,6 +452,12 @@
       "languageVersion": "2.19"
     },
     {
+      "name": "graphs",
+      "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/graphs-2.3.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.18"
+    },
+    {
       "name": "html",
       "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/html-0.15.4",
       "packageUri": "lib/",
@@ -408,6 +468,12 @@
       "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/http-0.13.6",
       "packageUri": "lib/",
       "languageVersion": "2.19"
+    },
+    {
+      "name": "http_multi_server",
+      "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/http_multi_server-3.2.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
     },
     {
       "name": "http_parser",
@@ -472,6 +538,12 @@
     {
       "name": "intl",
       "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/intl-0.18.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "io",
+      "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/io-1.0.4",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -680,6 +752,12 @@
       "languageVersion": "2.17"
     },
     {
+      "name": "pool",
+      "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/pool-1.5.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "process",
       "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/process-4.2.4",
       "packageUri": "lib/",
@@ -764,6 +842,18 @@
       "languageVersion": "2.18"
     },
     {
+      "name": "shelf",
+      "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/shelf-1.4.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
+      "name": "shelf_web_socket",
+      "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/shelf_web_socket-1.0.4",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
       "name": "shimmer",
       "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/shimmer-3.0.0",
       "packageUri": "lib/",
@@ -830,6 +920,12 @@
       "languageVersion": "2.14"
     },
     {
+      "name": "stream_transform",
+      "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/stream_transform-2.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
+    },
+    {
       "name": "string_scanner",
       "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/string_scanner-1.2.0",
       "packageUri": "lib/",
@@ -858,6 +954,12 @@
       "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/timeago-3.5.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
+    },
+    {
+      "name": "timing",
+      "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/timing-1.0.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
     },
     {
       "name": "typed_data",
@@ -1028,6 +1130,12 @@
       "languageVersion": "3.0"
     },
     {
+      "name": "web_socket_channel",
+      "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/web_socket_channel-2.4.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.15"
+    },
+    {
       "name": "win32",
       "rootUri": "file:///Users/warmac/.pub-cache/hosted/pub.dev/win32-3.1.4",
       "packageUri": "lib/",
@@ -1058,7 +1166,7 @@
       "languageVersion": "3.0"
     }
   ],
-  "generated": "2023-08-08T15:31:07.362979Z",
+  "generated": "2023-08-09T14:15:09.741198Z",
   "generator": "pub",
   "generatorVersion": "3.0.1"
 }

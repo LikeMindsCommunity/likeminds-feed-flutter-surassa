@@ -200,7 +200,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
         if (textEditingController!.text != convertedPostText) {
           showDialog(
               context: context,
-              builder: (context) => AlertDialog(
+              builder: (dialogContext) => AlertDialog(
                     title: const Text('Discard Changes'),
                     content: const Text(
                         'Are you sure want to discard the current changes?'),
@@ -211,13 +211,13 @@ class _EditPostScreenState extends State<EditPostScreen> {
                           style: TextStyle(fontSize: 14),
                         ),
                         onPressed: () {
-                          Navigator.of(context).pop();
+                          Navigator.of(dialogContext).pop();
                         },
                       ),
                       TextButton(
                         child: const Text('Yes'),
                         onPressed: () {
-                          Navigator.of(context).pop();
+                          Navigator.of(dialogContext).pop();
                           Navigator.of(context).pop();
                         },
                       ),
@@ -274,7 +274,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
             if (textEditingController!.text != convertedPostText) {
               showDialog(
                   context: context,
-                  builder: (context) => AlertDialog(
+                  builder: (dialogContext) => AlertDialog(
                         title: const Text('Discard Post'),
                         content: const Text(
                             'Are you sure want to discard the current post?'),
@@ -282,13 +282,13 @@ class _EditPostScreenState extends State<EditPostScreen> {
                           TextButton(
                             child: const Text('No'),
                             onPressed: () {
-                              Navigator.of(context).pop();
+                              Navigator.of(dialogContext).pop();
                             },
                           ),
                           TextButton(
                             child: const Text('Yes'),
                             onPressed: () {
-                              Navigator.of(context).pop();
+                              Navigator.of(dialogContext).pop();
                               Navigator.of(context).pop();
                             },
                           ),

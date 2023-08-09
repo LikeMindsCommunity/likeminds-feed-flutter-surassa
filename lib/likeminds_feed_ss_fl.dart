@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/icons.dart';
+import 'package:likeminds_feed_ss_fl/src/utils/utils.dart';
 import 'package:likeminds_feed_ss_fl/src/views/universal_feed_page.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 
@@ -26,7 +27,7 @@ class LMFeed extends StatefulWidget {
   final String? userId;
   final String? userName;
   final String apiKey;
-  final LMSDKCallback callback;
+  final LMSDKCallback? callback;
 
   static LMFeed? _instance;
 
@@ -37,7 +38,7 @@ class LMFeed extends StatefulWidget {
   static LMFeed instance({
     String? userId,
     String? userName,
-    required LMSDKCallback callback,
+    LMSDKCallback? callback,
     required String apiKey,
   }) {
     setupLMFeed(callback, apiKey);
@@ -97,7 +98,7 @@ class _LMFeedState extends State<LMFeed> {
       future: locator<LikeMindsService>().initiateUser(
         (InitiateUserRequestBuilder()
               ..userId(userId)
-              ..userName(userName))
+              ..userName(userName)
             .build(),
       ),
       initialData: null,
@@ -107,7 +108,7 @@ class _LMFeedState extends State<LMFeed> {
           if (response.success) {
             user = response.initiateUser?.user;
             UserLocalPreference.instance.storeUserData(user!);
-            // LMNotificationHandler.instance.registerDevice(user!.id);
+            LMNotificationHandler.instance.registerDevice(user!.id);
             return BlocProvider(
               create: (context) => NewPostBloc(),
               child: MaterialApp(
@@ -117,6 +118,7 @@ class _LMFeedState extends State<LMFeed> {
                     seedColor: kPrimaryColor,
                     primary: kPrimaryColor,
                     secondary: const Color.fromARGB(255, 70, 102, 246),
+                    onSecondary: kSecondaryColor700,
                   ),
                 ),
                 title: 'LM Feed',

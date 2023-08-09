@@ -200,6 +200,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
   final ValueNotifier postUploading = ValueNotifier(false);
   ScrollController? _controller;
   final ValueNotifier postSomethingNotifier = ValueNotifier(false);
+  bool showScrollButton = false;
 
   Widget getLoaderThumbnail(MediaModel? media) {
     if (media != null) {
@@ -224,11 +225,52 @@ class _FeedRoomViewState extends State<FeedRoomView> {
     }
   }
 
+  bool checkPostCreationRights() {
+    final MemberStateResponse memberStateResponse =
+        UserLocalPreference.instance.fetchMemberRights();
+    if (memberStateResponse.state == 1) {
+      return true;
+    }
+    final memberRights = UserLocalPreference.instance.fetchMemberRight(9);
+    return memberRights;
+  }
+
   var iconContainerHeight = 90.00;
   @override
   void initState() {
     super.initState();
     _controller = ScrollController()..addListener(_scrollListener);
+    _controller!.addListener(() {
+      _showScrollToTopButton();
+    });
+  }
+
+  void _scrollToTop() {
+    _controller!.animateTo(
+      0,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeOut,
+    );
+  }
+
+  void _showScrollToTopButton() {
+    if (_controller!.offset > 50.0) {
+      _showButton();
+    } else {
+      _hideButton();
+    }
+  }
+
+  void _showButton() {
+    setState(() {
+      showScrollButton = true;
+    });
+  }
+
+  void _hideButton() {
+    setState(() {
+      showScrollButton = false;
+    });
   }
 
   void _scrollListener() {
@@ -472,21 +514,25 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                     color:
                                         Theme.of(context).colorScheme.onPrimary,
                                   ),
-                                  onTap: () {
-                                    if (!postUploading.value) {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => NewPostScreen(),
-                                        ),
-                                      );
-                                    } else {
-                                      toast(
-                                        'A post is already uploading.',
-                                        duration: Toast.LENGTH_LONG,
-                                      );
-                                    }
-                                  },
+                                  onTap: checkPostCreationRights()
+                                      ? () {
+                                          if (!postUploading.value) {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    NewPostScreen(),
+                                              ),
+                                            );
+                                          } else {
+                                            toast(
+                                              'A post is already uploading.',
+                                              duration: Toast.LENGTH_LONG,
+                                            );
+                                          }
+                                        }
+                                      : () => toast(
+                                          "You do not have permission to create a post"),
                                 ),
                               ],
                             ),
@@ -554,39 +600,92 @@ class _FeedRoomViewState extends State<FeedRoomView> {
         ],
       ),
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
-      floatingActionButton: ValueListenableBuilder(
-        valueListenable: rebuildPostWidget,
-        builder: (context, _, __) {
-          return widget.feedRoomPagingController.itemList == null ||
-                  widget.feedRoomPagingController.itemList!.isEmpty
-              ? const SizedBox()
-              : LMTextButton(
-                  height: 48,
-                  width: 142,
-                  borderRadius: 28,
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  text: LMTextView(
-                    text: "Create Post",
-                    textStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimary,
-                      fontWeight: FontWeight.bold,
+      floatingActionButton: Stack(
+        children: [
+          showScrollButton
+              ? Align(
+                  alignment: Alignment.bottomCenter,
+                  child: AnimatedOpacity(
+                    opacity: showScrollButton ? 1 : 0,
+                    duration: const Duration(milliseconds: 500),
+                    child: Container(
+                      height: 30,
+                      width: 30,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: kPrimaryColor,
+                      ),
+                      child: Center(
+                        child: LMIconButton(
+                          onTap: (value) {
+                            _scrollToTop();
+                          },
+                          icon: const LMIcon(
+                            type: LMIconType.icon,
+                            icon: Icons.keyboard_arrow_up,
+                            color: Colors.white,
+                            size: 12,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                  icon: LMIcon(
-                    type: LMIconType.icon,
-                    icon: Icons.add,
-                    color: Theme.of(context).colorScheme.onPrimary,
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NewPostScreen(),
-                      ),
-                    );
-                  },
-                );
-        },
+                )
+              : const SizedBox(),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: ValueListenableBuilder(
+              valueListenable: rebuildPostWidget,
+              builder: (context, _, __) {
+                return widget.feedRoomPagingController.itemList == null ||
+                        widget.feedRoomPagingController.itemList!.isEmpty
+                    ? const SizedBox()
+                    : LMTextButton(
+                        height: 48,
+                        width: 142,
+                        borderRadius: 28,
+                        backgroundColor: checkPostCreationRights()
+                            ? Theme.of(context).colorScheme.primary
+                            : kGrey3Color,
+                        text: LMTextView(
+                          text: "Create Post",
+                          textStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        icon: LMIcon(
+                          type: LMIconType.icon,
+                          icon: Icons.add,
+                          boxSize: 30,
+                          fit: BoxFit.cover,
+                          size: 18,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        ),
+                        onTap: checkPostCreationRights()
+                            ? () {
+                                if (!postUploading.value) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const NewPostScreen(),
+                                    ),
+                                  );
+                                } else {
+                                  toast(
+                                    'A post is already uploading.',
+                                    duration: Toast.LENGTH_LONG,
+                                  );
+                                }
+                              }
+                            : () => toast(
+                                "You do not have permission to create a post"),
+                      );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -7,7 +7,7 @@ class DeepLinkRequest {
   bool isGuest;
   String apiKey;
   int feedRoomId;
-  LMSDKCallback callback;
+  LMSDKCallback? callback;
 
   DeepLinkRequest._({
     required this.isGuest,
@@ -15,7 +15,7 @@ class DeepLinkRequest {
     required this.userUniqueId,
     required this.apiKey,
     required this.link,
-    required this.callback,
+    this.callback,
     required this.feedRoomId,
   });
 
@@ -42,7 +42,7 @@ class DeepLinkRequestBuilder {
   void userUniqueId(String userUniqueId) => _userUniqueId = userUniqueId;
   void isGuest(bool isGuest) => _isGuest = isGuest;
   void apiKey(String apiKey) => _apiKey = apiKey;
-  void callback(LMSDKCallback callback) => _callback = callback;
+  void callback(LMSDKCallback? callback) => _callback = callback;
   void feedRoomId(int feedRoomId) => _feedRoomId = feedRoomId;
 
   DeepLinkRequest build() {
@@ -52,7 +52,7 @@ class DeepLinkRequestBuilder {
       userName: _userName!,
       userUniqueId: _userUniqueId!,
       apiKey: _apiKey!,
-      callback: _callback!,
+      callback: _callback,
       feedRoomId: _feedRoomId!,
     );
   }
