@@ -483,9 +483,11 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                         color: kGrey2Color)),
                                 const SizedBox(height: 28),
                                 LMTextButton(
-                                  height: 48,
-                                  width: 142,
                                   borderRadius: 28,
+                                  height: 44,
+                                  width: 153,
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 12, horizontal: 20),
                                   backgroundColor:
                                       Theme.of(context).colorScheme.primary,
                                   text: LMTextView(
@@ -501,6 +503,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                   icon: LMIcon(
                                     type: LMIconType.icon,
                                     icon: Icons.add,
+                                    size: 18,
                                     color:
                                         Theme.of(context).colorScheme.onPrimary,
                                   ),
@@ -597,8 +600,10 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                   widget.feedRoomPagingController.itemList!.isEmpty
               ? const SizedBox()
               : LMTextButton(
-                  height: 48,
-                  width: 142,
+                  height: 44,
+                  width: 153,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
                   borderRadius: 28,
                   backgroundColor: right
                       ? Theme.of(context).colorScheme.primary
