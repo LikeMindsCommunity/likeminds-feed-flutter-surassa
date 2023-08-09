@@ -58,11 +58,11 @@ class UserLocalPreference {
     MemberStateResponse memberStateResponse = fetchMemberRights();
     final memberRights = memberStateResponse.memberRights;
     if (memberRights == null) {
-      return false;
+      return true;
     } else {
       final right = memberRights.where((element) => element.state == id);
       if (right.isEmpty) {
-        return false;
+        return true;
       } else {
         return right.first.isSelected;
       }

@@ -201,6 +201,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
   ScrollController? _controller;
   final ValueNotifier postSomethingNotifier = ValueNotifier(false);
   bool showScrollButton = false;
+  bool right = true;
 
   Widget getLoaderThumbnail(MediaModel? media) {
     if (media != null) {
@@ -243,6 +244,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
     _controller!.addListener(() {
       _showScrollToTopButton();
     });
+    right = checkPostCreationRights();
   }
 
   void _scrollToTop() {
@@ -514,7 +516,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                     color:
                                         Theme.of(context).colorScheme.onPrimary,
                                   ),
-                                  onTap: checkPostCreationRights()
+                                  onTap: right
                                       ? () {
                                           if (!postUploading.value) {
                                             Navigator.push(
@@ -644,7 +646,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                         height: 48,
                         width: 142,
                         borderRadius: 28,
-                        backgroundColor: checkPostCreationRights()
+                        backgroundColor: right
                             ? Theme.of(context).colorScheme.primary
                             : kGrey3Color,
                         text: LMTextView(
@@ -662,7 +664,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                           size: 18,
                           color: Theme.of(context).colorScheme.onPrimary,
                         ),
-                        onTap: checkPostCreationRights()
+                        onTap: right
                             ? () {
                                 if (!postUploading.value) {
                                   Navigator.push(

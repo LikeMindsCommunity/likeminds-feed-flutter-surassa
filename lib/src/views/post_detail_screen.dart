@@ -44,6 +44,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   ValueNotifier<bool> rebuildButton = ValueNotifier(false);
   ValueNotifier<bool> rebuildPostWidget = ValueNotifier(false);
   ValueNotifier<bool> rebuildReplyWidget = ValueNotifier(false);
+  bool right = true;
   final PagingController<int, Reply> _pagingController =
       PagingController(firstPageKey: 1);
   Post? postData;
@@ -76,6 +77,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   void initState() {
     super.initState();
     updatePostDetails(context);
+    right = checkCommentRights();
     _commentController = TextEditingController();
     if (_commentController != null) {
       _commentController!.addListener(
@@ -251,7 +253,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bool right = checkCommentRights();
     NewPostBloc newPostBloc = BlocProvider.of<NewPostBloc>(context);
     return WillPopScope(
       onWillPop: () {
@@ -420,8 +421,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                   size: 36,
                                 ),
                                 focusNode: focusNode,
-                                enabled: right,
-                                hintText: right
+                                enabled: right!,
+                                hintText: right!
                                     ? 'Write a comment'
                                     : "You do not have permission to comment.",
                                 controller: _commentController,
@@ -434,7 +435,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                     right: 12.0,
                                     bottom: 16,
                                   ),
-                                  child: !right
+                                  child: !right!
                                       ? null
                                       : ValueListenableBuilder(
                                           valueListenable: rebuildReplyWidget,
@@ -494,7 +495,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                   text: "Post",
                                                                   textStyle:
                                                                       TextStyle(
-                                                                    color: right
+                                                                    color: right!
                                                                         ? Theme.of(context)
                                                                             .colorScheme
                                                                             .secondary
@@ -869,7 +870,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                       ),
                                                       subtitleText: LMTextView(
                                                         text:
-                                                            "@${postDetailResponse.users![item.userId]!.name.toLowerCase().split(' ').join()} · ${timeago.format(postData!.createdAt)}",
+                                                            "@${postDetailResponse.users![item.userId]!.name.toLowerCase().split(' ').join()} · ${timeago.format(item.createdAt)}",
                                                         textStyle: TextStyle(
                                                           fontSize: 12,
                                                           fontWeight:
