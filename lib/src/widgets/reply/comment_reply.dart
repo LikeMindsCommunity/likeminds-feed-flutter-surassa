@@ -252,9 +252,11 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
               if (state is CommentRepliesLoaded) {
                 replies = state.commentDetails.postReplies!.replies;
                 users = state.commentDetails.users!;
+                users.putIfAbsent(user.userUniqueId, () => user);
               } else if (state is PaginatedCommentRepliesLoading) {
                 replies = state.prevCommentDetails.postReplies!.replies;
                 users = state.prevCommentDetails.users!;
+                users.putIfAbsent(user.userUniqueId, () => user);
               }
 
               repliesW = mapRepliesToWidget(replies, users);

@@ -33,19 +33,19 @@ class UserLocalPreference {
   }
 
   Future<void> storeMemberState(bool isCm) async {
-    _sharedPreferences!.setBool(_memberStateKey, isCm);
+    await _sharedPreferences!.setBool(_memberStateKey, isCm);
   }
 
   bool fetchMemberState() {
     return _sharedPreferences!.getBool(_memberStateKey)!;
   }
 
-  void storeMemberRights(MemberStateResponse response) {
+  void storeMemberRights(MemberStateResponse response) async {
     final entity = response.toEntity();
     Map<String, dynamic> memberRights = entity.toJson();
     String memberRightsString = jsonEncode(memberRights);
-    storeMemberState(response.state == 1);
-    _sharedPreferences!.setString('memberRights', memberRightsString);
+    await storeMemberState(response.state == 1);
+    await _sharedPreferences!.setString('memberRights', memberRightsString);
   }
 
   MemberStateResponse fetchMemberRights() {
