@@ -372,9 +372,11 @@ class DeletedLikesTile extends StatelessWidget {
         ),
         kHorizontalPaddingSmall,
         kHorizontalPaddingMedium,
-        const LMTextView(
+        LMTextView(
           text: 'Deleted User',
-          textStyle: TextStyle(fontSize: kFontMedium, color: kGrey3Color),
+          textStyle: TextStyle(
+              fontSize: kFontMedium,
+              color: Theme.of(context).colorScheme.onSecondary),
         )
       ],
     );

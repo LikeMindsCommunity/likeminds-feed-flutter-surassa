@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/icons.dart';
+import 'package:likeminds_feed_ss_fl/src/utils/utils.dart';
 import 'package:likeminds_feed_ss_fl/src/views/universal_feed_page.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 
@@ -26,7 +27,8 @@ class LMFeed extends StatefulWidget {
   final String? userId;
   final String? userName;
   final String apiKey;
-  final LMSDKCallback callback;
+  final Function? openChatCallback;
+  final LMSDKCallback? callback;
 
   static LMFeed? _instance;
 
@@ -37,7 +39,8 @@ class LMFeed extends StatefulWidget {
   static LMFeed instance({
     String? userId,
     String? userName,
-    required LMSDKCallback callback,
+    LMSDKCallback? callback,
+    Function? openChatCallback,
     required String apiKey,
   }) {
     setupLMFeed(callback, apiKey);
@@ -46,16 +49,18 @@ class LMFeed extends StatefulWidget {
       userName: userName,
       callback: callback,
       apiKey: apiKey,
+      openChatCallback: openChatCallback,
     );
   }
 
-  const LMFeed._({
-    Key? key,
-    this.userId,
-    this.userName,
-    required this.callback,
-    required this.apiKey,
-  }) : super(key: key);
+  const LMFeed._(
+      {Key? key,
+      this.userId,
+      this.userName,
+      required this.callback,
+      required this.apiKey,
+      this.openChatCallback})
+      : super(key: key);
 
   @override
   _LMFeedState createState() => _LMFeedState();
@@ -107,7 +112,7 @@ class _LMFeedState extends State<LMFeed> {
           if (response.success) {
             user = response.initiateUser?.user;
             UserLocalPreference.instance.storeUserData(user!);
-            // LMNotificationHandler.instance.registerDevice(user!.id);
+            LMNotificationHandler.instance.registerDevice(user!.id);
             return BlocProvider(
               create: (context) => NewPostBloc(),
               child: MaterialApp(
@@ -115,8 +120,9 @@ class _LMFeedState extends State<LMFeed> {
                 theme: ThemeData.from(
                   colorScheme: ColorScheme.fromSeed(
                     seedColor: kPrimaryColor,
-                    primary: const Color.fromARGB(255, 70, 102, 246),
-                    secondary: const Color.fromARGB(255, 59, 130, 246),
+                    primary: kPrimaryColor,
+                    secondary: const Color.fromARGB(255, 70, 102, 246),
+                    onSecondary: kSecondaryColor700,
                   ),
                 ),
                 title: 'LM Feed',
@@ -220,7 +226,9 @@ class _LMFeedState extends State<LMFeed> {
                       final MemberStateResponse response = snapshot.data;
                       UserLocalPreference.instance.storeMemberRights(response);
 
-                      return const UniversalFeedScreen();
+                      return UniversalFeedScreen(
+                        openChatCallback: widget.openChatCallback,
+                      );
                     }
 
                     return Container(

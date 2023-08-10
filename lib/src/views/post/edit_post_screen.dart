@@ -15,6 +15,7 @@ import 'package:likeminds_feed_ss_fl/src/utils/tagging/tagging_textfield_ta.dart
 import 'package:likeminds_feed_ss_fl/src/views/post/post_composer_header.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class EditPostScreen extends StatefulWidget {
   static const String route = '/edit_post_screen';
@@ -81,6 +82,10 @@ class _EditPostScreenState extends State<EditPostScreen> {
           size: 20,
         ),
         documentUrl: attachments![index].attachmentMeta.url,
+        onTap: () {
+          Uri fileUrl = Uri.parse(attachments![index].attachmentMeta.url!);
+          launchUrl(fileUrl, mode: LaunchMode.platformDefault);
+        },
       ),
     );
   }
@@ -195,7 +200,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
         if (textEditingController!.text != convertedPostText) {
           showDialog(
               context: context,
-              builder: (context) => AlertDialog(
+              builder: (dialogContext) => AlertDialog(
                     title: const Text('Discard Changes'),
                     content: const Text(
                         'Are you sure want to discard the current changes?'),
@@ -206,13 +211,13 @@ class _EditPostScreenState extends State<EditPostScreen> {
                           style: TextStyle(fontSize: 14),
                         ),
                         onPressed: () {
-                          Navigator.of(context).pop();
+                          Navigator.of(dialogContext).pop();
                         },
                       ),
                       TextButton(
                         child: const Text('Yes'),
                         onPressed: () {
-                          Navigator.of(context).pop();
+                          Navigator.of(dialogContext).pop();
                           Navigator.of(context).pop();
                         },
                       ),
@@ -269,7 +274,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
             if (textEditingController!.text != convertedPostText) {
               showDialog(
                   context: context,
-                  builder: (context) => AlertDialog(
+                  builder: (dialogContext) => AlertDialog(
                         title: const Text('Discard Post'),
                         content: const Text(
                             'Are you sure want to discard the current post?'),
@@ -277,13 +282,13 @@ class _EditPostScreenState extends State<EditPostScreen> {
                           TextButton(
                             child: const Text('No'),
                             onPressed: () {
-                              Navigator.of(context).pop();
+                              Navigator.of(dialogContext).pop();
                             },
                           ),
                           TextButton(
                             child: const Text('Yes'),
                             onPressed: () {
-                              Navigator.of(context).pop();
+                              Navigator.of(dialogContext).pop();
                               Navigator.of(context).pop();
                             },
                           ),
