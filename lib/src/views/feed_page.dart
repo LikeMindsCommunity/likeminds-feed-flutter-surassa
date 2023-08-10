@@ -20,6 +20,8 @@ class FeedScreen extends StatefulWidget {
 }
 
 class _FeedScreenState extends State<FeedScreen> {
+  bool showScrollButton = true;
+  ScrollController scrollController = ScrollController();
   late final UniversalFeedBloc _feedBloc;
   ValueNotifier<bool> rebuildPostWidget = ValueNotifier(false);
   final ValueNotifier postUploading = ValueNotifier(false);
@@ -28,17 +30,50 @@ class _FeedScreenState extends State<FeedScreen> {
     firstPageKey: 1,
   );
 
+  void _scrollToTop() {
+    scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeOut,
+    );
+  }
+
   @override
   void initState() {
     super.initState();
     // Bloc.observer = SimpleBlocObserver();
     _feedBloc = UniversalFeedBloc();
     _feedBloc.add(const GetUniversalFeed(offset: 1, forLoadMore: false));
+    scrollController.addListener(() {
+      _showScrollToBottomButton();
+    });
+    _addPaginationListener();
+  }
+
+  void _showScrollToBottomButton() {
+    if (scrollController.offset > 10.0) {
+      _showButton();
+    } else {
+      _hideButton();
+    }
+  }
+
+  void _showButton() {
+    setState(() {
+      showScrollButton = true;
+    });
+  }
+
+  void _hideButton() {
+    setState(() {
+      showScrollButton = false;
+    });
   }
 
   @override
   void dispose() {
     _feedBloc.close();
+    scrollController.dispose();
     _pagingController.dispose();
     super.dispose();
   }
@@ -76,7 +111,6 @@ class _FeedScreenState extends State<FeedScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _addPaginationListener();
     return Scaffold(
       backgroundColor: kWhiteColor.withOpacity(0.95),
       appBar: AppBar(
@@ -115,6 +149,7 @@ class _FeedScreenState extends State<FeedScreen> {
               GetFeedResponse feedResponse = state.feed;
               return PagedListView<int, Post>(
                 pagingController: _pagingController,
+                scrollController: scrollController,
                 builderDelegate: PagedChildBuilderDelegate<Post>(
                   noItemsFoundIndicatorBuilder: (context) => Center(
                     child: Column(
@@ -232,37 +267,67 @@ class _FeedScreenState extends State<FeedScreen> {
         ),
       ),
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
-      // floatingActionButton: ValueListenableBuilder(
-      //   valueListenable: rebuildPostWidget,
-      //   builder: (BuildContext context, dynamic value, Widget? child) {
-      //     return  Container();
-      //   },
-      // ),,
-      floatingActionButton: LMTextButton(
-        height: 48,
-        width: 142,
-        borderRadius: 28,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        text: LMTextView(
-          text: "Create Post",
-          textStyle: TextStyle(
-            color: Theme.of(context).colorScheme.onPrimary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        icon: LMIcon(
-          type: LMIconType.icon,
-          icon: Icons.add,
-          color: Theme.of(context).colorScheme.onPrimary,
-        ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => NewPostScreen(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: Wrap(
+        direction: Axis.horizontal,
+        children: [
+          Container(
+            height: 25,
+            margin: const EdgeInsets.only(bottom: 12),
+            width: 25,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: kPrimaryColor,
+              boxShadow: [
+                BoxShadow(
+                  offset: const Offset(0, 4),
+                  blurRadius: 25,
+                  color: Colors.black.withOpacity(0.3),
+                )
+              ],
             ),
-          );
-        },
+            child: Center(
+              child: LMIconButton(
+                onTap: (value) {
+                  _scrollToTop();
+                },
+                icon: const LMIcon(
+                  type: LMIconType.icon,
+                  icon: Icons.keyboard_arrow_up,
+                  color: Colors.white,
+                  size: 14,
+                ),
+              ),
+            ),
+          ),
+          LMTextButton(
+            height: 48,
+            width: 142,
+            borderRadius: 28,
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            text: LMTextView(
+              text: "Create Post",
+              textStyle: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            icon: LMIcon(
+              type: LMIconType.icon,
+              icon: Icons.add,
+              size: 12,
+              color: Theme.of(context).colorScheme.onPrimary,
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NewPostScreen(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

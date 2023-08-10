@@ -1,6 +1,6 @@
 name: likeminds_feed_ss_fl
 description: A new Flutter package project.
-version: 0.0.1
+version: 1.0.2
 publish_to: none
 homepage: "https://likeminds.community/"
 
@@ -24,15 +24,15 @@ dependencies:
   overlay_support:
   lazy_load_scrollview:
   infinite_scroll_pagination:
-  device_info_plus:
+  device_info_plus: 
   permission_handler:
   image_picker:
   file_picker:
-  video_player: 
+  video_player:
   open_filex:
   timeago:
-  collection: 
-  flick_video_player: 
+  collection:
+  flick_video_player:
 
   flutter_typeahead_mm:
     path: lib/packages/flutter_typeahead-4.3.7
@@ -40,21 +40,21 @@ dependencies:
   likeminds_feed_ui_fl:
     path: ../LikeMinds-Flutter-Feed-UI
 
-  likeminds_feed:
+  likeminds_feed: 1.3.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+  build_runner: ^2.4.6
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # To add assets to your package, add an assets section, like this:
-    assets:
+  assets:
     - packages/likeminds_feed_ss_fl/assets/icons/document.svg
     - packages/likeminds_feed_ss_fl/assets/icons/gallery.svg
     - packages/likeminds_feed_ss_fl/assets/icons/poll.svg

@@ -4,7 +4,7 @@ import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 
 final GetIt locator = GetIt.I;
 
-void _setupLocator(LMSDKCallback callback, String apiKey) {
+void _setupLocator(LMSDKCallback? callback, String apiKey) {
   locator.allowReassignment = true;
   if (!locator.isRegistered<LikeMindsService>()) {
     locator.registerSingleton(LikeMindsService(callback, apiKey));
@@ -14,6 +14,6 @@ void _setupLocator(LMSDKCallback callback, String apiKey) {
   // }
 }
 
-void setupLMFeed(LMSDKCallback callback, String apiKey) {
+void setupLMFeed(LMSDKCallback? callback, String apiKey) {
   _setupLocator(callback, apiKey);
 }

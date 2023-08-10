@@ -81,6 +81,7 @@ class SSPostWidget extends StatelessWidget {
             }
           },
           child: GestureDetector(
+            behavior: HitTestBehavior.deferToChild,
             onTap: () {
               // Navigate to LMPostPage using material route
               if (isFeed) {
@@ -219,7 +220,7 @@ class SSPostWidget extends StatelessWidget {
                           ),
                         );
                       }),
-                  const SizedBox(height: 8),
+                  SizedBox(height: post.text.isEmpty ? 0 : 8),
                   const LMPostContent(),
                   postDetails!.attachments != null
                       ? const SizedBox(height: 12)
@@ -321,17 +322,19 @@ class SSPostWidget extends StatelessWidget {
                                   }
                                 }
                               },
-                              icon: const LMIcon(
+                              icon: LMIcon(
                                 type: LMIconType.svg,
                                 assetPath: kAssetLikeIcon,
-                                boxPadding: 0,
+                                color:
+                                    Theme.of(context).colorScheme.onSecondary,
                                 size: 20,
+                                boxPadding: 6,
                               ),
                               activeIcon: const LMIcon(
                                 type: LMIconType.svg,
                                 assetPath: kAssetLikeFilledIcon,
-                                boxPadding: 0,
                                 size: 20,
+                                boxPadding: 6,
                               ),
                               isActive: isLiked!,
                             );
@@ -353,11 +356,12 @@ class SSPostWidget extends StatelessWidget {
                             );
                           }
                         },
-                        icon: const LMIcon(
+                        icon: LMIcon(
                           type: LMIconType.svg,
                           assetPath: kAssetCommentIcon,
-                          boxPadding: 0,
+                          color: Theme.of(context).colorScheme.onSecondary,
                           size: 20,
+                          boxPadding: 6,
                         ),
                       ),
                       LMTextButton(
@@ -366,11 +370,12 @@ class SSPostWidget extends StatelessWidget {
                         onTap: () {
                           SharePost().sharePost(post.id);
                         },
-                        icon: const LMIcon(
+                        icon: LMIcon(
                           type: LMIconType.svg,
                           assetPath: kAssetShareIcon,
-                          boxPadding: 0,
+                          color: Theme.of(context).colorScheme.onSecondary,
                           size: 20,
+                          boxPadding: 6,
                         ),
                       ),
                     ],
