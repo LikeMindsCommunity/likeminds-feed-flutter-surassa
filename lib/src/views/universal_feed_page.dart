@@ -21,7 +21,7 @@ import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 class UniversalFeedScreen extends StatefulWidget {
-  final Function? openChatCallback;
+  final Function(BuildContext context)? openChatCallback;
   const UniversalFeedScreen({
     this.openChatCallback,
     super.key,
@@ -141,7 +141,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
             LMIconButton(
               containerSize: 42,
               onTap: (active) {
-                widget.openChatCallback!();
+                widget.openChatCallback!(context);
               },
               icon: const LMIcon(
                 type: LMIconType.svg,

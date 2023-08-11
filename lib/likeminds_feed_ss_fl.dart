@@ -27,7 +27,7 @@ class LMFeed extends StatefulWidget {
   final String? userId;
   final String? userName;
   final String apiKey;
-  final Function? openChatCallback;
+  final Function(BuildContext context)? openChatCallback;
   final LMSDKCallback? callback;
 
   static LMFeed? _instance;
@@ -40,7 +40,7 @@ class LMFeed extends StatefulWidget {
     String? userId,
     String? userName,
     LMSDKCallback? callback,
-    Function? openChatCallback,
+    Function(BuildContext context)? openChatCallback,
     required String apiKey,
   }) {
     setupLMFeed(callback, apiKey);
