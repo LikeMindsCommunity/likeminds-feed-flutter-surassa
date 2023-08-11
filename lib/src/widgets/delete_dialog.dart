@@ -177,8 +177,9 @@ Dialog deleteConfirmationDialog(
                                         rebuildReasonBox.value =
                                             !rebuildReasonBox.value;
                                       } else {
-                                        toast(response.errorMessage ??
-                                            'An error occured');
+                                        // TODO: Add your own toast
+                                        // toast(response.errorMessage ??
+                                        //     'An error occured');
                                       }
                                       boolVarLoading = false;
                                       rebuildReasonBox.value =
@@ -243,7 +244,8 @@ Dialog deleteConfirmationDialog(
                 onPressed: () {
                   if (user.userUniqueId != userId && isCm) {
                     if (reasonForDeletion == null) {
-                      toast('Please select a reason for deletion');
+                      // TODO: Add your own toast
+                      // toast('Please select a reason for deletion');
                       return;
                     }
                   }

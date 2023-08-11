@@ -260,10 +260,11 @@ class _NewPostScreenState extends State<NewPostScreen> {
                       );
                       Navigator.pop(context);
                     } else {
-                      toast(
-                        "Can't create a post without text or attachments",
-                        duration: Toast.LENGTH_LONG,
-                      );
+                      // TODO: Add your own toast
+                      // toast(
+                      //   "Can't create a post without text or attachments",
+                      //   duration: Toast.LENGTH_LONG,
+                      // );
                     }
                   },
                 ),
@@ -562,10 +563,11 @@ class _NewPostScreenState extends State<NewPostScreen> {
           } else if (permissionStatus == PermissionStatus.denied) {
             permissionStatus = await Permission.photos.request();
             if (permissionStatus == PermissionStatus.permanentlyDenied) {
-              toast(
-                'Permissions denied, change app settings',
-                duration: Toast.LENGTH_LONG,
-              );
+              // TODO: Add your own toast
+              // toast(
+              //   'Permissions denied, change app settings',
+              //   duration: Toast.LENGTH_LONG,
+              // );
               return false;
             } else if (permissionStatus == PermissionStatus.granted) {
               return true;
@@ -580,10 +582,11 @@ class _NewPostScreenState extends State<NewPostScreen> {
           } else if (permissionStatus == PermissionStatus.denied) {
             permissionStatus = await Permission.videos.request();
             if (permissionStatus == PermissionStatus.permanentlyDenied) {
-              toast(
-                'Permissions denied, change app settings',
-                duration: Toast.LENGTH_LONG,
-              );
+              // TODO: Add your own toast
+              // toast(
+              //   'Permissions denied, change app settings',
+              //   duration: Toast.LENGTH_LONG,
+              // );
               return false;
             } else if (permissionStatus == PermissionStatus.granted) {
               return true;
@@ -603,10 +606,11 @@ class _NewPostScreenState extends State<NewPostScreen> {
           } else if (permissionStatus == PermissionStatus.denied) {
             return false;
           } else if (permissionStatus == PermissionStatus.permanentlyDenied) {
-            toast(
-              'Permissions denied, change app settings',
-              duration: Toast.LENGTH_LONG,
-            );
+            // TODO: Add your own toast
+            // toast(
+            //   'Permissions denied, change app settings',
+            //   duration: Toast.LENGTH_LONG,
+            // );
             return false;
           }
         }
@@ -626,10 +630,11 @@ class _NewPostScreenState extends State<NewPostScreen> {
 
       if (list != null && list.files.isNotEmpty) {
         if (postMedia.length + list.files.length > 10) {
-          toast(
-            'A total of 10 attachments can be added to a post',
-            duration: Toast.LENGTH_LONG,
-          );
+          // TODO: Add your own toast
+          // toast(
+          //   'A total of 10 attachments can be added to a post',
+          //   duration: Toast.LENGTH_LONG,
+          // );
           onUploadedDocument(false);
           return;
         }
@@ -637,10 +642,11 @@ class _NewPostScreenState extends State<NewPostScreen> {
           int fileBytes = image.size;
           double fileSize = getFileSizeInDouble(fileBytes);
           if (fileSize > 100) {
-            toast(
-              'File size should be smaller than 100MB',
-              duration: Toast.LENGTH_LONG,
-            );
+            // TODO: Add your own toast
+            // toast(
+            //   'File size should be smaller than 100MB',
+            //   duration: Toast.LENGTH_LONG,
+            // );
             onUploadedDocument(false);
             return;
           } else {
@@ -658,10 +664,11 @@ class _NewPostScreenState extends State<NewPostScreen> {
         onUploadedDocument(false);
       }
     } catch (e) {
-      toast(
-        'An error occurred',
-        duration: Toast.LENGTH_LONG,
-      );
+      // TODO: Add your own toast
+      // toast(
+      //   'An error occurred',
+      //   duration: Toast.LENGTH_LONG,
+      // );
       onUploadedDocument(false);
       print(e.toString());
     }

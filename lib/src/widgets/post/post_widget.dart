@@ -301,11 +301,12 @@ class SSPostWidget extends StatelessWidget {
                                               ..postId(postDetails!.id))
                                             .build());
                                 if (!response.success) {
-                                  toast(
-                                    response.errorMessage ??
-                                        "There was an error liking the post",
-                                    duration: Toast.LENGTH_LONG,
-                                  );
+                                  // TODO: Add your own toast
+                                  // toast(
+                                  //   response.errorMessage ??
+                                  //       "There was an error liking the post",
+                                  //   duration: Toast.LENGTH_LONG,
+                                  // );
 
                                   if (isLiked!) {
                                     postLikes--;

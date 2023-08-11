@@ -80,27 +80,30 @@ class AddCommentReplyBloc
           );
 
           if (response.success) {
-            toast(
-              'Comment Deleted',
-              duration: Toast.LENGTH_LONG,
-            );
+            // TODO: Add your own toast
+            // toast(
+            //   'Comment Deleted',
+            //   duration: Toast.LENGTH_LONG,
+            // );
             emit(
               CommentDeleted(
                 commentId: event.deleteCommentRequest.commentId,
               ),
             );
           } else {
-            toast(
-              response.errorMessage ?? '',
-              duration: Toast.LENGTH_LONG,
-            );
+            // TODO: Add your own toast
+            // toast(
+            //   response.errorMessage ?? '',
+            //   duration: Toast.LENGTH_LONG,
+            // );
             emit(CommentDeleteError());
           }
         } catch (err) {
-          toast(
-            'An error occcurred while deleting comment',
-            duration: Toast.LENGTH_LONG,
-          );
+          // TODO: Add your own toast
+          // toast(
+          //   'An error occcurred while deleting comment',
+          //   duration: Toast.LENGTH_LONG,
+          // );
           emit(CommentDeleteError());
         }
       },
@@ -114,27 +117,30 @@ class AddCommentReplyBloc
           );
 
           if (response.success) {
-            toast(
-              'Comment Deleted',
-              duration: Toast.LENGTH_LONG,
-            );
+            // TODO: Add your own toast
+            // toast(
+            //   'Comment Deleted',
+            //   duration: Toast.LENGTH_LONG,
+            // );
             emit(
               CommentReplyDeleted(
                 replyId: event.deleteCommentReplyRequest.commentId,
               ),
             );
           } else {
-            toast(
-              response.errorMessage ?? '',
-              duration: Toast.LENGTH_LONG,
-            );
+            // TODO: Add your own toast
+            // toast(
+            //   response.errorMessage ?? '',
+            //   duration: Toast.LENGTH_LONG,
+            // );
             emit(CommentDeleteError());
           }
         } catch (err) {
-          toast(
-            'An error occcurred while deleting reply',
-            duration: Toast.LENGTH_LONG,
-          );
+          // TODO: Add your own toast
+          // toast(
+          //   'An error occcurred while deleting reply',
+          //   duration: Toast.LENGTH_LONG,
+          // );
           emit(CommentDeleteError());
         }
       },

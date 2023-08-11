@@ -178,10 +178,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       postData = postDetails.post;
       rebuildPostWidget.value = !rebuildPostWidget.value;
     } else {
-      toast(
-        postDetails.errorMessage ?? 'An error occured',
-        duration: Toast.LENGTH_LONG,
-      );
+      // TODO: Add your own toasts
+      // toast(
+      //   postDetails.errorMessage ?? 'An error occured',
+      //   duration: Toast.LENGTH_LONG,
+      // );
     }
   }
 
@@ -520,8 +521,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                           userTags);
                                                                       if (commentText
                                                                           .isEmpty) {
-                                                                        toast(
-                                                                            "Please write something to post");
+                                                                        // TODO: Add your own toast
+                                                                        // toast(
+                                                                        //     "Please write something to post");
                                                                         return;
                                                                       }
 
@@ -630,8 +632,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
                                                                       if (commentText
                                                                           .isEmpty) {
-                                                                        toast(
-                                                                            "Please write something to post");
+                                                                        // TODO: Add your own toast
+                                                                        // toast(
+                                                                        //     "Please write something to post");
                                                                         return;
                                                                       }
 

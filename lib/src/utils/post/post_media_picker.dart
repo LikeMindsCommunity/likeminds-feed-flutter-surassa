@@ -26,10 +26,11 @@ class PostMediaPicker {
           } else if (permissionStatus == PermissionStatus.denied) {
             permissionStatus = await Permission.photos.request();
             if (permissionStatus == PermissionStatus.permanentlyDenied) {
-              toast(
-                'Permissions denied, change app settings',
-                duration: Toast.LENGTH_LONG,
-              );
+              // TODO: Add your own toast
+              // toast(
+              //   'Permissions denied, change app settings',
+              //   duration: Toast.LENGTH_LONG,
+              // );
               return false;
             } else if (permissionStatus == PermissionStatus.granted) {
               return true;
@@ -44,10 +45,11 @@ class PostMediaPicker {
           } else if (permissionStatus == PermissionStatus.denied) {
             permissionStatus = await Permission.videos.request();
             if (permissionStatus == PermissionStatus.permanentlyDenied) {
-              toast(
-                'Permissions denied, change app settings',
-                duration: Toast.LENGTH_LONG,
-              );
+              // TODO: Add your own toast
+              // toast(
+              //   'Permissions denied, change app settings',
+              //   duration: Toast.LENGTH_LONG,
+              // );
               return false;
             } else if (permissionStatus == PermissionStatus.granted) {
               return true;
@@ -67,10 +69,11 @@ class PostMediaPicker {
           } else if (permissionStatus == PermissionStatus.denied) {
             return false;
           } else if (permissionStatus == PermissionStatus.permanentlyDenied) {
-            toast(
-              'Permissions denied, change app settings',
-              duration: Toast.LENGTH_LONG,
-            );
+            // TODO: Add your own toast
+            // toast(
+            //   'Permissions denied, change app settings',
+            //   duration: Toast.LENGTH_LONG,
+            // );
             return false;
           }
         }
@@ -90,20 +93,22 @@ class PostMediaPicker {
 
       if (pickedFile != null) {
         if (currentMediaLength + 1 > 10) {
-          toast(
-            'A total of 10 attachments can be added to a post',
-            duration: Toast.LENGTH_LONG,
-          );
+          // TODO: Add your own toast
+          // toast(
+          //   'A total of 10 attachments can be added to a post',
+          //   duration: Toast.LENGTH_LONG,
+          // );
           return null;
         } else {
           List<MediaModel> videoFiles = [];
           int fileBytes = await pickedFile!.length();
           double fileSize = getFileSizeInDouble(fileBytes);
           if (fileSize > 100) {
-            toast(
-              'File size should be smaller than 100MB',
-              duration: Toast.LENGTH_LONG,
-            );
+            // TODO: Add your own toast
+            // toast(
+            //   'File size should be smaller than 100MB',
+            //   duration: Toast.LENGTH_LONG,
+            // );
           } else {
             File video = File(pickedFile.path);
             VideoPlayerController controller = VideoPlayerController.file(
@@ -130,10 +135,11 @@ class PostMediaPicker {
         return null;
       }
     } catch (e) {
-      toast(
-        'An error occurred',
-        duration: Toast.LENGTH_LONG,
-      );
+      // TODO: Add your own toast
+      // toast(
+      //   'An error occurred',
+      //   duration: Toast.LENGTH_LONG,
+      // );
       debugPrint(e.toString());
       return null;
     }
@@ -151,19 +157,21 @@ class PostMediaPicker {
       );
       if (pickedFiles != null) {
         if (currentMediaLength + pickedFiles.files.length > 10) {
-          toast(
-            'A total of 10 attachments can be added to a post',
-            duration: Toast.LENGTH_LONG,
-          );
+          // TODO: Add your own toast
+          // toast(
+          //   'A total of 10 attachments can be added to a post',
+          //   duration: Toast.LENGTH_LONG,
+          // );
           return null;
         }
         List<MediaModel> attachedFiles = [];
         for (var pickedFile in pickedFiles.files) {
           if (getFileSizeInDouble(pickedFile.size) > 100) {
-            toast(
-              'File size should be smaller than 100MB',
-              duration: Toast.LENGTH_LONG,
-            );
+            // TODO: Add your own toast
+            // toast(
+            //   'File size should be smaller than 100MB',
+            //   duration: Toast.LENGTH_LONG,
+            // );
           } else {
             MediaModel videoFile = MediaModel(
                 mediaType: MediaType.document,
@@ -178,10 +186,11 @@ class PostMediaPicker {
         return null;
       }
     } catch (e) {
-      toast(
-        'An error occurred',
-        duration: Toast.LENGTH_LONG,
-      );
+      // TODO: Add your own toast
+      // toast(
+      //   'An error occurred',
+      //   duration: Toast.LENGTH_LONG,
+      // );
       return null;
     }
   }

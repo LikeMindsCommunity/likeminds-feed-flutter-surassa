@@ -20,7 +20,9 @@ class PostSomething extends StatelessWidget {
               Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => const NewPostScreen()));
             }
-          : () => toast("You do not have permission to create a post"),
+          : () {},
+      // TODO: Add your own toast
+      // => toast("You do not have permission to create a post"),
       child: Container(
         width: screenSize.width,
         height: 90,
