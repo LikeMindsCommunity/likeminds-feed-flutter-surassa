@@ -442,6 +442,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                     profilePicture: LMProfilePicture(
                                       fallbackText: currentUser.name,
                                       imageUrl: currentUser.imageUrl,
+                                      onTap: () {
+                                        locator<LikeMindsService>()
+                                            .routeToProfile(
+                                                currentUser.userUniqueId);
+                                      },
                                       size: 36,
                                     ),
                                     focusNode: focusNode,
@@ -530,6 +535,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                       ),
                                                                     ),
                                                                     onTap: () {
+                                                                      closeOnScreenKeyboard();
                                                                       String commentText = TaggingHelper.encodeString(
                                                                           _commentController!
                                                                               .text,
@@ -639,6 +645,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                               .secondary),
                                                                     ),
                                                                     onTap: () {
+                                                                      closeOnScreenKeyboard();
                                                                       String
                                                                           commentText =
                                                                           TaggingHelper
@@ -922,6 +929,14 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                 .users![item
                                                                     .userId]!
                                                                 .name,
+                                                        onTap: () {
+                                                          locator<LikeMindsService>()
+                                                              .routeToProfile(
+                                                                  postDetailResponse!
+                                                                      .users![item
+                                                                          .userId]!
+                                                                      .userUniqueId);
+                                                        },
                                                         imageUrl:
                                                             postDetailResponse!
                                                                 .users![item

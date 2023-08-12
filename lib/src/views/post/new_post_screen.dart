@@ -293,6 +293,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                   },
                   title: "Create Post",
                   onTap: () {
+                    _focusNode.unfocus();
                     String postText = _controller.text;
                     postText = postText.trim();
                     if (postText.isNotEmpty || postMedia.isNotEmpty) {
@@ -331,6 +332,10 @@ class _NewPostScreenState extends State<NewPostScreen> {
                         child: LMProfilePicture(
                           fallbackText: user.name,
                           imageUrl: user.imageUrl,
+                          onTap: () {
+                            locator<LikeMindsService>()
+                                .routeToProfile(user.userUniqueId);
+                          },
                           size: 36,
                         ),
                       ),
