@@ -142,28 +142,31 @@ Dialog deleteConfirmationDialog(
                                                                 Navigator.pop(
                                                                     context);
                                                               },
-                                                              child: Row(
-                                                                children: [
-                                                                  SizedBox(
-                                                                    width: 35,
-                                                                    child: Radio(
-                                                                        value: reportTags[index]
-                                                                            .id,
-                                                                        groupValue: reasonForDeletion ==
-                                                                                null
-                                                                            ? -1
-                                                                            : reasonForDeletion!
-                                                                                .id,
-                                                                        onChanged:
-                                                                            (value) {}),
-                                                                  ),
-                                                                  kHorizontalPaddingLarge,
-                                                                  Text(
-                                                                    reportTags[
-                                                                            index]
-                                                                        .name,
-                                                                  ),
-                                                                ],
+                                                              child: Container(
+                                                                color: Colors
+                                                                    .transparent,
+                                                                child: Row(
+                                                                  children: [
+                                                                    SizedBox(
+                                                                      width: 35,
+                                                                      child: Radio(
+                                                                          value: reportTags[index]
+                                                                              .id,
+                                                                          groupValue: reasonForDeletion == null
+                                                                              ? -1
+                                                                              : reasonForDeletion!
+                                                                                  .id,
+                                                                          onChanged:
+                                                                              (value) {}),
+                                                                    ),
+                                                                    kHorizontalPaddingLarge,
+                                                                    Text(
+                                                                      reportTags[
+                                                                              index]
+                                                                          .name,
+                                                                    ),
+                                                                  ],
+                                                                ),
                                                               ),
                                                             );
                                                           },

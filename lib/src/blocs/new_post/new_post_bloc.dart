@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
+import 'package:likeminds_feed_ss_fl/src/models/post_view_model.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/analytics/analytics.dart';
@@ -144,7 +145,8 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
           },
         );
         emit(NewPostUploaded(
-            postData: response.post!, userData: response.user!));
+            postData: PostViewModel.fromPost(post: response.post!),
+            userData: response.user!));
       } else {
         emit(NewPostError(message: response.errorMessage!));
       }
@@ -170,7 +172,7 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
       if (response.success) {
         emit(
           EditPostUploaded(
-            postData: response.post!,
+            postData: PostViewModel.fromPost(post: response.post!),
             userData: response.user!,
           ),
         );
@@ -215,16 +217,9 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
   }
 
   mapUpdatePostHandler(UpdatePost event, Emitter<NewPostState> emit) async {
-    GetPostRequest request = (GetPostRequestBuilder()
-          ..postId(event.postId)
-          ..page(1)
-          ..pageSize(1))
-        .build();
-    GetPostResponse response =
-        await locator<LikeMindsService>().getPost(request);
-    if (response.success) {
-      emit(PostUpdateState(post: response.post!));
-    }
+    emit(
+      PostUpdateState(post: event.post),
+    );
   }
 
   mapTogglePinPostHandler(
@@ -236,6 +231,8 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
         await locator<LikeMindsService>().pinPost(request);
 
     if (response.success) {
+      toast(event.isPinned ? "Post pinned" : "Post unpinned",
+          duration: Toast.LENGTH_LONG);
       emit(PostPinnedState(isPinned: event.isPinned, postId: event.postId));
     } else {
       emit(PostPinError(

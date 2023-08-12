@@ -6,8 +6,10 @@ import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/add_comment_reply/add_comment_reply_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/comment_replies/comment_replies_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/toggle_like_comment/toggle_like_comment_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
+import 'package:likeminds_feed_ss_fl/src/utils/post/post_action_id.dart';
 import 'package:likeminds_feed_ss_fl/src/widgets/delete_dialog.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -70,8 +72,13 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
 
   List<Widget> mapRepliesToWidget(
       List<CommentReply> replies, Map<String, User> users) {
-    ToggleLikeCommentBloc _toggleLikeCommentBloc =
+    ToggleLikeCommentBloc toggleLikeCommentBloc =
         BlocProvider.of<ToggleLikeCommentBloc>(context);
+    replies = replies.map((e) {
+      e.menuItems.removeWhere((element) =>
+          element.id == commentReportId || element.id == commentEditId);
+      return e;
+    }).toList();
     return replies.mapIndexed((index, element) {
       User user = users[element.userId]!;
       return StatefulBuilder(builder: (context, setReplyState) {
@@ -81,6 +88,9 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
             profilePicture: LMProfilePicture(
               imageUrl: user.imageUrl,
               fallbackText: user.name,
+              onTap: () {
+                locator<LikeMindsService>().routeToProfile(user.userUniqueId);
+              },
               size: 32,
             ),
             subtitleText: LMTextView(
@@ -155,7 +165,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                       fontSize: 12),
                 ),
                 onTap: () {
-                  _toggleLikeCommentBloc.add(
+                  toggleLikeCommentBloc.add(
                     ToggleLikeComment(
                       toggleLikeCommentRequest:
                           (ToggleLikeCommentRequestBuilder()
@@ -316,7 +326,9 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
               return BlocConsumer<AddCommentReplyBloc, AddCommentReplyState>(
                 bloc: addCommentReplyBloc,
                 listener: (context, state) {
-                  if (state is AddCommentReplySuccess) {
+                  if (state is AddCommentReplySuccess &&
+                      state.addCommentResponse.reply!.parentComment!.id ==
+                          reply!.id) {
                     replies.insert(0, state.addCommentResponse.reply!);
 
                     repliesW = mapRepliesToWidget(replies, users);

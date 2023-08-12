@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
+import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
+import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/local_preference/user_local_preference.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post/new_post_screen.dart';
@@ -36,6 +38,9 @@ class PostSomething extends StatelessWidget {
               LMProfilePicture(
                 fallbackText: user.name,
                 imageUrl: user.imageUrl,
+                onTap: () {
+                  locator<LikeMindsService>().routeToProfile(user.userUniqueId);
+                },
                 size: 42,
               ),
               kHorizontalPaddingMedium,

@@ -19,14 +19,14 @@ class NewPostUploading extends NewPostState {
 class EditPostUploading extends NewPostState {}
 
 class NewPostUploaded extends NewPostState {
-  final Post postData;
+  final PostViewModel postData;
   final Map<String, User> userData;
 
   const NewPostUploaded({required this.postData, required this.userData});
 }
 
 class EditPostUploaded extends NewPostState {
-  final Post postData;
+  final PostViewModel postData;
   final Map<String, User> userData;
 
   const EditPostUploaded({required this.postData, required this.userData});
@@ -57,7 +57,7 @@ class PostDeleted extends NewPostState {
 }
 
 class PostUpdateState extends NewPostState {
-  final Post post;
+  final PostViewModel post;
 
   const PostUpdateState({required this.post});
 
