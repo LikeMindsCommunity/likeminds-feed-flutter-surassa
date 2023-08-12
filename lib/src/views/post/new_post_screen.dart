@@ -232,7 +232,33 @@ class _NewPostScreenState extends State<NewPostScreen> {
     Size screenSize = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () {
-        Navigator.pop(context);
+        if (_controller.text.isNotEmpty || postMedia.isNotEmpty) {
+          showDialog(
+              context: context,
+              builder: (dialogContext) => AlertDialog(
+                    title: const Text('Discard Post'),
+                    content: const Text(
+                        'Are you sure want to discard the current post?'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text('No'),
+                        onPressed: () {
+                          Navigator.of(dialogContext).pop();
+                        },
+                      ),
+                      TextButton(
+                        child: const Text('Yes'),
+                        onPressed: () {
+                          Navigator.of(dialogContext).pop();
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  ));
+        } else {
+          Navigator.of(context).pop();
+        }
+
         return Future.value(false);
       },
       child: AnnotatedRegion<SystemUiOverlayStyle>(
@@ -243,6 +269,34 @@ class _NewPostScreenState extends State<NewPostScreen> {
             child: Column(
               children: [
                 PostComposerHeader(
+                  onPressedBack: () {
+                    if (_controller.text.isNotEmpty || postMedia.isNotEmpty) {
+                      showDialog(
+                          context: context,
+                          builder: (dialogContext) => AlertDialog(
+                                title: const Text('Discard Post'),
+                                content: const Text(
+                                    'Are you sure want to discard the current post?'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: const Text('No'),
+                                    onPressed: () {
+                                      Navigator.of(dialogContext).pop();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: const Text('Yes'),
+                                    onPressed: () {
+                                      Navigator.of(dialogContext).pop();
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              ));
+                    } else {
+                      Navigator.of(context).pop();
+                    }
+                  },
                   title: "Create Post",
                   onTap: () {
                     if (_controller.text.isNotEmpty || postMedia.isNotEmpty) {
