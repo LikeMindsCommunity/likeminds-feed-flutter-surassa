@@ -322,7 +322,9 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
               return BlocConsumer<AddCommentReplyBloc, AddCommentReplyState>(
                 bloc: addCommentReplyBloc,
                 listener: (context, state) {
-                  if (state is AddCommentReplySuccess) {
+                  if (state is AddCommentReplySuccess &&
+                      state.addCommentResponse.reply!.parentComment!.id ==
+                          reply!.id) {
                     replies.insert(0, state.addCommentResponse.reply!);
 
                     repliesW = mapRepliesToWidget(replies, users);

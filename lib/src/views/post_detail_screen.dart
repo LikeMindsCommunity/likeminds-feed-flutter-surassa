@@ -530,10 +530,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                       ),
                                                                     ),
                                                                     onTap: () {
-                                                                      final commentText = TaggingHelper.encodeString(
+                                                                      String commentText = TaggingHelper.encodeString(
                                                                           _commentController!
                                                                               .text,
                                                                           userTags);
+                                                                      commentText =
+                                                                          commentText
+                                                                              .trim();
                                                                       if (commentText
                                                                           .isEmpty) {
                                                                         toast(
@@ -636,14 +639,17 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                               .secondary),
                                                                     ),
                                                                     onTap: () {
-                                                                      final commentText =
+                                                                      String
+                                                                          commentText =
                                                                           TaggingHelper
                                                                               .encodeString(
                                                                         _commentController!
                                                                             .text,
                                                                         userTags,
                                                                       );
-
+                                                                      commentText =
+                                                                          commentText
+                                                                              .trim();
                                                                       if (commentText
                                                                           .isEmpty) {
                                                                         toast(
