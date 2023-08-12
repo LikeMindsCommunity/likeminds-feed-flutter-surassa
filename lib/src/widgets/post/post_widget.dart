@@ -4,9 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/models/post_view_model.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
+import 'package:likeminds_feed_ss_fl/src/utils/post/post_action_id.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_utils.dart';
 import 'package:likeminds_feed_ss_fl/src/views/likes/likes_screen.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post/edit_post_screen.dart';
@@ -16,21 +18,14 @@ import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-class SSPostWidget extends StatelessWidget {
-  final Post post;
+class SSPostWidget extends StatefulWidget {
+  final PostViewModel post;
   final User user;
   final bool isFeed;
   final Function() onTap;
   final Function(bool isDeleted) refresh;
-  int postLikes = 0;
-  int comments = 0;
-  Post? postDetails;
-  bool? isLiked;
-  bool? isPinned;
-  ValueNotifier<bool> rebuildLikeWidget = ValueNotifier(false);
-  ValueNotifier<bool> rebuildPostWidget = ValueNotifier(false);
 
-  SSPostWidget({
+  const SSPostWidget({
     Key? key,
     required this.post,
     required this.user,
@@ -39,27 +34,58 @@ class SSPostWidget extends StatelessWidget {
     required this.isFeed,
   }) : super(key: key);
 
+  @override
+  State<SSPostWidget> createState() => _SSPostWidgetState();
+}
+
+class _SSPostWidgetState extends State<SSPostWidget> {
+  int postLikes = 0;
+  int comments = 0;
+  PostViewModel? postDetails;
+  bool? isLiked;
+  bool? isPinned;
+  ValueNotifier<bool> rebuildLikeWidget = ValueNotifier(false);
+  ValueNotifier<bool> rebuildPostWidget = ValueNotifier(false);
+
+  @override
+  void initState() {
+    super.initState();
+    setPostDetails();
+  }
+
+  @override
+  void didUpdateWidget(covariant SSPostWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    setPostDetails();
+  }
+
+  removeEditPost() {
+    postDetails!.menuItems.removeWhere((element) {
+      return element.id == postEditId;
+    });
+  }
+
   void setPostDetails() {
-    postDetails = post;
+    postDetails = widget.post;
     postLikes = postDetails!.likeCount;
     comments = postDetails!.commentCount;
     isLiked = postDetails!.isLiked;
     isPinned = postDetails!.isPinned;
+    removeEditPost();
   }
 
   @override
   Widget build(BuildContext context) {
-    setPostDetails();
     NewPostBloc newPostBloc = BlocProvider.of<NewPostBloc>(context);
     timeago.setLocaleMessages('en', SSCustomMessages());
     return InheritedPostProvider(
-      post: post,
+      post: widget.post.toPost(),
       child: Container(
         color: kWhiteColor,
         child: BlocListener(
           bloc: newPostBloc,
           listener: (context, state) {
-            if (state is PostPinnedState && state.postId == post.id) {
+            if (state is PostPinnedState && state.postId == widget.post.id) {
               isPinned = state.isPinned;
               int? itemIndex = postDetails?.menuItems.indexWhere((element) {
                 return (isPinned! && element.id == 2) ||
@@ -74,8 +100,11 @@ class SSPostWidget extends StatelessWidget {
                       PopupMenuItemModel(title: "Pin this Post", id: 2);
                 }
               }
+              postDetails!.isPinned = isPinned!;
               rebuildPostWidget.value = !rebuildPostWidget.value;
-            } else if (state is PostPinError && state.postId == post.id) {
+              newPostBloc.add(UpdatePost(post: postDetails!));
+            } else if (state is PostPinError &&
+                state.postId == widget.post.id) {
               isPinned = state.isPinned;
               rebuildPostWidget.value = !rebuildPostWidget.value;
             }
@@ -84,11 +113,11 @@ class SSPostWidget extends StatelessWidget {
             behavior: HitTestBehavior.deferToChild,
             onTap: () {
               // Navigate to LMPostPage using material route
-              if (isFeed) {
+              if (widget.isFeed) {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => PostDetailScreen(
-                      postId: post.id,
+                      postId: widget.post.id,
                     ),
                   ),
                 );
@@ -137,10 +166,14 @@ class SSPostWidget extends StatelessWidget {
                       valueListenable: rebuildPostWidget,
                       builder: (context, _, __) {
                         return LMPostHeader(
-                          user: user,
-                          isFeed: isFeed,
+                          user: widget.user,
+                          isFeed: widget.isFeed,
+                          onProfileTap: () {
+                            locator<LikeMindsService>()
+                                .routeToProfile(widget.user.userUniqueId);
+                          },
                           titleText: LMTextView(
-                            text: user.name,
+                            text: widget.user.name,
                             textStyle: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -148,7 +181,7 @@ class SSPostWidget extends StatelessWidget {
                           ),
                           subText: LMTextView(
                             text:
-                                "@${user.name.toLowerCase().split(" ").join("")}",
+                                "@${widget.user.name.toLowerCase().split(" ").join("")}",
                             textStyle: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w400,
@@ -156,7 +189,7 @@ class SSPostWidget extends StatelessWidget {
                             ),
                           ),
                           createdAt: LMTextView(
-                            text: timeago.format(post.createdAt),
+                            text: timeago.format(widget.post.createdAt),
                             textStyle: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w400,
@@ -166,7 +199,7 @@ class SSPostWidget extends StatelessWidget {
                           menu: LMPostMenu(
                             menuItems: postDetails!.menuItems,
                             onSelected: (id) {
-                              if (id == 1) {
+                              if (id == postDeleteId) {
                                 // Delete post
                                 showDialog(
                                     context: context,
@@ -199,28 +232,28 @@ class SSPostWidget extends StatelessWidget {
                                                 reason: reason ?? 'Self Post',
                                               ),
                                             );
-                                            if (!isFeed) {
+                                            if (!widget.isFeed) {
                                               Navigator.of(context).pop();
                                             }
                                           },
                                           actionText: 'Delete',
                                         ));
-                              } else if (id == 2 || id == 3) {
+                              } else if (id == postPinId || id == postUnpinId) {
                                 newPostBloc.add(TogglePinPost(
                                     postId: postDetails!.id,
                                     isPinned: !isPinned!));
-                              } else if (id == 5) {
+                              } else if (id == postEditId) {
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => EditPostScreen(
                                           postId: postDetails!.id,
                                         )));
                               }
                             },
-                            isFeed: isFeed,
+                            isFeed: widget.isFeed,
                           ),
                         );
                       }),
-                  SizedBox(height: post.text.isEmpty ? 0 : 8),
+                  SizedBox(height: widget.post.text.isEmpty ? 0 : 8),
                   const LMPostContent(),
                   postDetails!.attachments != null
                       ? const SizedBox(height: 12)
@@ -261,7 +294,8 @@ class SSPostWidget extends StatelessWidget {
                               },
                               child: LMTextView(text: "${postLikes} Likes")),
                           const Spacer(),
-                          LMTextView(text: "${post.commentCount} Comments"),
+                          LMTextView(
+                              text: "${widget.post.commentCount} Comments"),
                         ],
                       );
                     },
@@ -288,8 +322,12 @@ class SSPostWidget extends StatelessWidget {
                               onTap: () async {
                                 if (isLiked!) {
                                   postLikes--;
+                                  postDetails!.likeCount -= 1;
+                                  postDetails!.isLiked = false;
                                 } else {
                                   postLikes++;
+                                  postDetails!.likeCount += 1;
+                                  postDetails!.isLiked = true;
                                 }
                                 isLiked = !isLiked!;
                                 rebuildLikeWidget.value =
@@ -309,16 +347,23 @@ class SSPostWidget extends StatelessWidget {
 
                                   if (isLiked!) {
                                     postLikes--;
+                                    postDetails!.likeCount -= 1;
+                                    postDetails!.isLiked = false;
                                   } else {
                                     postLikes++;
+                                    postDetails!.likeCount += 1;
+                                    postDetails!.isLiked = true;
                                   }
                                   isLiked = !isLiked!;
                                   rebuildLikeWidget.value =
                                       !rebuildLikeWidget.value;
                                 } else {
-                                  if (!isFeed) {
+                                  if (!widget.isFeed) {
                                     newPostBloc.add(
-                                        UpdatePost(postId: postDetails!.id));
+                                      UpdatePost(
+                                        post: postDetails!,
+                                      ),
+                                    );
                                   }
                                 }
                               },
@@ -344,12 +389,12 @@ class SSPostWidget extends StatelessWidget {
                         text: const LMTextView(text: "Comment"),
                         margin: 0,
                         onTap: () {
-                          if (isFeed) {
+                          if (widget.isFeed) {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => PostDetailScreen(
-                                  postId: post.id,
+                                  postId: widget.post.id,
                                   fromCommentButton: true,
                                 ),
                               ),
@@ -368,7 +413,7 @@ class SSPostWidget extends StatelessWidget {
                         text: const LMTextView(text: "Share"),
                         margin: 0,
                         onTap: () {
-                          SharePost().sharePost(post.id);
+                          SharePost().sharePost(widget.post.id);
                         },
                         icon: LMIcon(
                           type: LMIconType.svg,

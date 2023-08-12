@@ -4,6 +4,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/universal_feed/universal_feed_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/models/post_view_model.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post/new_post_screen.dart';
@@ -26,7 +27,8 @@ class _FeedScreenState extends State<FeedScreen> {
   ValueNotifier<bool> rebuildPostWidget = ValueNotifier(false);
   final ValueNotifier postUploading = ValueNotifier(false);
 
-  final PagingController<int, Post> _pagingController = PagingController(
+  final PagingController<int, PostViewModel> _pagingController =
+      PagingController(
     firstPageKey: 1,
   );
 
@@ -101,10 +103,12 @@ class _FeedScreenState extends State<FeedScreen> {
   void updatePagingControllers(Object? state) {
     if (state is UniversalFeedLoaded) {
       _pageFeed++;
+      List<PostViewModel> listOfPosts =
+          state.feed.posts.map((e) => PostViewModel.fromPost(post: e)).toList();
       if (state.feed.posts.length < 10) {
-        _pagingController.appendLastPage(state.feed.posts);
+        _pagingController.appendLastPage(listOfPosts);
       } else {
-        _pagingController.appendPage(state.feed.posts, _pageFeed);
+        _pagingController.appendPage(listOfPosts, _pageFeed);
       }
     }
   }
@@ -147,10 +151,10 @@ class _FeedScreenState extends State<FeedScreen> {
           builder: ((context, state) {
             if (state is UniversalFeedLoaded) {
               GetFeedResponse feedResponse = state.feed;
-              return PagedListView<int, Post>(
+              return PagedListView<int, PostViewModel>(
                 pagingController: _pagingController,
                 scrollController: scrollController,
-                builderDelegate: PagedChildBuilderDelegate<Post>(
+                builderDelegate: PagedChildBuilderDelegate<PostViewModel>(
                   noItemsFoundIndicatorBuilder: (context) => Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -238,16 +242,16 @@ class _FeedScreenState extends State<FeedScreen> {
                                       ..pageSize(10))
                                     .build(),
                               );
-                              item = updatedPostDetails.post!;
-                              List<Post>? feedRoomItemList =
+                              item = PostViewModel.fromPost(
+                                  post: updatedPostDetails.post!);
+                              List<PostViewModel>? feedRoomItemList =
                                   _pagingController.itemList;
-                              feedRoomItemList?[index] =
-                                  updatedPostDetails.post!;
+                              feedRoomItemList?[index] = item;
                               _pagingController.itemList = feedRoomItemList;
                               rebuildPostWidget.value =
                                   !rebuildPostWidget.value;
                             } else {
-                              List<Post>? feedRoomItemList =
+                              List<PostViewModel>? feedRoomItemList =
                                   _pagingController.itemList;
                               feedRoomItemList!.removeAt(index);
                               _pagingController.itemList = feedRoomItemList;

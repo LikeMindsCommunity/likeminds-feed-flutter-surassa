@@ -337,6 +337,10 @@ class _EditPostScreenState extends State<EditPostScreen> {
                 child: LMProfilePicture(
                   fallbackText: user!.name,
                   imageUrl: user!.imageUrl,
+                  onTap: () {
+                    locator<LikeMindsService>()
+                        .routeToProfile(user!.userUniqueId);
+                  },
                   size: 36,
                 ),
               ),
