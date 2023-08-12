@@ -156,7 +156,7 @@ class PostMediaPicker {
         ],
       );
       if (pickedFiles != null) {
-        if (currentMediaLength + pickedFiles.files.length > 10) {
+        if (currentMediaLength + pickedFiles.files.length > 3) {
           // TODO: Add your own toast
           // toast(
           //   'A total of 10 attachments can be added to a post',
