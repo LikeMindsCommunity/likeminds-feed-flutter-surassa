@@ -179,6 +179,10 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
                     LMProfilePicture(
                       fallbackText: opt.name!,
                       imageUrl: opt.imageUrl!,
+                      onTap: () {
+                        locator<LikeMindsService>()
+                            .routeToProfile(opt.userUniqueId ?? '');
+                      },
                       size: 32,
                     ),
                     const SizedBox(width: 12),

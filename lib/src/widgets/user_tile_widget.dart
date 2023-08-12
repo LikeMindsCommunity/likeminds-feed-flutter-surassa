@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
+import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
+import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 
@@ -24,6 +26,9 @@ class LMUserTile extends StatelessWidget {
         LMProfilePicture(
           size: imageSize ?? 50,
           fallbackText: user.name,
+          onTap: () {
+            locator<LikeMindsService>().routeToProfile(user.userUniqueId);
+          },
           imageUrl: user.imageUrl,
         ),
         kHorizontalPaddingLarge,

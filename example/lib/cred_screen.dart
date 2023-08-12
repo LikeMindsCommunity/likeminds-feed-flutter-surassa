@@ -17,25 +17,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return OverlaySupport.global(
-      toastTheme: ToastThemeData(
-          background: Colors.black,
-          textColor: Colors.white,
-          alignment: Alignment.bottomCenter),
-      child: MaterialApp(
-        title: 'Integration App for UI + SDK package',
-        debugShowCheckedModeBanner: false,
-        scaffoldMessengerKey: rootScaffoldMessengerKey,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 70, 102, 246),
-            primary: const Color.fromARGB(255, 70, 102, 246),
-            secondary: const Color.fromARGB(255, 59, 130, 246),
-          ),
-          useMaterial3: true,
+    return MaterialApp(
+      title: 'Integration App for UI + SDK package',
+      debugShowCheckedModeBanner: false,
+      scaffoldMessengerKey: rootScaffoldMessengerKey,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color.fromARGB(255, 70, 102, 246),
+          primary: const Color.fromARGB(255, 70, 102, 246),
+          secondary: const Color.fromARGB(255, 59, 130, 246),
         ),
-        home: const CredScreen(),
+        useMaterial3: true,
       ),
+      home: const CredScreen(),
     );
   }
 }

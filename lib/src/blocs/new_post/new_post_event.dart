@@ -43,14 +43,14 @@ class DeletePost extends NewPostEvents {
 }
 
 class UpdatePost extends NewPostEvents {
-  final String postId;
+  final PostViewModel post;
 
   UpdatePost({
-    required this.postId,
+    required this.post,
   });
 
   @override
-  List<Object> get props => [postId];
+  List<Object> get props => [post];
 }
 
 class TogglePinPost extends NewPostEvents {

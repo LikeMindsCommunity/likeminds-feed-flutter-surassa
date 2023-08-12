@@ -249,6 +249,7 @@ class LikeMindsService implements ILikeMindsService {
 
   @override
   void routeToProfile(String userId) {
+    debugPrint(userId);
     _sdkApplication.routeToProfile(userId);
   }
 }
