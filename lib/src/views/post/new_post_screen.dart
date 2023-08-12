@@ -559,6 +559,10 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                   size: 44,
                                 ),
                                 onTap: (active) async {
+                                  if (postMedia.length >= 3) {
+                                    //  TODO: Add your own toast message for document limit
+                                    return;
+                                  }
                                   onUploading();
                                   List<MediaModel>? pickedMediaFiles =
                                       await PostMediaPicker.pickDocuments(

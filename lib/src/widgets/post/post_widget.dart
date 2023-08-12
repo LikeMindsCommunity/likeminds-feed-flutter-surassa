@@ -7,6 +7,7 @@ import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
+import 'package:likeminds_feed_ss_fl/src/utils/post/post_action_id.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_utils.dart';
 import 'package:likeminds_feed_ss_fl/src/views/likes/likes_screen.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post/edit_post_screen.dart';
@@ -53,16 +54,20 @@ class _SSPostWidgetState extends State<SSPostWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     setPostDetails();
   }
 
   @override
   void didUpdateWidget(covariant SSPostWidget oldWidget) {
-    // TODO: implement didUpdateWidget
     super.didUpdateWidget(oldWidget);
     setPostDetails();
+  }
+
+  removeEditPost() {
+    postDetails!.menuItems.removeWhere((element) {
+      return element.id == postEditId;
+    });
   }
 
   void setPostDetails() {
@@ -71,11 +76,11 @@ class _SSPostWidgetState extends State<SSPostWidget> {
     comments = postDetails!.commentCount;
     isLiked = postDetails!.isLiked;
     isPinned = postDetails!.isPinned;
+    removeEditPost();
   }
 
   @override
   Widget build(BuildContext context) {
-    //setPostDetails();
     NewPostBloc newPostBloc = BlocProvider.of<NewPostBloc>(context);
     timeago.setLocaleMessages('en', SSCustomMessages());
     return InheritedPostProvider(
@@ -193,7 +198,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                           menu: LMPostMenu(
                             menuItems: postDetails!.menuItems,
                             onSelected: (id) {
-                              if (id == 1) {
+                              if (id == postDeleteId) {
                                 // Delete post
                                 showDialog(
                                     context: context,
@@ -232,11 +237,11 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                           },
                                           actionText: 'Delete',
                                         ));
-                              } else if (id == 2 || id == 3) {
+                              } else if (id == postPinId || id == postUnpinId) {
                                 newPostBloc.add(TogglePinPost(
                                     postId: postDetails!.id,
                                     isPinned: !isPinned!));
-                              } else if (id == 5) {
+                              } else if (id == postEditId) {
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => EditPostScreen(
                                           postId: postDetails!.id,
