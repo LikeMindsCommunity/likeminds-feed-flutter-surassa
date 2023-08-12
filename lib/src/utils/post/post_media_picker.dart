@@ -150,9 +150,9 @@ class PostMediaPicker {
         ],
       );
       if (pickedFiles != null) {
-        if (currentMediaLength + pickedFiles.files.length > 10) {
+        if (currentMediaLength + pickedFiles.files.length > 3) {
           toast(
-            'A total of 10 attachments can be added to a post',
+            'A total of 3 documents can be added to a post',
             duration: Toast.LENGTH_LONG,
           );
           return null;

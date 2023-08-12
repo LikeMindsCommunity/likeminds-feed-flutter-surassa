@@ -232,7 +232,30 @@ class _NewPostScreenState extends State<NewPostScreen> {
     Size screenSize = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () {
-        Navigator.pop(context);
+        showDialog(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: const Text('Discard Post'),
+            content:
+                const Text('Are you sure want to discard the current post?'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('No'),
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                },
+              ),
+              TextButton(
+                child: const Text('Yes'),
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+        );
+
         return Future.value(false);
       },
       child: AnnotatedRegion<SystemUiOverlayStyle>(
@@ -243,10 +266,37 @@ class _NewPostScreenState extends State<NewPostScreen> {
             child: Column(
               children: [
                 PostComposerHeader(
+                  onPressedBack: () {
+                    showDialog(
+                      context: context,
+                      builder: (dialogContext) => AlertDialog(
+                        title: const Text('Discard Post'),
+                        content: const Text(
+                            'Are you sure want to discard the current post?'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: const Text('No'),
+                            onPressed: () {
+                              Navigator.of(dialogContext).pop();
+                            },
+                          ),
+                          TextButton(
+                            child: const Text('Yes'),
+                            onPressed: () {
+                              Navigator.of(dialogContext).pop();
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                   title: "Create Post",
                   onTap: () {
-                    if (_controller.text.isNotEmpty || postMedia.isNotEmpty) {
-                      String postText = _controller.text;
+                    _focusNode.unfocus();
+                    String postText = _controller.text;
+                    postText = postText.trim();
+                    if (postText.isNotEmpty || postMedia.isNotEmpty) {
                       checkTextLinks();
                       userTags =
                           TaggingHelper.matchTags(_controller.text, userTags);
@@ -282,6 +332,10 @@ class _NewPostScreenState extends State<NewPostScreen> {
                         child: LMProfilePicture(
                           fallbackText: user.name,
                           imageUrl: user.imageUrl,
+                          onTap: () {
+                            locator<LikeMindsService>()
+                                .routeToProfile(user.userUniqueId);
+                          },
                           size: 36,
                         ),
                       ),
@@ -504,6 +558,10 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                   size: 44,
                                 ),
                                 onTap: (active) async {
+                                  if (postMedia.length >= 3) {
+                                    //  TODO: Add your own toast message for document limit
+                                    return;
+                                  }
                                   onUploading();
                                   List<MediaModel>? pickedMediaFiles =
                                       await PostMediaPicker.pickDocuments(

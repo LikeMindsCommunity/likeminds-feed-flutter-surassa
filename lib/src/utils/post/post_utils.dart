@@ -14,23 +14,23 @@ class SSCustomMessages implements LookupMessages {
   @override
   String lessThanOneMinute(int seconds) => 'now';
   @override
-  String aboutAMinute(int minutes) => '${minutes}m';
+  String aboutAMinute(int minutes) => '1m';
   @override
   String minutes(int minutes) => '${minutes}m';
   @override
-  String aboutAnHour(int minutes) => '${minutes}m';
+  String aboutAnHour(int minutes) => '1h';
   @override
   String hours(int hours) => '${hours}h';
   @override
-  String aDay(int hours) => '${hours}h';
+  String aDay(int hours) => '1d';
   @override
   String days(int days) => '${days}d';
   @override
-  String aboutAMonth(int days) => '${days}d';
+  String aboutAMonth(int month) => '1mo';
   @override
   String months(int months) => '${months}mo';
   @override
-  String aboutAYear(int year) => '${year}y';
+  String aboutAYear(int months) => '1y';
   @override
   String years(int years) => '${years}y';
   @override

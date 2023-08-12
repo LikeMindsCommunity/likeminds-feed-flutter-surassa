@@ -38,7 +38,6 @@ dependencies:
   device_info_plus: 
   firebase_core: 
   firebase_messaging: 
-  overlay_support: 
   connectivity_plus: 
   uni_links: 
   share_plus: 
