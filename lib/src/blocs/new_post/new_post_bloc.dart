@@ -199,18 +199,16 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
     );
 
     if (response.success) {
-      // TODO: Add your own toast
-      // toast(
-      //   'Post Deleted',
-      //   duration: Toast.LENGTH_LONG,
-      // );
+      toast(
+        'Post Deleted',
+        duration: Toast.LENGTH_LONG,
+      );
       emit(PostDeleted(postId: event.postId));
     } else {
-      // TODO: Add your own toast
-      // toast(
-      //   response.errorMessage ?? 'An error occurred',
-      //   duration: Toast.LENGTH_LONG,
-      // );
+      toast(
+        response.errorMessage ?? 'An error occurred',
+        duration: Toast.LENGTH_LONG,
+      );
       emit(PostDeletionError(
           message: response.errorMessage ?? 'An error occurred'));
     }

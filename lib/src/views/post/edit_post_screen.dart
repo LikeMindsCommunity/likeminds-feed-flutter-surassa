@@ -315,11 +315,10 @@ class _EditPostScreenState extends State<EditPostScreen> {
               ));
               Navigator.of(context).pop();
             } else {
-              // TODO: Add your own toast
-              // toast(
-              //   "Can't save a post without text or attachments",
-              //   duration: Toast.LENGTH_LONG,
-              // );
+              toast(
+                "Can't save a post without text or attachments",
+                duration: Toast.LENGTH_LONG,
+              );
             }
           },
         ),

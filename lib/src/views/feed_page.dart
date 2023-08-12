@@ -200,11 +200,10 @@ class _FeedScreenState extends State<FeedScreen> {
                                 ),
                               );
                             } else {
-                              // TODO: Add your own toast
-                              // toast(
-                              //   'A post is already uploading.',
-                              //   duration: Toast.LENGTH_LONG,
-                              // );
+                              toast(
+                                'A post is already uploading.',
+                                duration: Toast.LENGTH_LONG,
+                              );
                             }
                           },
                         ),

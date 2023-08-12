@@ -118,9 +118,8 @@ class _CredScreenState extends State<CredScreen> {
               .build());
         }
       }, onError: (err) {
-        // TODO: Add your own toast
         // Handle exception by warning the user their action did not succeed
-        // toast('An error occured');
+        toast('An error occured');
       });
     }
   }

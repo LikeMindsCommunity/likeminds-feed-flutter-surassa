@@ -344,11 +344,10 @@ class _FeedRoomViewState extends State<FeedRoomView> {
               }
               if (curr is NewPostError) {
                 postUploading.value = false;
-                // TODO: Add your own toast
-                // toast(
-                //   curr.message,
-                //   duration: Toast.LENGTH_LONG,
-                // );
+                toast(
+                  curr.message,
+                  duration: Toast.LENGTH_LONG,
+                );
               }
               if (curr is PostUpdateState) {
                 List<Post>? feedRoomItemList =
@@ -519,17 +518,14 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                               ),
                                             );
                                           } else {
-                                            // TODO: Add your own toast
-                                            // toast(
-                                            //   'A post is already uploading.',
-                                            //   duration: Toast.LENGTH_LONG,
-                                            // );
+                                            toast(
+                                              'A post is already uploading.',
+                                              duration: Toast.LENGTH_LONG,
+                                            );
                                           }
                                         }
-                                      : () {},
-                                  // TODO: Add your own toast
-                                  // : () => toast(
-                                  //     "You do not have permission to create a post"),
+                                      : () => toast(
+                                          "You do not have permission to create a post"),
                                 ),
                               ],
                             ),
@@ -638,16 +634,15 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                               ),
                             );
                           } else {
-                            // TODO: Add your own toast
-                            // toast(
-                            //   'A post is already uploading.',
-                            //   duration: Toast.LENGTH_LONG,
-                            // );
+                            toast(
+                              'A post is already uploading.',
+                              duration: Toast.LENGTH_LONG,
+                            );
                           }
                         }
-                      : () => {} // TODO: Add your own toast
-                  //  toast("You do not have permission to create a post"),
-                  );
+                      : () =>
+                          toast("You do not have permission to create a post"),
+                );
         },
       ),
     );

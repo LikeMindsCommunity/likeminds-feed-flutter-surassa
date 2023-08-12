@@ -334,12 +334,11 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                               ..postId(postDetails!.id))
                                             .build());
                                 if (!response.success) {
-                                  // TODO: Add your own toast
-                                  // toast(
-                                  //   response.errorMessage ??
-                                  //       "There was an error liking the post",
-                                  //   duration: Toast.LENGTH_LONG,
-                                  // );
+                                  toast(
+                                    response.errorMessage ??
+                                        "There was an error liking the post",
+                                    duration: Toast.LENGTH_LONG,
+                                  );
 
                                   if (isLiked!) {
                                     postLikes--;
