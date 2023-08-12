@@ -749,6 +749,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                 rebuildPostWidget.value =
                                     !rebuildPostWidget.value;
                               }
+                              if (state is PostUpdateState) {
+                                postData = state.post;
+                              }
                             },
                             child: CustomScrollView(
                               slivers: [
@@ -756,10 +759,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                     padding: EdgeInsets.only(top: 16)),
                                 SliverToBoxAdapter(
                                   child: postData == null
-                                      ? CircularProgressIndicator(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary)
+                                      ? Center(
+                                          child: CircularProgressIndicator(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary),
+                                        )
                                       : SSPostWidget(
                                           post: postData!,
                                           user: postDetailResponse!.users![
