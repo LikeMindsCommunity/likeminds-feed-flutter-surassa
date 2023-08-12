@@ -13,6 +13,7 @@ import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/local_preference/user_local_preference.dart';
+import 'package:likeminds_feed_ss_fl/src/utils/post/post_action_id.dart';
 import 'package:likeminds_feed_ss_fl/src/widgets/delete_dialog.dart';
 import 'package:likeminds_feed_ss_fl/src/widgets/post/post_widget.dart';
 import 'package:likeminds_feed_ss_fl/src/widgets/reply/comment_reply.dart';
@@ -823,6 +824,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                   StatefulBuilder(builder:
                                                       (context,
                                                           setCommentState) {
+                                                    item.menuItems.removeWhere(
+                                                        (element) =>
+                                                            element.id ==
+                                                                commentReportId ||
+                                                            element.id ==
+                                                                commentEditId);
                                                     return LMCommentTile(
                                                       key: ValueKey(item.id),
                                                       onMenuTap: (id) {

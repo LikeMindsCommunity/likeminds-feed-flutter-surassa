@@ -8,6 +8,7 @@ import 'package:likeminds_feed_ss_fl/src/blocs/comment/comment_replies/comment_r
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/toggle_like_comment/toggle_like_comment_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
+import 'package:likeminds_feed_ss_fl/src/utils/post/post_action_id.dart';
 import 'package:likeminds_feed_ss_fl/src/widgets/delete_dialog.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -70,8 +71,13 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
 
   List<Widget> mapRepliesToWidget(
       List<CommentReply> replies, Map<String, User> users) {
-    ToggleLikeCommentBloc _toggleLikeCommentBloc =
+    ToggleLikeCommentBloc toggleLikeCommentBloc =
         BlocProvider.of<ToggleLikeCommentBloc>(context);
+    replies = replies.map((e) {
+      e.menuItems.removeWhere((element) =>
+          element.id == commentReportId || element.id == commentEditId);
+      return e;
+    }).toList();
     return replies.mapIndexed((index, element) {
       User user = users[element.userId]!;
       return StatefulBuilder(builder: (context, setReplyState) {
@@ -155,7 +161,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                       fontSize: 12),
                 ),
                 onTap: () {
-                  _toggleLikeCommentBloc.add(
+                  toggleLikeCommentBloc.add(
                     ToggleLikeComment(
                       toggleLikeCommentRequest:
                           (ToggleLikeCommentRequestBuilder()
