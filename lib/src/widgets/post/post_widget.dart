@@ -40,17 +40,11 @@ class SSPostWidget extends StatefulWidget {
 
 class _SSPostWidgetState extends State<SSPostWidget> {
   int postLikes = 0;
-
   int comments = 0;
-
   PostViewModel? postDetails;
-
   bool? isLiked;
-
   bool? isPinned;
-
   ValueNotifier<bool> rebuildLikeWidget = ValueNotifier(false);
-
   ValueNotifier<bool> rebuildPostWidget = ValueNotifier(false);
 
   @override
@@ -174,6 +168,10 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                         return LMPostHeader(
                           user: widget.user,
                           isFeed: widget.isFeed,
+                          onProfileTap: () {
+                            locator<LikeMindsService>()
+                                .routeToProfile(widget.user.userUniqueId);
+                          },
                           titleText: LMTextView(
                             text: widget.user.name,
                             textStyle: const TextStyle(
