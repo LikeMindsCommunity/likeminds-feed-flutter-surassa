@@ -9,6 +9,7 @@ import 'package:likeminds_feed_ss_fl/src/blocs/comment/all_comments/all_comments
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/comment_replies/comment_replies_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/toggle_like_comment/toggle_like_comment_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/models/post_view_model.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
@@ -35,11 +36,13 @@ class PostDetailScreen extends StatefulWidget {
 }
 
 class _PostDetailScreenState extends State<PostDetailScreen> {
+  bool keyBoardShown = false;
   late final AllCommentsBloc _allCommentsBloc;
   late final AddCommentBloc _addCommentBloc;
   late final AddCommentReplyBloc _addCommentReplyBloc;
   late final CommentRepliesBloc _commentRepliesBloc;
   late final ToggleLikeCommentBloc _toggleLikeCommentBloc;
+  late final NewPostBloc newPostBloc;
   final FocusNode focusNode = FocusNode();
   TextEditingController? _commentController;
   ValueNotifier<bool> rebuildButton = ValueNotifier(false);
@@ -49,7 +52,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   PostDetailResponse? postDetailResponse;
   final PagingController<int, Reply> _pagingController =
       PagingController(firstPageKey: 1);
-  Post? postData;
+  PostViewModel? postData;
   User currentUser = UserLocalPreference.instance.fetchUserData();
 
   List<UserTag> userTags = [];
@@ -78,6 +81,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   @override
   void initState() {
     super.initState();
+    newPostBloc = BlocProvider.of<NewPostBloc>(context);
     updatePostDetails(context);
     right = checkCommentRights();
     _commentController = TextEditingController();
@@ -102,8 +106,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     _toggleLikeCommentBloc = ToggleLikeCommentBloc();
     _commentRepliesBloc = CommentRepliesBloc();
     _addPaginationListener();
-    if (widget.fromCommentButton && focusNode.canRequestFocus) {
+    if (widget.fromCommentButton &&
+        focusNode.canRequestFocus &&
+        keyBoardShown == false) {
       focusNode.requestFocus();
+      keyBoardShown = true;
     }
   }
 
@@ -176,7 +183,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           .build(),
     );
     if (postDetails.success) {
-      postData = postDetails.post;
+      postData = PostViewModel.fromPost(post: postDetails.post!);
       rebuildPostWidget.value = !rebuildPostWidget.value;
     } else {
       toast(
@@ -202,10 +209,14 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     if (commentItemList.length >= 10) {
       commentItemList.removeAt(9);
     }
-
     commentItemList.insert(0, addCommentSuccess.addCommentResponse.reply!);
     increaseCommentCount();
     rebuildPostWidget.value = !rebuildPostWidget.value;
+    newPostBloc.add(
+      UpdatePost(
+        post: postData!,
+      ),
+    );
   }
 
   void updateCommentInList(EditCommentSuccess editCommentSuccess) {
@@ -240,6 +251,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       commentItemList.removeAt(index);
       decreaseCommentCount();
       rebuildPostWidget.value = !rebuildPostWidget.value;
+      newPostBloc.add(
+        UpdatePost(
+          post: postData!,
+        ),
+      );
     }
   }
 
@@ -255,7 +271,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    NewPostBloc newPostBloc = BlocProvider.of<NewPostBloc>(context);
     return WillPopScope(
       onWillPop: () {
         if (Navigator.of(context).canPop()) {

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/models/post_view_model.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
@@ -18,7 +19,7 @@ import 'package:overlay_support/overlay_support.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class SSPostWidget extends StatefulWidget {
-  final Post post;
+  final PostViewModel post;
   final User user;
   final bool isFeed;
   final Function() onTap;
@@ -42,7 +43,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
 
   int comments = 0;
 
-  Post? postDetails;
+  PostViewModel? postDetails;
 
   bool? isLiked;
 
@@ -84,7 +85,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
     NewPostBloc newPostBloc = BlocProvider.of<NewPostBloc>(context);
     timeago.setLocaleMessages('en', SSCustomMessages());
     return InheritedPostProvider(
-      post: widget.post,
+      post: widget.post.toPost(),
       child: Container(
         color: kWhiteColor,
         child: BlocListener(
@@ -105,7 +106,9 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                       PopupMenuItemModel(title: "Pin this Post", id: 2);
                 }
               }
+              postDetails!.isPinned = isPinned!;
               rebuildPostWidget.value = !rebuildPostWidget.value;
+              newPostBloc.add(UpdatePost(post: postDetails!));
             } else if (state is PostPinError &&
                 state.postId == widget.post.id) {
               isPinned = state.isPinned;
@@ -321,8 +324,12 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                               onTap: () async {
                                 if (isLiked!) {
                                   postLikes--;
+                                  postDetails!.likeCount -= 1;
+                                  postDetails!.isLiked = false;
                                 } else {
                                   postLikes++;
+                                  postDetails!.likeCount += 1;
+                                  postDetails!.isLiked = true;
                                 }
                                 isLiked = !isLiked!;
                                 rebuildLikeWidget.value =
@@ -342,8 +349,12 @@ class _SSPostWidgetState extends State<SSPostWidget> {
 
                                   if (isLiked!) {
                                     postLikes--;
+                                    postDetails!.likeCount -= 1;
+                                    postDetails!.isLiked = false;
                                   } else {
                                     postLikes++;
+                                    postDetails!.likeCount += 1;
+                                    postDetails!.isLiked = true;
                                   }
                                   isLiked = !isLiked!;
                                   rebuildLikeWidget.value =
@@ -351,7 +362,10 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                 } else {
                                   if (!widget.isFeed) {
                                     newPostBloc.add(
-                                        UpdatePost(postId: postDetails!.id));
+                                      UpdatePost(
+                                        post: postDetails!,
+                                      ),
+                                    );
                                   }
                                 }
                               },
