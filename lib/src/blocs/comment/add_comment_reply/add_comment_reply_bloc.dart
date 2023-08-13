@@ -148,7 +148,7 @@ class AddCommentReplyBloc
     AddCommentReplyResponse response = await locator<LikeMindsService>()
         .addCommentReply(addCommentReplyRequest);
     if (!response.success) {
-      emit(const AddCommentReplyError(message: "No data found"));
+      emit(const AddCommentReplyError(message: "An error occurred"));
     } else {
       LMAnalytics.get().track(
         AnalyticsKeys.replyPosted,

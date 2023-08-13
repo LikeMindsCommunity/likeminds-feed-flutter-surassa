@@ -187,7 +187,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       rebuildPostWidget.value = !rebuildPostWidget.value;
     } else {
       toast(
-        postDetails.errorMessage ?? 'An error occured',
+        postDetails.errorMessage ?? 'An error occurred',
         duration: Toast.LENGTH_LONG,
       );
     }

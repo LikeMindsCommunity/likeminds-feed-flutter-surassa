@@ -32,7 +32,9 @@ dependencies:
   open_filex:
   timeago:
   collection:
-  flick_video_player:
+  flick_video_player: 
+  connectivity_plus:
+  flutter_no_internet_widget: ^1.0.0+18-dev.1
 
   flutter_typeahead_mm:
     path: lib/packages/flutter_typeahead-4.3.7
