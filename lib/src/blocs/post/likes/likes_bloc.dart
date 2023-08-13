@@ -32,12 +32,12 @@ class LikesBloc extends Bloc<LikesEvent, LikesState> {
             );
           } else {
             emit(
-              const LikesError(message: "An error occurred, Please try again"),
+              LikesError(message: response.errorMessage ?? "An error occurred"),
             );
           }
         } catch (e) {
           emit(
-            LikesError(message: "${e.toString()} No data found"),
+            const LikesError(message: "An error occurred"),
           );
         }
       } else if (event is GetCommentLikes) {
@@ -63,12 +63,12 @@ class LikesBloc extends Bloc<LikesEvent, LikesState> {
             );
           } else {
             emit(
-              const LikesError(message: "An error occurred, Please try again"),
+              LikesError(message: response.errorMessage ?? "An error occurred"),
             );
           }
         } catch (e) {
           emit(
-            LikesError(message: "${e.toString()} No data found"),
+            const LikesError(message: "An error occurred"),
           );
         }
       }

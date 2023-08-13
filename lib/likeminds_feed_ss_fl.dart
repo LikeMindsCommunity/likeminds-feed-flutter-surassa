@@ -2,8 +2,10 @@ library likeminds_feed_ss_fl;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_no_internet_widget/flutter_no_internet_widget.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/icons.dart';
+import 'package:likeminds_feed_ss_fl/src/utils/network_handling.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/utils.dart';
 import 'package:likeminds_feed_ss_fl/src/views/universal_feed_page.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
@@ -22,6 +24,9 @@ export 'src/utils/share/share_post.dart';
 
 /// Flutter environment manager v0.0.1
 const prodFlag = !bool.fromEnvironment('DEBUG');
+
+final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>();
 
 class LMFeed extends StatefulWidget {
   final String? userId;
@@ -67,10 +72,14 @@ class _LMFeedState extends State<LMFeed> {
   late final String userId;
   late final String userName;
   late final bool isProd;
+  late final NetworkConnectivity networkConnectivity;
+  ValueNotifier<bool> rebuildOnConnectivityChange = ValueNotifier<bool>(false);
 
   @override
   void initState() {
     super.initState();
+    networkConnectivity = NetworkConnectivity.instance;
+    networkConnectivity.initialise();
     loadSvgIntoCache();
     isProd = prodFlag;
     userId = widget.userId!.isEmpty
@@ -79,7 +88,6 @@ class _LMFeedState extends State<LMFeed> {
             : CredsDev.botId
         : widget.userId!;
     userName = widget.userName!.isEmpty ? "Test username" : widget.userName!;
-
     // firebase();
   }
 
@@ -94,179 +102,136 @@ class _LMFeedState extends State<LMFeed> {
 
   @override
   Widget build(BuildContext context) {
+    Size screeSize = MediaQuery.of(context).size;
     return OverlaySupport.global(
       toastTheme: ToastThemeData(
           background: Colors.black,
           textColor: Colors.white,
           alignment: Alignment.bottomCenter),
-      child: FutureBuilder<InitiateUserResponse>(
-        future: locator<LikeMindsService>().initiateUser(
-          (InitiateUserRequestBuilder()
-                ..userId(userId)
-                ..userName(userName))
-              .build(),
+      child: InternetWidget(
+        offline: FullScreenWidget(
+          child: Container(
+            width: screeSize.width,
+            color: Colors.white,
+            child: const Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(
+                  Icons.signal_wifi_off,
+                  size: 40,
+                  color: kPrimaryColor,
+                ),
+                kVerticalPaddingLarge,
+                Text("No internet\nCheck your connection and try again",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: kPrimaryColor,
+                      fontSize: 14,
+                    )),
+              ],
+            ),
+          ),
         ),
-        initialData: null,
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.hasData) {
-            InitiateUserResponse response = snapshot.data;
-            if (response.success) {
-              user = response.initiateUser?.user;
-              UserLocalPreference.instance.storeUserData(user!);
-              LMNotificationHandler.instance.registerDevice(user!.id);
-              return BlocProvider(
-                create: (context) => NewPostBloc(),
-                child: MaterialApp(
-                  debugShowCheckedModeBanner: !isProd,
-                  theme: ThemeData.from(
-                    colorScheme: ColorScheme.fromSeed(
-                      seedColor: kPrimaryColor,
-                      primary: kPrimaryColor,
-                      secondary: const Color.fromARGB(255, 70, 102, 246),
-                      onSecondary: kSecondaryColor700,
-                    ),
-                  ),
-                  title: 'LM Feed',
-                  // navigatorKey: locator<NavigationService>().navigatorKey,
-                  // onGenerateRoute: (settings) {
-                  //   if (settings.name == NotificationScreen.route) {
-                  //     return MaterialPageRoute(
-                  //       builder: (context) => const NotificationScreen(),
-                  //     );
-                  //   }
-                  //   if (settings.name == AllCommentsScreen.route) {
-                  //     final args =
-                  //         settings.arguments as AllCommentsScreenArguments;
-                  //     return MaterialPageRoute(
-                  //       builder: (context) {
-                  //         return AllCommentsScreen(
-                  //           postId: args.postId,
-                  //           feedRoomId: args.feedRoomId,
-                  //           fromComment: args.fromComment,
-                  //         );
-                  //       },
-                  //     );
-                  //   }
-                  //   if (settings.name == LikesScreen.route) {
-                  //     final args = settings.arguments as LikesScreenArguments;
-                  //     return MaterialPageRoute(
-                  //       builder: (context) {
-                  //         return LikesScreen(
-                  //           postId: args.postId,
-                  //           commentId: args.commentId,
-                  //           isCommentLikes: args.isCommentLikes,
-                  //         );
-                  //       },
-                  //     );
-                  //   }
-                  //   if (settings.name == MediaPreviewScreen.routeName) {
-                  //     final args = settings.arguments as MediaPreviewArguments;
-                  //     return MaterialPageRoute(
-                  //       builder: (context) {
-                  //         return MediaPreviewScreen(
-                  //           attachments: args.attachments,
-                  //           postId: args.postId,
-                  //           mediaFile: args.mediaFile,
-                  //           mediaUrl: args.mediaUrl,
-                  //         );
-                  //       },
-                  //     );
-                  //   }
-                  //   if (settings.name == ReportPostScreen.route) {
-                  //     return MaterialPageRoute(
-                  //       builder: (context) {
-                  //         return const ReportPostScreen();
-                  //       },
-                  //     );
-                  //   }
-                  //   if (settings.name == NewPostScreen.route) {
-                  //     final args = settings.arguments as NewPostScreenArguments;
-                  //     return MaterialPageRoute(
-                  //       builder: (context) {
-                  //         return NewPostScreen(
-                  //           feedRoomId: args.feedroomId,
-                  //           feedRoomTitle: args.feedRoomTitle,
-                  //           isCm: args.isCm,
-                  //           populatePostMedia: args.populatePostMedia,
-                  //           populatePostText: args.populatePostText,
-                  //         );
-                  //       },
-                  //     );
-                  //   }
+        connectivity: networkConnectivity.networkConnectivity,
+        // ignore: avoid_print
+        whenOffline: () {
+          debugPrint('No Internet');
+          rebuildOnConnectivityChange.value =
+              !rebuildOnConnectivityChange.value;
+        },
+        // ignore: avoid_print
+        whenOnline: () {
+          debugPrint('Connected to internet');
+          rebuildOnConnectivityChange.value =
+              !rebuildOnConnectivityChange.value;
+        },
+        loadingWidget: const Center(child: CircularProgressIndicator()),
+        online: ValueListenableBuilder(
+            valueListenable: rebuildOnConnectivityChange,
+            builder: (context, _, __) {
+              return FutureBuilder<InitiateUserResponse>(
+                future: locator<LikeMindsService>().initiateUser(
+                  (InitiateUserRequestBuilder()
+                        ..userId(userId)
+                        ..userName(userName))
+                      .build(),
+                ),
+                initialData: null,
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (snapshot.hasData) {
+                    InitiateUserResponse response = snapshot.data;
+                    if (response.success) {
+                      user = response.initiateUser?.user;
+                      UserLocalPreference.instance.storeUserData(user!);
+                      LMNotificationHandler.instance.registerDevice(user!.id);
+                      return BlocProvider(
+                        create: (context) => NewPostBloc(),
+                        child: MaterialApp(
+                          debugShowCheckedModeBanner: !isProd,
+                          theme: ThemeData.from(
+                            colorScheme: ColorScheme.fromSeed(
+                              seedColor: kPrimaryColor,
+                              primary: kPrimaryColor,
+                              secondary:
+                                  const Color.fromARGB(255, 70, 102, 246),
+                              onSecondary: kSecondaryColor700,
+                            ),
+                          ),
+                          title: 'LM Feed',
+                          home: FutureBuilder(
+                            future:
+                                locator<LikeMindsService>().getMemberState(),
+                            initialData: null,
+                            builder:
+                                (BuildContext context, AsyncSnapshot snapshot) {
+                              if (snapshot.hasData) {
+                                final MemberStateResponse response =
+                                    snapshot.data;
+                                UserLocalPreference.instance
+                                    .storeMemberRights(response);
 
-                  //   if (settings.name == EditPostScreen.route) {
-                  //     final args = settings.arguments as EditPostScreenArguments;
-                  //     return MaterialPageRoute(
-                  //       builder: (context) {
-                  //         return EditPostScreen(
-                  //           postId: args.postId,
-                  //           feedRoomId: args.feedRoomId,
-                  //         );
-                  //       },
-                  //     );
-                  //   }
+                                return const UniversalFeedScreen();
+                              }
 
-                  //   if (settings.name == FeedRoomSelect.route) {
-                  //     final args = settings.arguments as FeedRoomSelectArguments;
-                  //     return MaterialPageRoute(
-                  //       builder: (context) {
-                  //         return FeedRoomSelect(
-                  //           user: args.user,
-                  //           feedRoomIds: args.feedRoomIds,
-                  //         );
-                  //       },
-                  //     );
-                  //   }
-                  //   return null;
-                  // },
-                  home: FutureBuilder(
-                    future: locator<LikeMindsService>().getMemberState(),
-                    initialData: null,
-                    builder: (BuildContext context, AsyncSnapshot snapshot) {
-                      if (snapshot.hasData) {
-                        final MemberStateResponse response = snapshot.data;
-                        UserLocalPreference.instance
-                            .storeMemberRights(response);
-
-                        return const UniversalFeedScreen();
-                      }
-
-                      return Container(
-                        height: MediaQuery.of(context).size.height,
-                        width: MediaQuery.of(context).size.width,
-                        color: kBackgroundColor,
-                        child: const Center(
-                          child: LMLoader(
-                            isPrimary: true,
+                              return Container(
+                                height: MediaQuery.of(context).size.height,
+                                width: MediaQuery.of(context).size.width,
+                                color: kBackgroundColor,
+                                child: const Center(
+                                  child: LMLoader(
+                                    isPrimary: true,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ),
                       );
-                    },
-                  ),
-                ),
+                    } else {}
+                  } else if (snapshot.hasError) {
+                    debugPrint("Error - ${snapshot.error}");
+                    return Container(
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      color: kBackgroundColor,
+                      child: const Center(
+                        child: Text("An error has occured",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                            )),
+                      ),
+                    );
+                  }
+                  return Container(
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width,
+                    color: kBackgroundColor,
+                  );
+                },
               );
-            } else {}
-          } else if (snapshot.hasError) {
-            debugPrint("Error - ${snapshot.error}");
-            return Container(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              color: kBackgroundColor,
-              child: const Center(
-                child: Text("An error has occured",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                    )),
-              ),
-            );
-          }
-          return Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            color: kBackgroundColor,
-          );
-        },
+            }),
       ),
     );
   }

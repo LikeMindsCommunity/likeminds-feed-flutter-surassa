@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/src/models/post_view_model.dart';
@@ -70,20 +71,22 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
             final String? response = await locator<LikeMindsService>()
                 .uploadFile(mediaFile, user.userUniqueId);
             if (response != null) {
-              attachments.add(Attachment(
-                attachmentType: media.mapMediaTypeToInt(),
-                attachmentMeta: AttachmentMeta(
-                    url: response,
-                    size: media.mediaType == MediaType.document
-                        ? media.size
-                        : null,
-                    format: media.mediaType == MediaType.document
-                        ? media.format
-                        : null,
-                    duration: media.mediaType == MediaType.video
-                        ? media.duration
-                        : null),
-              ));
+              attachments.add(
+                Attachment(
+                  attachmentType: media.mapMediaTypeToInt(),
+                  attachmentMeta: AttachmentMeta(
+                      url: response,
+                      size: media.mediaType == MediaType.document
+                          ? media.size
+                          : null,
+                      format: media.mediaType == MediaType.document
+                          ? media.format
+                          : null,
+                      duration: media.mediaType == MediaType.video
+                          ? media.duration
+                          : null),
+                ),
+              );
               progress.add(index / postMedia.length);
             } else {
               throw ('Error uploading file');
@@ -152,7 +155,7 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
       }
     } catch (err) {
       emit(const NewPostError(message: 'An error occurred'));
-      print(err.toString());
+      debugPrint(err.toString());
     }
   }
 
@@ -186,7 +189,7 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
     } catch (err) {
       emit(
         const NewPostError(
-          message: 'An error occured while saving the post',
+          message: 'An error occurred while saving the post',
         ),
       );
     }
