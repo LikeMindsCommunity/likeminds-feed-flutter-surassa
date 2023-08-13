@@ -304,7 +304,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                   const Divider(),
                   const SizedBox(height: 6),
                   LMPostFooter(
-                    alignment: LMAlignment.centre,
+                    alignment: LMAlignment.left,
                     children: [
                       ValueListenableBuilder(
                           valueListenable: rebuildLikeWidget,
@@ -384,7 +384,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                               isActive: isLiked!,
                             );
                           }),
-                      // LMLikeButton(),
+                      kHorizontalPaddingLarge,
                       LMTextButton(
                         text: const LMTextView(text: "Comment"),
                         margin: 0,
@@ -409,20 +409,21 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                           boxPadding: 6,
                         ),
                       ),
-                      LMTextButton(
-                        text: const LMTextView(text: "Share"),
-                        margin: 0,
-                        onTap: () {
-                          SharePost().sharePost(widget.post.id);
-                        },
-                        icon: LMIcon(
-                          type: LMIconType.svg,
-                          assetPath: kAssetShareIcon,
-                          color: Theme.of(context).colorScheme.onSecondary,
-                          size: 20,
-                          boxPadding: 6,
-                        ),
-                      ),
+
+                      // LMTextButton(
+                      //   text: const LMTextView(text: "Share"),
+                      //   margin: 0,
+                      //   onTap: () {
+                      //     SharePost().sharePost(widget.post.id);
+                      //   },
+                      //   icon: LMIcon(
+                      //     type: LMIconType.svg,
+                      //     assetPath: kAssetShareIcon,
+                      //     color: Theme.of(context).colorScheme.onSecondary,
+                      //     size: 20,
+                      //     boxPadding: 6,
+                      //   ),
+                      // ),
                     ],
                     // children: [
 

@@ -27,7 +27,7 @@ class ToggleLikeCommentBloc
     ToggleLikeCommentResponse? response =
         await lmService.toggleLikeComment(toggleLikeCommentRequest);
     if (!response.success) {
-      emit(const ToggleLikeCommentError(message: "No data found"));
+      emit(const ToggleLikeCommentError(message: "An error occurred"));
     } else {
       emit(ToggleLikeCommentSuccess(toggleLikeCommentResponse: response));
     }

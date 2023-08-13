@@ -43,7 +43,8 @@ class UniversalFeedBloc extends Bloc<UniversalFeedEvent, UniversalFeedState> {
     );
 
     if (response == null) {
-      emit(const UniversalFeedError(message: "No data found"));
+      emit(const UniversalFeedError(
+          message: "An error occurred, please check your network connection"));
     } else {
       response.users.addAll(users);
       emit(UniversalFeedLoaded(

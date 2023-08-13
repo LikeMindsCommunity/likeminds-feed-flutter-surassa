@@ -29,7 +29,7 @@ class AddCommentBloc extends Bloc<AddCommentEvent, AddCommentState> {
     AddCommentResponse? response =
         await locator<LikeMindsService>().addComment(addCommentRequest);
     if (!response.success) {
-      emit(const AddCommentError(message: "No data found"));
+      emit(const AddCommentError(message: "An error occurred"));
     } else {
       LMAnalytics.get().track(
         AnalyticsKeys.commentPosted,
