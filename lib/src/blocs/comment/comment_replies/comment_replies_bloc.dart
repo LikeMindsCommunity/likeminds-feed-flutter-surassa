@@ -53,7 +53,7 @@ class CommentRepliesBloc
     GetCommentResponse response =
         await lmService.getComment(commentDetailRequest);
     if (!response.success) {
-      emit(const CommentRepliesError(message: "No data found"));
+      emit(const CommentRepliesError(message: "An error occurred"));
     } else {
       response.postReplies!.replies.insertAll(0, comments);
       response.users!.addAll(users);

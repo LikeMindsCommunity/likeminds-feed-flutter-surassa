@@ -181,7 +181,7 @@ Dialog deleteConfirmationDialog(
                                             !rebuildReasonBox.value;
                                       } else {
                                         toast(response.errorMessage ??
-                                            'An error occured');
+                                            'An error occurred');
                                       }
                                       boolVarLoading = false;
                                       rebuildReasonBox.value =
