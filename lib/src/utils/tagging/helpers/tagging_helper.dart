@@ -74,7 +74,6 @@ class TaggingHelper {
   }
 
   static void routeToProfile(String userId) {
-    debugPrint(userId);
     locator<LikeMindsService>().routeToProfile(userId);
   }
 

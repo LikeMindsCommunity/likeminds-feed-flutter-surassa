@@ -443,9 +443,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                       fallbackText: currentUser.name,
                                       imageUrl: currentUser.imageUrl,
                                       onTap: () {
-                                        locator<LikeMindsService>()
-                                            .routeToProfile(
-                                                currentUser.userUniqueId);
+                                        if (currentUser.sdkClientInfo != null) {
+                                          locator<LikeMindsService>()
+                                              .routeToProfile(currentUser
+                                                  .sdkClientInfo!.userUniqueId);
+                                        }
                                       },
                                       size: 36,
                                     ),
@@ -860,6 +862,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                 commentEditId);
                                                     return LMCommentTile(
                                                       key: ValueKey(item.id),
+                                                      onTagTap:
+                                                          (String userId) {
+                                                        locator<LikeMindsService>()
+                                                            .routeToProfile(
+                                                                userId);
+                                                      },
                                                       onMenuTap: (id) {
                                                         if (id == 6) {
                                                           deselectCommentToEdit();
@@ -930,12 +938,18 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                     .userId]!
                                                                 .name,
                                                         onTap: () {
-                                                          locator<LikeMindsService>()
-                                                              .routeToProfile(
-                                                                  postDetailResponse!
-                                                                      .users![item
-                                                                          .userId]!
-                                                                      .userUniqueId);
+                                                          if (postDetailResponse!
+                                                                  .users![item
+                                                                      .userId]!
+                                                                  .sdkClientInfo !=
+                                                              null) {
+                                                            locator<LikeMindsService>().routeToProfile(
+                                                                postDetailResponse!
+                                                                    .users![item
+                                                                        .userId]!
+                                                                    .sdkClientInfo!
+                                                                    .userUniqueId);
+                                                          }
                                                         },
                                                         imageUrl:
                                                             postDetailResponse!

@@ -180,8 +180,10 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
                       fallbackText: opt.name!,
                       imageUrl: opt.imageUrl!,
                       onTap: () {
-                        locator<LikeMindsService>()
-                            .routeToProfile(opt.userUniqueId ?? '');
+                        if (opt.sdkClientInfo != null) {
+                          locator<LikeMindsService>()
+                              .routeToProfile(opt.sdkClientInfo!.userUniqueId);
+                        }
                       },
                       size: 32,
                     ),
