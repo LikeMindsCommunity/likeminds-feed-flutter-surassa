@@ -49,7 +49,7 @@ class LMFeed extends StatefulWidget {
     required String apiKey,
   }) {
     setupLMFeed(callback, apiKey);
-    return _instance ??= LMFeed._(
+    return LMFeed._(
       userId: userId,
       userName: userName,
       callback: callback,
@@ -166,7 +166,7 @@ class _LMFeedState extends State<LMFeed> {
                     InitiateUserResponse response = snapshot.data;
                     if (response.success) {
                       user = response.initiateUser?.user;
-                      UserLocalPreference.instance.storeUserData(user!);
+
                       LMNotificationHandler.instance.registerDevice(user!.id);
                       return BlocProvider(
                         create: (context) => NewPostBloc(),
@@ -189,11 +189,6 @@ class _LMFeedState extends State<LMFeed> {
                             builder:
                                 (BuildContext context, AsyncSnapshot snapshot) {
                               if (snapshot.hasData) {
-                                final MemberStateResponse response =
-                                    snapshot.data;
-                                UserLocalPreference.instance
-                                    .storeMemberRights(response);
-
                                 return UniversalFeedScreen(
                                   openChatCallback: widget.openChatCallback,
                                 );

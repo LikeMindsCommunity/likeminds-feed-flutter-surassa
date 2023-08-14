@@ -23,7 +23,7 @@ class UserLocalPreference {
     UserEntity userEntity = user.toEntity();
     Map<String, dynamic> userData = userEntity.toJson();
     String userString = jsonEncode(userData);
-    _sharedPreferences!.setString(_userKey, userString);
+    await _sharedPreferences!.setString(_userKey, userString);
   }
 
   User fetchUserData() {
@@ -40,7 +40,7 @@ class UserLocalPreference {
     return _sharedPreferences!.getBool(_memberStateKey)!;
   }
 
-  void storeMemberRights(MemberStateResponse response) async {
+  Future<void> storeMemberRights(MemberStateResponse response) async {
     final entity = response.toEntity();
     Map<String, dynamic> memberRights = entity.toJson();
     String memberRightsString = jsonEncode(memberRights);
@@ -67,5 +67,24 @@ class UserLocalPreference {
         return right.first.isSelected;
       }
     }
+  }
+
+  Future<void> setUserDataFromInitiateUserResponse(
+      InitiateUserResponse response) async {
+    if (response.success) {
+      await UserLocalPreference.instance
+          .storeUserData(response.initiateUser!.user);
+    }
+  }
+
+  Future<void> storeMemberRightsFromMemberStateResponse(
+      MemberStateResponse response) async {
+    if (response.success) {
+      await UserLocalPreference.instance.storeMemberRights(response);
+    }
+  }
+
+  Future<void> clearLocalPrefs() async {
+    await _sharedPreferences!.clear();
   }
 }

@@ -84,12 +84,18 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
       return StatefulBuilder(builder: (context, setReplyState) {
         return LMReplyTile(
             comment: element,
+            onTagTap: (String userId) {
+              locator<LikeMindsService>().routeToProfile(userId);
+            },
             user: user,
             profilePicture: LMProfilePicture(
               imageUrl: user.imageUrl,
               fallbackText: user.name,
               onTap: () {
-                locator<LikeMindsService>().routeToProfile(user.userUniqueId);
+                if (user.sdkClientInfo != null) {
+                  locator<LikeMindsService>()
+                      .routeToProfile(user.sdkClientInfo!.userUniqueId);
+                }
               },
               size: 32,
             ),

@@ -15,12 +15,12 @@ class NetworkConnectivity {
     ConnectivityResult result = await networkConnectivity.checkConnectivity();
     if (result != ConnectivityResult.mobile &&
         result != ConnectivityResult.wifi) {
-      // TODO: show snackbaro  or toast to update the user of network connectivity
+      // TODO: show snackbar or toast to update the user of network connectivity
     }
     networkConnectivity.onConnectivityChanged.listen((result) {
       if (result != ConnectivityResult.mobile &&
           result != ConnectivityResult.wifi) {
-        // TODO: show snackbaro  or toast to update the user of network connectivity
+        // TODO: show snackbar or toast to update the user of network connectivity
       }
       if (result == ConnectivityResult.mobile ||
           result == ConnectivityResult.wifi) {
