@@ -32,6 +32,7 @@ class LMFeed extends StatefulWidget {
   final String? userId;
   final String? userName;
   final String apiKey;
+  final Function(BuildContext context)? openChatCallback;
   final LMSDKCallback? callback;
 
   static LMFeed? _instance;
@@ -44,6 +45,7 @@ class LMFeed extends StatefulWidget {
     String? userId,
     String? userName,
     LMSDKCallback? callback,
+    Function(BuildContext context)? openChatCallback,
     required String apiKey,
   }) {
     setupLMFeed(callback, apiKey);
@@ -52,16 +54,18 @@ class LMFeed extends StatefulWidget {
       userName: userName,
       callback: callback,
       apiKey: apiKey,
+      openChatCallback: openChatCallback,
     );
   }
 
-  const LMFeed._({
-    Key? key,
-    this.userId,
-    this.userName,
-    required this.callback,
-    required this.apiKey,
-  }) : super(key: key);
+  const LMFeed._(
+      {Key? key,
+      this.userId,
+      this.userName,
+      required this.callback,
+      required this.apiKey,
+      this.openChatCallback})
+      : super(key: key);
 
   @override
   _LMFeedState createState() => _LMFeedState();
@@ -185,7 +189,9 @@ class _LMFeedState extends State<LMFeed> {
                             builder:
                                 (BuildContext context, AsyncSnapshot snapshot) {
                               if (snapshot.hasData) {
-                                return const UniversalFeedScreen();
+                                return UniversalFeedScreen(
+                                  openChatCallback: widget.openChatCallback,
+                                );
                               }
 
                               return Container(
