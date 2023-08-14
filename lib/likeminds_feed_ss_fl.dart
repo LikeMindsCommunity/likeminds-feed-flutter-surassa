@@ -47,7 +47,7 @@ class LMFeed extends StatefulWidget {
     required String apiKey,
   }) {
     setupLMFeed(callback, apiKey);
-    return _instance ??= LMFeed._(
+    return LMFeed._(
       userId: userId,
       userName: userName,
       callback: callback,

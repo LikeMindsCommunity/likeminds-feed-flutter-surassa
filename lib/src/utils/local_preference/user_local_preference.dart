@@ -83,4 +83,8 @@ class UserLocalPreference {
       await UserLocalPreference.instance.storeMemberRights(response);
     }
   }
+
+  Future<void> clearLocalPrefs() async {
+    await _sharedPreferences!.clear();
+  }
 }

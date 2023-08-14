@@ -12,6 +12,7 @@ const _prodFlag = !bool.fromEnvironment('DEBUG');
 
 abstract class ILikeMindsService {
   Future<InitiateUserResponse> initiateUser(InitiateUserRequest request);
+  Future<LogoutResponse> logout(LogoutRequest request);
   Future<MemberStateResponse> getMemberState();
   Future<GetFeedResponse?> getFeed(GetFeedRequest request);
   Future<GetFeedRoomResponse> getFeedRoom(GetFeedRoomRequest request);
@@ -88,6 +89,12 @@ class LikeMindsService implements ILikeMindsService {
     await UserLocalPreference.instance
         .setUserDataFromInitiateUserResponse(response);
     return response;
+  }
+
+  @override
+  Future<LogoutResponse> logout(LogoutRequest request) async {
+    UserLocalPreference.instance.clearLocalPrefs();
+    return await _sdkApplication.logout(request);
   }
 
   @override
