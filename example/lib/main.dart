@@ -29,7 +29,7 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
   await setupNotifications();
-  await UserLocalPreference.instance.initialize();
+  // await UserLocalPreference.instance.initialize();
   runApp(const MyApp());
 }
 
