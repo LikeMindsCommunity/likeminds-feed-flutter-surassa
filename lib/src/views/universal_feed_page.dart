@@ -606,52 +606,49 @@ class _FeedRoomViewState extends State<FeedRoomView> {
           return widget.feedRoomPagingController.itemList == null ||
                   widget.feedRoomPagingController.itemList!.isEmpty
               ? const SizedBox()
-              : Padding(
-                  padding: EdgeInsets.only(bottom: Platform.isIOS ? 50 : 0),
-                  child: LMTextButton(
-                    height: 44,
-                    width: 153,
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 12, horizontal: 20),
-                    borderRadius: 28,
-                    backgroundColor: right
-                        ? Theme.of(context).colorScheme.primary
-                        : kGrey3Color,
-                    placement: LMIconPlacement.end,
-                    text: LMTextView(
-                      text: "Create Post",
-                      textStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimary,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    margin: 5,
-                    icon: LMIcon(
-                      type: LMIconType.icon,
-                      icon: Icons.add,
-                      fit: BoxFit.cover,
-                      size: 18,
+              : LMTextButton(
+                  height: 44,
+                  width: 153,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                  borderRadius: 28,
+                  backgroundColor: right
+                      ? Theme.of(context).colorScheme.primary
+                      : kGrey3Color,
+                  placement: LMIconPlacement.end,
+                  text: LMTextView(
+                    text: "Create Post",
+                    textStyle: TextStyle(
                       color: Theme.of(context).colorScheme.onPrimary,
+                      fontWeight: FontWeight.w500,
                     ),
-                    onTap: right
-                        ? () {
-                            if (!postUploading.value) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const NewPostScreen(),
-                                ),
-                              );
-                            } else {
-                              toast(
-                                'A post is already uploading.',
-                                duration: Toast.LENGTH_LONG,
-                              );
-                            }
-                          }
-                        : () => toast(
-                            "You do not have permission to create a post"),
                   ),
+                  margin: 5,
+                  icon: LMIcon(
+                    type: LMIconType.icon,
+                    icon: Icons.add,
+                    fit: BoxFit.cover,
+                    size: 18,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                  onTap: right
+                      ? () {
+                          if (!postUploading.value) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const NewPostScreen(),
+                              ),
+                            );
+                          } else {
+                            toast(
+                              'A post is already uploading.',
+                              duration: Toast.LENGTH_LONG,
+                            );
+                          }
+                        }
+                      : () =>
+                          toast("You do not have permission to create a post"),
                 );
         },
       ),
