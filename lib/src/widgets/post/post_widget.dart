@@ -169,8 +169,10 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                           user: widget.user,
                           isFeed: widget.isFeed,
                           onProfileTap: () {
-                            locator<LikeMindsService>()
-                                .routeToProfile(widget.user.userUniqueId);
+                            if (widget.user.sdkClientInfo != null) {
+                              locator<LikeMindsService>().routeToProfile(
+                                  widget.user.sdkClientInfo!.userUniqueId);
+                            }
                           },
                           titleText: LMTextView(
                             text: widget.user.name,
@@ -254,7 +256,11 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                         );
                       }),
                   SizedBox(height: widget.post.text.isEmpty ? 0 : 8),
-                  const LMPostContent(),
+                  LMPostContent(
+                    onTagTap: (String userId) {
+                      locator<LikeMindsService>().routeToProfile(userId);
+                    },
+                  ),
                   postDetails!.attachments != null
                       ? const SizedBox(height: 12)
                       : const SizedBox(),
@@ -292,7 +298,10 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                               postId: postDetails!.id,
                                             )));
                               },
-                              child: LMTextView(text: "${postLikes} Likes")),
+                              child: LMTextView(
+                                  text: postLikes == 1
+                                      ? "$postLikes Like"
+                                      : "$postLikes Likes")),
                           const Spacer(),
                           LMTextView(
                               text: "${widget.post.commentCount} Comments"),

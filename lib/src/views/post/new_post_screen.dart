@@ -333,8 +333,10 @@ class _NewPostScreenState extends State<NewPostScreen> {
                           fallbackText: user.name,
                           imageUrl: user.imageUrl,
                           onTap: () {
-                            locator<LikeMindsService>()
-                                .routeToProfile(user.userUniqueId);
+                            if (user.sdkClientInfo != null) {
+                              locator<LikeMindsService>().routeToProfile(
+                                  user.sdkClientInfo!.userUniqueId);
+                            }
                           },
                           size: 36,
                         ),

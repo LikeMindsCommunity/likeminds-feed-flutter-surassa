@@ -27,7 +27,10 @@ class LMUserTile extends StatelessWidget {
           size: imageSize ?? 50,
           fallbackText: user.name,
           onTap: () {
-            locator<LikeMindsService>().routeToProfile(user.userUniqueId);
+            if (user.sdkClientInfo != null) {
+              locator<LikeMindsService>()
+                  .routeToProfile(user.sdkClientInfo!.userUniqueId);
+            }
           },
           imageUrl: user.imageUrl,
         ),
