@@ -33,6 +33,7 @@ lib/packages/flutter_typeahead-4.3.7/pubspec.lock
 .pub-cache/
 .pub/
 /build/
+.DS_Store
 
 # Symbolication related
 app.*.symbols
