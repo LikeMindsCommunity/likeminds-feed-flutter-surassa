@@ -42,7 +42,7 @@ dependencies:
   likeminds_feed_ui_fl:
     path: ../LikeMinds-Flutter-Feed-UI
 
-  likeminds_feed: 1.3.2
+  likeminds_feed: 1.3.3
 
 dev_dependencies:
   flutter_test:
