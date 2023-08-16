@@ -304,7 +304,9 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                       : "$postLikes Likes")),
                           const Spacer(),
                           LMTextView(
-                              text: "${widget.post.commentCount} Comments"),
+                              text: widget.post.commentCount == 1
+                                  ? "${widget.post.commentCount} Comment"
+                                  : "${widget.post.commentCount} Comments"),
                         ],
                       );
                     },
