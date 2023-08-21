@@ -132,10 +132,10 @@ class _MultiImageCropServiceState extends State<MultiImageCropService>
     // String extension = files.isNotEmpty
     //     ? files[currentPage].path.split('.').last.toLowerCase()
     //     : '';
-    return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
-        child: Expanded(
-          child: PreloadPageView.builder(
+    return Expanded(
+      child: Stack(
+        children: [
+          PreloadPageView.builder(
             controller: _pageController,
             itemCount: files.length,
             preloadPagesCount: files.length,
@@ -151,15 +151,20 @@ class _MultiImageCropServiceState extends State<MultiImageCropService>
               });
             },
             itemBuilder: (context, index) {
-              return Crop(
-                image: FileImage(File(files[index].path)),
-                key: cropKeyList[index],
-                alwaysShowGrid: widget.alwaysShowGrid,
-                aspectRatio: widget.aspectRatio,
+              return Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Crop(
+                  image: FileImage(File(files[index].path)),
+                  key: cropKeyList[index],
+                  alwaysShowGrid: widget.alwaysShowGrid,
+                  aspectRatio: widget.aspectRatio,
+                ),
               );
             },
           ),
-        ));
+        ],
+      ),
+    );
   }
 
   /// [thumbnailsControl] shows image preview of all selected images.
