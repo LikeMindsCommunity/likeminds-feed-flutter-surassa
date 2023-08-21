@@ -1,6 +1,6 @@
 name: likeminds_feed_ss_fl
 description: A new Flutter package project.
-version: 1.0.6
+version: 1.0.7
 publish_to: none
 homepage: "https://likeminds.community/"
 
@@ -38,6 +38,9 @@ dependencies:
 
   flutter_typeahead_mm:
     path: lib/packages/flutter_typeahead-4.3.7
+
+  multi_image_crop:
+    path: lib/packages/multi_image_crop
 
   likeminds_feed_ui_fl:
     path: ../LikeMinds-Flutter-Feed-UI
