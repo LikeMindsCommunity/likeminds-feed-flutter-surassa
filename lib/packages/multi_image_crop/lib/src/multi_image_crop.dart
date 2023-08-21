@@ -132,35 +132,34 @@ class _MultiImageCropServiceState extends State<MultiImageCropService>
     // String extension = files.isNotEmpty
     //     ? files[currentPage].path.split('.').last.toLowerCase()
     //     : '';
-    return Expanded(
-        child: Stack(
-      children: [
-        PreloadPageView.builder(
-          controller: _pageController,
-          itemCount: files.length,
-          preloadPagesCount: files.length,
-          physics: files.length > 1
-              ? const AlwaysScrollableScrollPhysics()
-              : const NeverScrollableScrollPhysics(),
-          onPageChanged: (page) async {
-            await _autoScrollController!
-                .scrollToIndex(page, preferPosition: AutoScrollPosition.middle);
-            setState(() {
-              currentPage = page;
-              mediaType = files[page].path.split('.').last;
-            });
-          },
-          itemBuilder: (context, index) {
-            return Crop(
-              image: FileImage(File(files[index].path)),
-              key: cropKeyList[index],
-              alwaysShowGrid: widget.alwaysShowGrid,
-              aspectRatio: widget.aspectRatio,
-            );
-          },
-        ),
-      ],
-    ));
+    return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+        child: Expanded(
+          child: PreloadPageView.builder(
+            controller: _pageController,
+            itemCount: files.length,
+            preloadPagesCount: files.length,
+            physics: files.length > 1
+                ? const AlwaysScrollableScrollPhysics()
+                : const NeverScrollableScrollPhysics(),
+            onPageChanged: (page) async {
+              await _autoScrollController!.scrollToIndex(page,
+                  preferPosition: AutoScrollPosition.middle);
+              setState(() {
+                currentPage = page;
+                mediaType = files[page].path.split('.').last;
+              });
+            },
+            itemBuilder: (context, index) {
+              return Crop(
+                image: FileImage(File(files[index].path)),
+                key: cropKeyList[index],
+                alwaysShowGrid: widget.alwaysShowGrid,
+                aspectRatio: widget.aspectRatio,
+              );
+            },
+          ),
+        ));
   }
 
   /// [thumbnailsControl] shows image preview of all selected images.
@@ -266,38 +265,38 @@ class _MultiImageCropServiceState extends State<MultiImageCropService>
             inActiveColor: CustomColors.secondaryColor,
             icon: isIos ? CupertinoIcons.delete : Icons.delete,
           ),
-          CustomIconButton(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  FadePageRoute(
-                      fullscreenDialog: true,
-                      builder: (_) => EditImage(
-                            image: files[currentPage],
-                            pixelRatio: widget.pixelRatio,
-                            activeColor:
-                                widget.activeColor ?? CustomColors.activeColor,
-                            onFiltered: (ByteData imageMemory) async {
-                              final buffer = imageMemory.buffer;
-                              await File(files[currentPage].path).writeAsBytes(
-                                  buffer.asUint8List(imageMemory.offsetInBytes,
-                                      imageMemory.lengthInBytes));
-                              if (kDebugMode) {
-                                print('Filter applied successfully...');
-                              }
-                              imageCache.clearLiveImages();
-                              imageCache.clear();
-                              setState(() {});
-                            },
-                          )));
-            },
-            toolTip: 'Edit',
-            labelText: 'Edit',
-            activeColor: CustomColors.secondaryColor,
-            isActive: false,
-            inActiveColor: CustomColors.secondaryColor,
-            icon: isIos ? CupertinoIcons.pencil : Icons.edit,
-          ),
+          // CustomIconButton(
+          //   onTap: () {
+          //     Navigator.push(
+          //         context,
+          //         FadePageRoute(
+          //             fullscreenDialog: true,
+          //             builder: (_) => EditImage(
+          //                   image: files[currentPage],
+          //                   pixelRatio: widget.pixelRatio,
+          //                   activeColor:
+          //                       widget.activeColor ?? CustomColors.activeColor,
+          //                   onFiltered: (ByteData imageMemory) async {
+          //                     final buffer = imageMemory.buffer;
+          //                     await File(files[currentPage].path).writeAsBytes(
+          //                         buffer.asUint8List(imageMemory.offsetInBytes,
+          //                             imageMemory.lengthInBytes));
+          //                     if (kDebugMode) {
+          //                       print('Filter applied successfully...');
+          //                     }
+          //                     imageCache.clearLiveImages();
+          //                     imageCache.clear();
+          //                     setState(() {});
+          //                   },
+          //                 )));
+          //   },
+          //   toolTip: 'Edit',
+          //   labelText: 'Edit',
+          //   activeColor: CustomColors.secondaryColor,
+          //   isActive: false,
+          //   inActiveColor: CustomColors.secondaryColor,
+          //   icon: isIos ? CupertinoIcons.pencil : Icons.edit,
+          // ),
           CustomIconButton(
               onTap: () => cropImage(),
               toolTip: 'Crop',
