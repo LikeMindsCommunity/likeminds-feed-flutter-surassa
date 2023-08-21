@@ -432,7 +432,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                   decoration: BoxDecoration(
                                       color: Theme.of(context)
                                           .colorScheme
-                                          .secondary
+                                          .primary
                                           .withOpacity(0.04),
                                       borderRadius: BorderRadius.circular(24)),
                                   margin: const EdgeInsets.symmetric(
@@ -530,7 +530,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                       textStyle:
                                                                           TextStyle(
                                                                         color: right
-                                                                            ? Theme.of(context).colorScheme.secondary
+                                                                            ? Theme.of(context).colorScheme.primary
                                                                             : Colors.transparent,
                                                                         fontSize:
                                                                             12.5,
@@ -644,7 +644,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                               12.5,
                                                                           color: Theme.of(context)
                                                                               .colorScheme
-                                                                              .secondary),
+                                                                              .primary),
                                                                     ),
                                                                     onTap: () {
                                                                       closeOnScreenKeyboard();
@@ -1005,7 +1005,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                 color: Theme.of(
                                                                         context)
                                                                     .colorScheme
-                                                                    .secondary,
+                                                                    .primary,
                                                                 fontSize: 12),
                                                           ),
                                                           onTap: () {
@@ -1057,9 +1057,16 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                         Row(
                                                           children: [
                                                             LMTextButton(
-                                                              text: const LMTextView(
-                                                                  text:
-                                                                      "Reply"),
+                                                              margin: 10,
+                                                              text:
+                                                                  const LMTextView(
+                                                                      text:
+                                                                          "Reply",
+                                                                      textStyle:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            12,
+                                                                      )),
                                                               onTap: () {
                                                                 selectCommentToReply(
                                                                   item.id,
@@ -1103,7 +1110,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                           TextStyle(
                                                                         color: Theme.of(context)
                                                                             .colorScheme
-                                                                            .secondary,
+                                                                            .primary,
                                                                       ),
                                                                     ),
                                                                   )

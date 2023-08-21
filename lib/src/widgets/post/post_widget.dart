@@ -76,6 +76,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
 
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.of(context).size;
     NewPostBloc newPostBloc = BlocProvider.of<NewPostBloc>(context);
     timeago.setLocaleMessages('en', SSCustomMessages());
     return InheritedPostProvider(
@@ -270,6 +271,8 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                           child: LMPostMedia(
                             attachments: postDetails!.attachments!,
                             borderRadius: 16.0,
+                            width: screenSize.width - 32,
+                            height: screenSize.width - 32,
                             documentIcon: const LMIcon(
                               type: LMIconType.svg,
                               assetPath: kAssetDocPDFIcon,

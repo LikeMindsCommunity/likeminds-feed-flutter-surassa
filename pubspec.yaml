@@ -39,6 +39,9 @@ dependencies:
   flutter_typeahead_mm:
     path: lib/packages/flutter_typeahead-4.3.7
 
+  multi_image_crop:
+    path: lib/packages/multi_image_crop
+
   likeminds_feed_ui_fl:
     path: ../LikeMinds-Flutter-Feed-UI
 

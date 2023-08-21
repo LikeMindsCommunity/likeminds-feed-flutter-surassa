@@ -158,7 +158,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                       : element.likesCount == 1
                           ? "1 Like"
                           : "${element.likesCount} Likes",
-                  textStyle: TextStyle(fontSize: 12),
+                  textStyle: const TextStyle(fontSize: 12),
                 ),
                 activeText: LMTextView(
                   text: element.likesCount == 0
@@ -167,8 +167,9 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                           ? "1 Like"
                           : "${element.likesCount} Likes",
                   textStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.secondary,
-                      fontSize: 12),
+                    color: Theme.of(context).colorScheme.primary,
+                    fontSize: 12,
+                  ),
                 ),
                 onTap: () {
                   toggleLikeCommentBloc.add(
@@ -190,9 +191,9 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                   });
                 },
                 icon: const LMIcon(
-                  type: LMIconType.icon,
-                  icon: Icons.thumb_up_alt_outlined,
-                  size: 18,
+                  type: LMIconType.svg,
+                  assetPath: kAssetLikeIcon,
+                  size: 20,
                 ),
                 activeIcon: const LMIcon(
                   type: LMIconType.svg,
@@ -307,7 +308,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                                   text: 'View more replies',
                                   textStyle: TextStyle(
                                     color:
-                                        Theme.of(context).colorScheme.secondary,
+                                        Theme.of(context).colorScheme.primary,
                                     fontSize: 14,
                                   ),
                                 ),
