@@ -57,13 +57,13 @@ class LMFeed extends StatefulWidget {
     );
   }
 
-  static void setupLMFeed({
+  static void setupFeed({
     required String apiKey,
     LMSDKCallback? lmCallBack,
   }) {
     setupLMFeed(
-      apiKey: apiKey,
-      lmCallBack: lmCallBack,
+      lmCallBack,
+      apiKey,
     );
   }
 
