@@ -718,10 +718,14 @@ class _NewPostScreenState extends State<NewPostScreen> {
                 .toList();
             setPickedMediaFiles(mediaFiles);
             onUploadedDocument(true);
+            return;
           },
         );
+        onUploadedDocument(false);
+        return;
       } else {
         onUploadedDocument(false);
+        return;
       }
     } catch (e) {
       toast(
@@ -730,6 +734,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
       );
       onUploadedDocument(false);
       print(e.toString());
+      return;
     }
   }
 }
