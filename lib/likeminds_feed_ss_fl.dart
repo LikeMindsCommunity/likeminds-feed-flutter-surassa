@@ -48,7 +48,6 @@ class LMFeed extends StatefulWidget {
     Function(BuildContext context)? openChatCallback,
     required String apiKey,
   }) {
-    setupLMFeed(callback, apiKey);
     return LMFeed._(
       userId: userId,
       userName: userName,
@@ -56,6 +55,20 @@ class LMFeed extends StatefulWidget {
       apiKey: apiKey,
       openChatCallback: openChatCallback,
     );
+  }
+
+  static void setupFeed({
+    required String apiKey,
+    LMSDKCallback? lmCallBack,
+  }) {
+    setupLMFeed(
+      lmCallBack,
+      apiKey,
+    );
+  }
+
+  static void logout() {
+    locator<LikeMindsService>().logout(LogoutRequestBuilder().build());
   }
 
   const LMFeed._(
