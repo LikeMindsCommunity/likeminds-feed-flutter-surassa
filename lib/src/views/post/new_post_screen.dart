@@ -10,6 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:likeminds_feed/likeminds_feed.dart';
+import 'package:likeminds_feed_ss_fl/packages/multi_image_crop/lib/multi_image_crop.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
@@ -703,17 +704,22 @@ class _NewPostScreenState extends State<NewPostScreen> {
             );
             onUploadedDocument(false);
             return;
-          } else {
-            final file = File(image.path!);
-            final mediaModel = MediaModel(
-              mediaFile: file,
-              mediaType: MediaType.image,
-            );
-            mediaFiles.add(mediaModel);
           }
         }
-        setPickedMediaFiles(mediaFiles);
-        onUploadedDocument(true);
+        MultiImageCrop.startCropping(
+          context: context,
+          activeColor: kWhiteColor,
+          aspectRatio: 1,
+          files: list.files.map((e) => File(e.path!)).toList(),
+          callBack: (List<File> images) {
+            List<MediaModel> mediaFiles = images
+                .map((e) => MediaModel(
+                    mediaFile: File(e.path), mediaType: MediaType.image))
+                .toList();
+            setPickedMediaFiles(mediaFiles);
+            onUploadedDocument(true);
+          },
+        );
       } else {
         onUploadedDocument(false);
       }
