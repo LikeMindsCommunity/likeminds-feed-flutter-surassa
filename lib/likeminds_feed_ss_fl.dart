@@ -59,7 +59,7 @@ class LMFeed extends StatefulWidget {
 
   static void setupLMFeed({
     required String apiKey,
-    required LMSDKCallback lmCallBack,
+    LMSDKCallback? lmCallBack,
   }) {
     setupLMFeed(
       apiKey: apiKey,
