@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_sample/cred_screen.dart';
+import 'package:likeminds_feed_ss_sample/credentials/credentials.dart';
 import 'package:likeminds_feed_ss_sample/firebase_options.dart';
+import 'package:likeminds_feed_ss_sample/likeminds_callback.dart';
 import 'package:likeminds_feed_ss_sample/user_local_preference.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -29,7 +31,10 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
   await setupNotifications();
-  // await UserLocalPreference.instance.initialize();
+  LMFeed.setupFeed(
+      apiKey: debug ? CredsDev.apiKey : CredsProd.apiKey,
+      lmCallBack: LikeMindsCallback());
+
   runApp(const MyApp());
 }
 
