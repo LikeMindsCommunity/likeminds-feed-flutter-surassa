@@ -110,9 +110,12 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
           ),
         );
       }
+      List<Topic> postTopics =
+          event.selectedTopics.map((e) => e.toTopic()).toList();
       final AddPostRequest request = (AddPostRequestBuilder()
             ..text(event.postText)
-            ..attachments(attachments))
+            ..attachments(attachments)
+            ..topics(postTopics))
           .build();
 
       final AddPostResponse response =
@@ -147,9 +150,12 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
                   },
           },
         );
-        emit(NewPostUploaded(
-            postData: PostViewModel.fromPost(post: response.post!),
-            userData: response.user!));
+        emit(
+          NewPostUploaded(
+              postData: PostViewModel.fromPost(post: response.post!),
+              userData: response.user!,
+              topics: response.topics ?? <String, Topic>{}),
+        );
       } else {
         emit(NewPostError(message: response.errorMessage!));
       }
@@ -177,6 +183,7 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
           EditPostUploaded(
             postData: PostViewModel.fromPost(post: response.post!),
             userData: response.user!,
+            topics: response.topics ?? <String, Topic>{},
           ),
         );
       } else {

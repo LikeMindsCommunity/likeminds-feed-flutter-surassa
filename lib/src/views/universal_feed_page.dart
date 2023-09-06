@@ -119,6 +119,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
     selectedTopics = topics;
     rebuildTopicFeed.value = !rebuildTopicFeed.value;
     clearPagingController();
+    _pageFeed = 1;
     _feedBloc.add(
       GetUniversalFeed(
         offset: 1,
@@ -294,7 +295,8 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                                   clipBehavior: Clip.hardEdge,
                                   builder: (context) => TopicBottomSheet(
                                     selectedTopics: selectedTopics,
-                                    onTopicSelected: (updatedTopics) {
+                                    onTopicSelected:
+                                        (updatedTopics, tappedTopic) {
                                       updateSelectedTopics(updatedTopics);
                                     },
                                   ),
@@ -604,6 +606,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                   feedRoomItemList.removeLast();
                 }
                 widget.feedResponse.users.addAll(curr.userData);
+                widget.feedResponse.topics.addAll(curr.topics);
                 widget.feedRoomPagingController.itemList = feedRoomItemList;
                 postUploading.value = false;
                 rebuildPostWidget.value = !rebuildPostWidget.value;
@@ -619,6 +622,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                   feedRoomItemList?[index] = item;
                 }
                 widget.feedResponse.users.addAll(curr.userData);
+                widget.feedResponse.topics.addAll(curr.topics);
                 postUploading.value = false;
                 rebuildPostWidget.value = !rebuildPostWidget.value;
               }
@@ -807,6 +811,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                 const SizedBox(height: 8),
                                 SSPostWidget(
                                   post: item,
+                                  topics: widget.feedResponse.topics,
                                   user: widget.feedResponse.users[item.userId]!,
                                   onTap: () {
                                     Navigator.push(

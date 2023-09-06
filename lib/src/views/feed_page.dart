@@ -221,6 +221,7 @@ class _FeedScreenState extends State<FeedScreen> {
                         SSPostWidget(
                           post: item,
                           user: feedResponse.users[item.userId]!,
+                          topics: feedResponse.topics,
                           onTap: () {
                             Navigator.push(
                               context,

@@ -21,15 +21,25 @@ class EditPostUploading extends NewPostState {}
 class NewPostUploaded extends NewPostState {
   final PostViewModel postData;
   final Map<String, User> userData;
+  final Map<String, Topic> topics;
 
-  const NewPostUploaded({required this.postData, required this.userData});
+  const NewPostUploaded({
+    required this.postData,
+    required this.userData,
+    required this.topics,
+  });
 }
 
 class EditPostUploaded extends NewPostState {
   final PostViewModel postData;
   final Map<String, User> userData;
+  final Map<String, Topic> topics;
 
-  const EditPostUploaded({required this.postData, required this.userData});
+  const EditPostUploaded({
+    required this.postData,
+    required this.userData,
+    required this.topics,
+  });
 }
 
 class NewPostError extends NewPostState {

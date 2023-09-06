@@ -8,7 +8,7 @@ import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 
 class TopicBottomSheet extends StatefulWidget {
   final List<TopicViewModel> selectedTopics;
-  final Function(List<TopicViewModel>) onTopicSelected;
+  final Function(List<TopicViewModel>, TopicViewModel) onTopicSelected;
   final bool? isEnabled;
   const TopicBottomSheet({
     Key? key,
@@ -178,7 +178,7 @@ class _TopicBottomSheetState extends State<TopicBottomSheet> {
                                     isTopicSelected = !isTopicSelected;
                                     rebuildTopicsScreen.value =
                                         !rebuildTopicsScreen.value;
-                                    widget.onTopicSelected(selectedTopics);
+                                    widget.onTopicSelected(selectedTopics, e);
                                   },
                                   child: Container(
                                     margin: const EdgeInsets.only(

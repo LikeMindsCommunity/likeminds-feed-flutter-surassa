@@ -14,6 +14,7 @@ import 'package:likeminds_feed_ss_fl/src/views/likes/likes_screen.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post/edit_post_screen.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post_detail_screen.dart';
 import 'package:likeminds_feed_ss_fl/src/widgets/delete_dialog.dart';
+import 'package:likeminds_feed_ss_fl/src/widgets/topic/topic_chip_widget.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -21,6 +22,7 @@ import 'package:timeago/timeago.dart' as timeago;
 class SSPostWidget extends StatefulWidget {
   final PostViewModel post;
   final User user;
+  final Map<String, Topic> topics;
   final bool isFeed;
   final Function() onTap;
   final Function(bool isDeleted) refresh;
@@ -30,6 +32,7 @@ class SSPostWidget extends StatefulWidget {
     required this.post,
     required this.user,
     required this.onTap,
+    required this.topics,
     required this.refresh,
     required this.isFeed,
   }) : super(key: key);
@@ -256,7 +259,12 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                           ),
                         );
                       }),
-                  SizedBox(height: widget.post.text.isEmpty ? 0 : 8),
+                  postDetails!.topics.isEmpty
+                      ? const SizedBox()
+                      : TopicChipWidget(
+                          postTopic: TopicViewModel.fromTopic(
+                              widget.topics[postDetails!.topics.first]!),
+                        ),
                   LMPostContent(
                     onTagTap: (String userId) {
                       locator<LikeMindsService>().routeToProfile(userId);

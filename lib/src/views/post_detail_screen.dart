@@ -795,6 +795,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                         )
                                       : SSPostWidget(
                                           post: postData!,
+                                          topics:
+                                              postDetailResponse!.topics ?? {},
                                           user: postDetailResponse!.users![
                                               postDetailResponse!
                                                   .postReplies!.userId]!,
