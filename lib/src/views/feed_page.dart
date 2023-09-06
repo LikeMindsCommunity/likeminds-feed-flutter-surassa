@@ -45,7 +45,7 @@ class _FeedScreenState extends State<FeedScreen> {
     super.initState();
     // Bloc.observer = SimpleBlocObserver();
     _feedBloc = UniversalFeedBloc();
-    _feedBloc.add(const GetUniversalFeed(offset: 1, forLoadMore: false));
+    _feedBloc.add(const GetUniversalFeed(offset: 1));
     scrollController.addListener(() {
       _showScrollToBottomButton();
     });
@@ -82,7 +82,7 @@ class _FeedScreenState extends State<FeedScreen> {
 
   void _addPaginationListener() {
     _pagingController.addPageRequestListener((pageKey) {
-      _feedBloc.add(GetUniversalFeed(offset: pageKey, forLoadMore: true));
+      _feedBloc.add(GetUniversalFeed(offset: pageKey));
     });
   }
 
@@ -200,7 +200,7 @@ class _FeedScreenState extends State<FeedScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => NewPostScreen(),
+                                  builder: (context) => const NewPostScreen(),
                                 ),
                               );
                             } else {

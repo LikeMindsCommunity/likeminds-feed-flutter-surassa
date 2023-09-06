@@ -50,6 +50,7 @@ abstract class ILikeMindsService {
   Future<MarkReadNotificationResponse> markReadNotification(
       MarkReadNotificationRequest request);
   Future<GetDeleteReasonResponse> getReportTags(GetDeleteReasonRequest request);
+  Future<GetTopicsResponse> getTopics(GetTopicsRequest request);
   void routeToProfile(String userId);
 }
 
@@ -259,6 +260,11 @@ class LikeMindsService implements ILikeMindsService {
   Future<GetDeleteReasonResponse> getReportTags(
       GetDeleteReasonRequest request) async {
     return await _sdkApplication.getReportTags(request);
+  }
+
+  @override
+  Future<GetTopicsResponse> getTopics(GetTopicsRequest request) {
+    return _sdkApplication.getTopics(request);
   }
 
   @override

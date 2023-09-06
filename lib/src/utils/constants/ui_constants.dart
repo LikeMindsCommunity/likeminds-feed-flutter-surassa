@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 
 const Color kPrimaryColor = Color.fromRGBO(59, 130, 246, 1);
 const Color kSecondaryColor700 = Color.fromRGBO(51, 65, 85, 1);
+const Color onSurface = Color.fromRGBO(226, 232, 240, 1);
 const Color kBackgroundColor = Color(0xffF5F5F5);
 const Color kWhiteColor = Color(0xffFFFFFF);
+const Color appBlack = Color(0xFF334155);
+const Color appSecondaryBlack = Color(0xFF94A3B8);
 const Color kGreyColor = Color(0xff666666);
 const Color kGrey1Color = Color(0xff222020);
 const Color kGrey2Color = Color(0xff504B4B);
