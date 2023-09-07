@@ -59,11 +59,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyAVmbe-8jgnO2MUnFotMdp2tmDVnwTZqfE',
-    appId: '1:317419981427:ios:8bd786c38ad27dded2f806',
+    appId: '1:317419981427:ios:237be42bf46d966fd2f806',
     messagingSenderId: '317419981427',
     projectId: 'likeminds-sdk-app',
     storageBucket: 'likeminds-sdk-app.appspot.com',
-    iosClientId: '317419981427-e7pvjo4et7sfek380beg3dckrb067kv4.apps.googleusercontent.com',
-    iosBundleId: 'com.example.likemindsFeedSsSample',
+    iosClientId:
+        '317419981427-g0kdob11etdsnql322ll5ksa6h4jj1db.apps.googleusercontent.com',
+    iosBundleId: 'com.likeminds.feed-ss-sample',
   );
 }
