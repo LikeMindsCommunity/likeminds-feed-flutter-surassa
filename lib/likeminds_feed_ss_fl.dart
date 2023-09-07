@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_no_internet_widget/flutter_no_internet_widget.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
+import 'package:likeminds_feed_ss_fl/src/services/navigation_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/icons.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/network_handling.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/utils.dart';
@@ -185,6 +186,8 @@ class _LMFeedState extends State<LMFeed> {
                         create: (context) => NewPostBloc(),
                         child: MaterialApp(
                           debugShowCheckedModeBanner: !isProd,
+                          navigatorKey:
+                              locator<NavigationService>().navigatorKey,
                           theme: ThemeData.from(
                             colorScheme: ColorScheme.fromSeed(
                               seedColor: kPrimaryColor,
