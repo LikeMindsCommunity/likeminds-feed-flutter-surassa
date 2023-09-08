@@ -30,6 +30,7 @@ import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NewPostScreen extends StatefulWidget {
   final String? populatePostText;
@@ -269,60 +270,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
         value: SystemUiOverlayStyle.dark,
         child: Scaffold(
           backgroundColor: kWhiteColor,
-          floatingActionButton:
-              StatefulBuilder(builder: (context, setChildState) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                CustomPopupMenu(
-                  controller: _controllerPopUp,
-                  pressType: PressType.singleClick,
-                  menuBuilder: () => TopicPopUp(
-                      selectedTopics: selectedTopic,
-                      onTopicSelected: (updatedTopics, tappedTopic) {
-                        if (selectedTopic.isEmpty) {
-                          selectedTopic.add(tappedTopic);
-                        } else {
-                          if (selectedTopic.first.id == tappedTopic.id) {
-                            selectedTopic.clear();
-                          } else {
-                            selectedTopic.clear();
-                            selectedTopic.add(tappedTopic);
-                          }
-                        }
-                        _controllerPopUp.hideMenu();
-                        setChildState(() {});
-                      }),
-                  child: Container(
-                    height: 36,
-                    margin: const EdgeInsets.only(bottom: 50, left: 30),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(500),
-                      border: Border.all(
-                        color: kPrimaryColor,
-                        width: 1,
-                      ),
-                    ),
-                    child: LMTopicChip(
-                      topic: selectedTopic.isEmpty
-                          ? TopicViewModel(
-                              id: "0", isEnabled: true, name: "Topic")
-                          : selectedTopic.first,
-                      textStyle: const TextStyle(color: kPrimaryColor),
-                      icon: const LMIcon(
-                        type: LMIconType.icon,
-                        icon: CupertinoIcons.chevron_down,
-                        size: 16,
-                        color: kPrimaryColor,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            );
-          }),
           body: SafeArea(
             child: Column(
               children: [
@@ -447,7 +394,47 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                         showLinkPreview)
                                     ? Stack(
                                         children: [
-                                          LMLinkPreview(linkModel: linkModel),
+                                          LMLinkPreview(
+                                            linkModel: linkModel,
+                                            backgroundColor: kSecondary100,
+                                            showLinkUrl: false,
+                                            onTap: () {
+                                              launchUrl(
+                                                Uri.parse(
+                                                    linkModel?.ogTags?.url ??
+                                                        ''),
+                                                mode: LaunchMode
+                                                    .externalApplication,
+                                              );
+                                            },
+                                            border: Border.all(
+                                              width: 1,
+                                              color: kSecondary100,
+                                            ),
+                                            title: LMTextView(
+                                              text: linkModel?.ogTags?.title ??
+                                                  "--",
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              textStyle: const TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                color: kHeadingBlackColor,
+                                                height: 1.30,
+                                              ),
+                                            ),
+                                            subtitle: LMTextView(
+                                              text: linkModel
+                                                      ?.ogTags?.description ??
+                                                  "--",
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              textStyle: const TextStyle(
+                                                color: kHeadingBlackColor,
+                                                fontWeight: FontWeight.w400,
+                                                height: 1.30,
+                                              ),
+                                            ),
+                                          ),
                                           Positioned(
                                             top: 5,
                                             right: 5,
@@ -554,6 +541,69 @@ class _NewPostScreenState extends State<NewPostScreen> {
                   ),
                 ),
                 const Spacer(),
+                ValueListenableBuilder(
+                  valueListenable: rebuildTopicFloatingButton,
+                  builder: (context, _, __) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Align(
+                          alignment: Alignment.bottomLeft,
+                          child: CustomPopupMenu(
+                            controller: _controllerPopUp,
+                            pressType: PressType.singleClick,
+                            menuBuilder: () => TopicPopUp(
+                                selectedTopics: selectedTopic,
+                                onTopicSelected: (updatedTopics, tappedTopic) {
+                                  if (selectedTopic.isEmpty) {
+                                    selectedTopic.add(tappedTopic);
+                                  } else {
+                                    if (selectedTopic.first.id ==
+                                        tappedTopic.id) {
+                                      selectedTopic.clear();
+                                    } else {
+                                      selectedTopic.clear();
+                                      selectedTopic.add(tappedTopic);
+                                    }
+                                  }
+                                  _controllerPopUp.hideMenu();
+                                  rebuildTopicFloatingButton.value =
+                                      !rebuildTopicFloatingButton.value;
+                                }),
+                            child: Container(
+                              height: 36,
+                              alignment: Alignment.bottomLeft,
+                              margin:
+                                  const EdgeInsets.only(bottom: 50, left: 30),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(500),
+                                border: Border.all(
+                                  color: kPrimaryColor,
+                                  width: 1,
+                                ),
+                              ),
+                              child: LMTopicChip(
+                                topic: selectedTopic.isEmpty
+                                    ? TopicViewModel(
+                                        id: "0", isEnabled: true, name: "Topic")
+                                    : selectedTopic.first,
+                                textStyle:
+                                    const TextStyle(color: kPrimaryColor),
+                                icon: const LMIcon(
+                                  type: LMIconType.icon,
+                                  icon: CupertinoIcons.chevron_down,
+                                  size: 16,
+                                  color: kPrimaryColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
                 Container(
                   decoration: BoxDecoration(
                     color: kWhiteColor,
@@ -780,21 +830,28 @@ class _NewPostScreenState extends State<NewPostScreen> {
             return;
           }
         }
-        MultiImageCrop.startCropping(
-          context: context,
-          activeColor: kWhiteColor,
-          aspectRatio: 1,
-          files: list.files.map((e) => File(e.path!)).toList(),
-          callBack: (List<File> images) {
-            List<MediaModel> mediaFiles = images
-                .map((e) => MediaModel(
-                    mediaFile: File(e.path), mediaType: MediaType.image))
-                .toList();
-            setPickedMediaFiles(mediaFiles);
-            onUploadedDocument(true);
-            return;
-          },
-        );
+        List<File> pickedFiles = list.files.map((e) => File(e.path!)).toList();
+        List<MediaModel> mediaFiles = pickedFiles
+            .map((e) =>
+                MediaModel(mediaFile: File(e.path), mediaType: MediaType.image))
+            .toList();
+        setPickedMediaFiles(mediaFiles);
+        onUploadedDocument(true);
+        // MultiImageCrop.startCropping(
+        //   context: context,
+        //   activeColor: kWhiteColor,
+        //   aspectRatio: 1,
+        //   files: list.files.map((e) => File(e.path!)).toList(),
+        //   callBack: (List<File> images) {
+        //     List<MediaModel> mediaFiles = images
+        //         .map((e) => MediaModel(
+        //             mediaFile: File(e.path), mediaType: MediaType.image))
+        //         .toList();
+        //     setPickedMediaFiles(mediaFiles);
+        //     onUploadedDocument(true);
+        //     return;
+        //   },
+        // );
         onUploadedDocument(false);
         return;
       } else {

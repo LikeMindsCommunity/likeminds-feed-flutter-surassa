@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
 const Color kPrimaryColor = Color(0xFF3B82F6);
+const Color kHeadingBlackColor = Color(0xFF0F172A);
 const Color kPrimaryColorLight = Color(0xFFDBEAFE);
-const Color kSecondaryColor700 = Color.fromRGBO(51, 65, 85, 1);
+const Color kSecondary100 = Color(0xFFF1F5F9);
+const Color kSecondaryColor700 = Color(0xFF334155);
 const Color kSecondaryColorLight = Color(0xFFEDF0FE);
-const Color onSurface = Color.fromRGBO(226, 232, 240, 1);
+const Color onSurface = Color(0xFFE2E8F0);
 const Color kBackgroundColor = Color(0xffF5F5F5);
 const Color kWhiteColor = Color(0xffFFFFFF);
 const Color appBlack = Color(0xFF334155);
@@ -14,12 +16,12 @@ const Color kGrey1Color = Color(0xff222020);
 const Color kGrey2Color = Color(0xff504B4B);
 const Color kGrey3Color = Color(0xff9B9B9B);
 const Color kGreyWebBGColor = Color(0xffE6EBF5);
-const Color kGreyBGColor = Color.fromRGBO(208, 216, 226, .4);
-const Color kBlueGreyColor = Color(0xff484F67);
+const Color kGreyBGColor = Color(0x66D0D8E2);
+const Color kBlueGreyColor = Color(0xFF484F67);
 const Color kLinkColor = Color(0xff007AFF);
 const Color kHeadingColor = Color(0xff333149);
-const Color kBorderColor = Color.fromRGBO(208, 216, 226, 0.5);
-const Color notificationRedColor = Color.fromRGBO(208, 216, 226, 0.4);
+const Color kBorderColor = Color(0x7ED0D8E2);
+const Color notificationRedColor = Color(0x66D0D8E2);
 
 const double kFontSmall = 12;
 const double kButtonFontSize = 12;
