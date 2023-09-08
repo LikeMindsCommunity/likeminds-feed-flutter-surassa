@@ -208,7 +208,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
             url: responseTags.url,
           ),
         );
-        LMAnalytics.get().logEvent(
+        LMAnalytics.get().track(
           AnalyticsKeys.linkAttachedInPost,
           {
             'link': previewLink,
@@ -581,6 +581,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                   size: 44,
                                 ),
                                 onTap: (active) async {
+                                  LMAnalytics.get().track(
+                                      AnalyticsKeys.clickedOnAttachment,
+                                      {'type': 'image'});
                                   final result =
                                       await handlePermissions(context, 1);
                                   if (result) {
@@ -634,6 +637,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                     return;
                                   }
                                   onUploading();
+                                  LMAnalytics.get().track(
+                                      AnalyticsKeys.clickedOnAttachment,
+                                      {'type': 'file'});
                                   List<MediaModel>? pickedMediaFiles =
                                       await PostMediaPicker.pickDocuments(
                                           postMedia.length);

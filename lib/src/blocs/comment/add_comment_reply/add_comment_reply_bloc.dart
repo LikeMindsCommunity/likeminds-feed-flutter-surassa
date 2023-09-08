@@ -84,6 +84,10 @@ class AddCommentReplyBloc
               'Comment Deleted',
               duration: Toast.LENGTH_LONG,
             );
+            LMAnalytics.get().track(AnalyticsKeys.commentDeleted, {
+              "post_id": event.deleteCommentRequest.postId,
+              "comment_reply_id": event.deleteCommentRequest.commentId,
+            });
             emit(
               CommentDeleted(
                 commentId: event.deleteCommentRequest.commentId,
@@ -118,6 +122,10 @@ class AddCommentReplyBloc
               'Comment Deleted',
               duration: Toast.LENGTH_LONG,
             );
+            LMAnalytics.get().track(AnalyticsKeys.replyDeleted, {
+              "post_id": event.deleteCommentReplyRequest.postId,
+              "comment_reply_id": event.deleteCommentReplyRequest.commentId,
+            });
             emit(
               CommentReplyDeleted(
                 replyId: event.deleteCommentReplyRequest.commentId,

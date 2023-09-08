@@ -538,6 +538,8 @@ class _FeedRoomViewState extends State<FeedRoomView> {
   @override
   void initState() {
     super.initState();
+    LMAnalytics.get()
+        .track(AnalyticsKeys.feedOpened, {'feed_type': "universal_feed"});
     _controller = widget.scrollController..addListener(_scrollListener);
     right = checkPostCreationRights();
   }
@@ -785,6 +787,10 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                   onTap: right
                                       ? () {
                                           if (!postUploading.value) {
+                                            LMAnalytics.get().track(
+                                                AnalyticsKeys
+                                                    .postCreationStarted,
+                                                {});
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(

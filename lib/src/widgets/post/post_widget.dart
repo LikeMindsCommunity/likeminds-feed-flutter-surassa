@@ -245,10 +245,38 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                           actionText: 'Delete',
                                         ));
                               } else if (id == postPinId || id == postUnpinId) {
+                                String? postType = getPostType(postDetails!
+                                        .attachments?.first.attachmentType ??
+                                    0);
+                                if (isPinned!) {
+                                  LMAnalytics.get()
+                                      .track(AnalyticsKeys.postUnpinned, {
+                                    "created_by_id": postDetails!.userId,
+                                    "post_id": postDetails!.id,
+                                    "post_type": postType,
+                                  });
+                                } else {
+                                  LMAnalytics.get()
+                                      .track(AnalyticsKeys.postPinned, {
+                                    "created_by_id": postDetails!.userId,
+                                    "post_id": postDetails!.id,
+                                    "post_type": postType,
+                                  });
+                                }
                                 newPostBloc.add(TogglePinPost(
                                     postId: postDetails!.id,
                                     isPinned: !isPinned!));
                               } else if (id == postEditId) {
+                                String? postType;
+                                postType = getPostType(postDetails!
+                                        .attachments?.first.attachmentType ??
+                                    0);
+                                LMAnalytics.get()
+                                    .track(AnalyticsKeys.postEdited, {
+                                  "created_by_id": postDetails!.userId,
+                                  "post_id": postDetails!.id,
+                                  "post_type": postType,
+                                });
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => EditPostScreen(
                                           postId: postDetails!.id,
