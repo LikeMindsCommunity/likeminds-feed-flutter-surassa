@@ -132,7 +132,7 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
           keyboardType: TextInputType.multiline,
           controller: _controller,
           focusNode: _focusNode,
-          minLines: 2,
+          minLines: 1,
           maxLines: 200,
           decoration: widget.decoration ??
               const InputDecoration(
