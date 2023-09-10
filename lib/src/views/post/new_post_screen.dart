@@ -269,60 +269,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
         value: SystemUiOverlayStyle.dark,
         child: Scaffold(
           backgroundColor: kWhiteColor,
-          floatingActionButton:
-              StatefulBuilder(builder: (context, setChildState) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                CustomPopupMenu(
-                  controller: _controllerPopUp,
-                  pressType: PressType.singleClick,
-                  menuBuilder: () => TopicPopUp(
-                      selectedTopics: selectedTopic,
-                      onTopicSelected: (updatedTopics, tappedTopic) {
-                        if (selectedTopic.isEmpty) {
-                          selectedTopic.add(tappedTopic);
-                        } else {
-                          if (selectedTopic.first.id == tappedTopic.id) {
-                            selectedTopic.clear();
-                          } else {
-                            selectedTopic.clear();
-                            selectedTopic.add(tappedTopic);
-                          }
-                        }
-                        _controllerPopUp.hideMenu();
-                        setChildState(() {});
-                      }),
-                  child: Container(
-                    height: 36,
-                    margin: const EdgeInsets.only(bottom: 50, left: 30),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(500),
-                      border: Border.all(
-                        color: kPrimaryColor,
-                        width: 1,
-                      ),
-                    ),
-                    child: LMTopicChip(
-                      topic: selectedTopic.isEmpty
-                          ? TopicViewModel(
-                              id: "0", isEnabled: true, name: "Topic")
-                          : selectedTopic.first,
-                      textStyle: const TextStyle(color: kPrimaryColor),
-                      icon: const LMIcon(
-                        type: LMIconType.icon,
-                        icon: CupertinoIcons.chevron_down,
-                        size: 16,
-                        color: kPrimaryColor,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            );
-          }),
           body: SafeArea(
             child: Column(
               children: [
@@ -554,6 +500,81 @@ class _NewPostScreenState extends State<NewPostScreen> {
                   ),
                 ),
                 const Spacer(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Align(
+                      alignment: Alignment.bottomLeft,
+                      child: ValueListenableBuilder(
+                        valueListenable: rebuildTopicFloatingButton,
+                        builder: (context, _, __) {
+                          return Flexible(
+                            child: Align(
+                              alignment: Alignment.bottomLeft,
+                              child: CustomPopupMenu(
+                                controller: _controllerPopUp,
+                                showArrow: false,
+                                verticalMargin: 0,
+                                horizontalMargin: 0,
+                                pressType: PressType.singleClick,
+                                menuBuilder: () => TopicPopUp(
+                                    selectedTopics: selectedTopic,
+                                    onTopicSelected:
+                                        (updatedTopics, tappedTopic) {
+                                      if (selectedTopic.isEmpty) {
+                                        selectedTopic.add(tappedTopic);
+                                      } else {
+                                        if (selectedTopic.first.id ==
+                                            tappedTopic.id) {
+                                          selectedTopic.clear();
+                                        } else {
+                                          selectedTopic.clear();
+                                          selectedTopic.add(tappedTopic);
+                                        }
+                                      }
+                                      _controllerPopUp.hideMenu();
+                                      rebuildTopicFloatingButton.value =
+                                          !rebuildTopicFloatingButton.value;
+                                    }),
+                                child: Container(
+                                  height: 36,
+                                  alignment: Alignment.bottomLeft,
+                                  margin: const EdgeInsets.only(left: 20),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(500),
+                                    border: Border.all(
+                                      color: kPrimaryColor,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: LMTopicChip(
+                                    topic: selectedTopic.isEmpty
+                                        ? TopicViewModel(
+                                            id: "0",
+                                            isEnabled: true,
+                                            name: "Topic")
+                                        : selectedTopic.first,
+                                    textStyle:
+                                        const TextStyle(color: kPrimaryColor),
+                                    icon: const LMIcon(
+                                      type: LMIconType.icon,
+                                      icon: CupertinoIcons.chevron_down,
+                                      size: 16,
+                                      color: kPrimaryColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
                 Container(
                   decoration: BoxDecoration(
                     color: kWhiteColor,
