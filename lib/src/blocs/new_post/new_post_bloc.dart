@@ -113,7 +113,7 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
         );
       }
       List<Topic> postTopics =
-          event.selectedTopics.map((e) => e.toTopic()).toList();
+          event.selectedTopics.map((e) => e.toTopic()).toList() as List<Topic>;
       final AddPostRequest request = (AddPostRequestBuilder()
             ..text(event.postText)
             ..attachments(attachments)

@@ -290,7 +290,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                   postDetails!.topics.isEmpty
                       ? const SizedBox()
                       : TopicChipWidget(
-                          postTopic: TopicViewModel.fromTopic(
+                          postTopic: TopicUI.fromTopic(
                               widget.topics[postDetails!.topics.first]!),
                         ),
                   LMPostContent(
