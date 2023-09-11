@@ -244,8 +244,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
           context: context,
           builder: (dialogContext) => AlertDialog(
             title: const Text('Discard Post'),
-            content:
-                const Text('Are you sure want to discard the current post?'),
+            content: const Text(
+                'Are you sure you want to discard the current post?'),
             actions: <Widget>[
               TextButton(
                 child: const Text('No'),
@@ -280,7 +280,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                       builder: (dialogContext) => AlertDialog(
                         title: const Text('Discard Post'),
                         content: const Text(
-                            'Are you sure want to discard the current post?'),
+                            'Are you sure you want to discard the current post?'),
                         actions: <Widget>[
                           TextButton(
                             child: const Text('No'),
@@ -549,61 +549,53 @@ class _NewPostScreenState extends State<NewPostScreen> {
                       child: ValueListenableBuilder(
                         valueListenable: rebuildTopicFloatingButton,
                         builder: (context, _, __) {
-                          return Flexible(
-                            child: Align(
+                          return CustomPopupMenu(
+                            controller: _controllerPopUp,
+                            showArrow: false,
+                            verticalMargin: 0,
+                            horizontalMargin: 0,
+                            pressType: PressType.singleClick,
+                            menuBuilder: () => TopicPopUp(
+                                selectedTopics: selectedTopic,
+                                onTopicSelected: (updatedTopics, tappedTopic) {
+                                  if (selectedTopic.isEmpty) {
+                                    selectedTopic.add(tappedTopic);
+                                  } else {
+                                    if (selectedTopic.first.id ==
+                                        tappedTopic.id) {
+                                      selectedTopic.clear();
+                                    } else {
+                                      selectedTopic.clear();
+                                      selectedTopic.add(tappedTopic);
+                                    }
+                                  }
+                                  _controllerPopUp.hideMenu();
+                                  rebuildTopicFloatingButton.value =
+                                      !rebuildTopicFloatingButton.value;
+                                }),
+                            child: Container(
+                              height: 36,
                               alignment: Alignment.bottomLeft,
-                              child: CustomPopupMenu(
-                                controller: _controllerPopUp,
-                                showArrow: false,
-                                verticalMargin: 0,
-                                horizontalMargin: 0,
-                                pressType: PressType.singleClick,
-                                menuBuilder: () => TopicPopUp(
-                                    selectedTopics: selectedTopic,
-                                    onTopicSelected:
-                                        (updatedTopics, tappedTopic) {
-                                      if (selectedTopic.isEmpty) {
-                                        selectedTopic.add(tappedTopic);
-                                      } else {
-                                        if (selectedTopic.first.id ==
-                                            tappedTopic.id) {
-                                          selectedTopic.clear();
-                                        } else {
-                                          selectedTopic.clear();
-                                          selectedTopic.add(tappedTopic);
-                                        }
-                                      }
-                                      _controllerPopUp.hideMenu();
-                                      rebuildTopicFloatingButton.value =
-                                          !rebuildTopicFloatingButton.value;
-                                    }),
-                                child: Container(
-                                  height: 36,
-                                  alignment: Alignment.bottomLeft,
-                                  margin: const EdgeInsets.only(left: 20),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(500),
-                                    border: Border.all(
-                                      color: kPrimaryColor,
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: LMTopicChip(
-                                    topic: selectedTopic.isEmpty
-                                        ? TopicViewModel(
-                                            id: "0",
-                                            isEnabled: true,
-                                            name: "Topic")
-                                        : selectedTopic.first,
-                                    textStyle:
-                                        const TextStyle(color: kPrimaryColor),
-                                    icon: const LMIcon(
-                                      type: LMIconType.icon,
-                                      icon: CupertinoIcons.chevron_down,
-                                      size: 16,
-                                      color: kPrimaryColor,
-                                    ),
-                                  ),
+                              margin: const EdgeInsets.only(left: 20),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(500),
+                                border: Border.all(
+                                  color: kPrimaryColor,
+                                  width: 1,
+                                ),
+                              ),
+                              child: LMTopicChip(
+                                topic: selectedTopic.isEmpty
+                                    ? TopicViewModel(
+                                        id: "0", isEnabled: true, name: "Topic")
+                                    : selectedTopic.first,
+                                textStyle:
+                                    const TextStyle(color: kPrimaryColor),
+                                icon: const LMIcon(
+                                  type: LMIconType.icon,
+                                  icon: CupertinoIcons.chevron_down,
+                                  size: 16,
+                                  color: kPrimaryColor,
                                 ),
                               ),
                             ),
