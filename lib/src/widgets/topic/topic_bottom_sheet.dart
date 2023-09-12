@@ -7,8 +7,8 @@ import 'package:likeminds_feed_ss_fl/src/widgets/topic/bloc/topic_bloc.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 
 class TopicBottomSheet extends StatefulWidget {
-  final List<TopicViewModel> selectedTopics;
-  final Function(List<TopicViewModel>, TopicViewModel) onTopicSelected;
+  final List<TopicUI> selectedTopics;
+  final Function(List<TopicUI>, TopicUI) onTopicSelected;
   final bool? isEnabled;
   const TopicBottomSheet({
     Key? key,
@@ -22,7 +22,7 @@ class TopicBottomSheet extends StatefulWidget {
 }
 
 class _TopicBottomSheetState extends State<TopicBottomSheet> {
-  List<TopicViewModel> selectedTopics = [];
+  List<TopicUI> selectedTopics = [];
   bool paginationComplete = false;
   ScrollController controller = ScrollController();
   FocusNode keyboardNode = FocusNode();
@@ -30,21 +30,21 @@ class _TopicBottomSheetState extends State<TopicBottomSheet> {
   TextEditingController searchController = TextEditingController();
   String searchType = "";
   String search = "";
-  TopicViewModel allTopics = TopicViewModel(
-    name: "All Topics",
-    id: "0",
-    isEnabled: true,
-  );
+  TopicUI allTopics = (TopicUIBuilder()
+        ..id("0")
+        ..isEnabled(true)
+        ..name("All Topics"))
+      .build();
   final int pageSize = 100;
   TopicBloc topicBloc = TopicBloc();
   bool isSearching = false;
   ValueNotifier<bool> rebuildTopicsScreen = ValueNotifier<bool>(false);
-  PagingController<int, TopicViewModel> topicsPagingController =
+  PagingController<int, TopicUI> topicsPagingController =
       PagingController(firstPageKey: 1);
 
   int _page = 1;
 
-  bool checkSelectedTopicExistsInList(TopicViewModel topic) {
+  bool checkSelectedTopicExistsInList(TopicUI topic) {
     return selectedTopicId.contains(topic.id);
   }
 
@@ -52,7 +52,7 @@ class _TopicBottomSheetState extends State<TopicBottomSheet> {
   void initState() {
     super.initState();
     selectedTopics = widget.selectedTopics;
-    for (TopicViewModel topic in selectedTopics) {
+    for (TopicUI topic in selectedTopics) {
       selectedTopicId.add(topic.id);
     }
     topicsPagingController.itemList = selectedTopics;
@@ -124,7 +124,7 @@ class _TopicBottomSheetState extends State<TopicBottomSheet> {
                   (element) => selectedTopicId.contains(element.id));
               topicsPagingController.appendPage(
                 state.getTopicFeedResponse.topics!
-                    .map((e) => TopicViewModel.fromTopic(e))
+                    .map((e) => TopicUI.fromTopic(e))
                     .toList(),
                 _page,
               );

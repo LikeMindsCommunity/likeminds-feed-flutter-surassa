@@ -50,7 +50,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   ValueNotifier<bool> rebuildLinkPreview = ValueNotifier(false);
-  List<TopicViewModel> selectedTopic = [];
+  List<TopicUI> selectedTopic = [];
   ValueNotifier<bool> rebuildTopicFloatingButton = ValueNotifier(false);
   CustomPopupMenuController _controllerPopUp = CustomPopupMenuController();
 
@@ -586,8 +586,11 @@ class _NewPostScreenState extends State<NewPostScreen> {
                               ),
                               child: LMTopicChip(
                                 topic: selectedTopic.isEmpty
-                                    ? TopicViewModel(
-                                        id: "0", isEnabled: true, name: "Topic")
+                                    ? (TopicUIBuilder()
+                                          ..id("0")
+                                          ..isEnabled(true)
+                                          ..name("Topic"))
+                                        .build()
                                     : selectedTopic.first,
                                 textStyle:
                                     const TextStyle(color: kPrimaryColor),

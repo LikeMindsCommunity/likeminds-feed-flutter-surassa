@@ -4,7 +4,7 @@ import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 
 class TopicChipWidget extends StatelessWidget {
-  final TopicViewModel postTopic;
+  final TopicUI postTopic;
   const TopicChipWidget({Key? key, required this.postTopic}) : super(key: key);
 
   @override
