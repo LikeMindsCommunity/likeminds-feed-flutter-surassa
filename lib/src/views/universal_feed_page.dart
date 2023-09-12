@@ -49,7 +49,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
   // future to get the topics
   Future<GetTopicsResponse>? getTopicsResponse;
   // list of selected topics by the user
-  List<TopicViewModel> selectedTopics = [];
+  List<TopicUI> selectedTopics = [];
 
   // bloc to handle universal feed
   late final UniversalFeedBloc _feedBloc; // bloc to fetch the feedroom data
@@ -115,7 +115,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
     }
   }
 
-  void updateSelectedTopics(List<TopicViewModel> topics) {
+  void updateSelectedTopics(List<TopicUI> topics) {
     selectedTopics = topics;
     rebuildTopicFeed.value = !rebuildTopicFeed.value;
     clearPagingController();
@@ -306,10 +306,11 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                                 children: [
                                   selectedTopics.isEmpty
                                       ? LMTopicChip(
-                                          topic: TopicViewModel(
-                                              name: "Topic",
-                                              id: "0",
-                                              isEnabled: true),
+                                          topic: (TopicUIBuilder()
+                                                ..id("0")
+                                                ..isEnabled(true)
+                                                ..name("Topic"))
+                                              .build(),
                                           borderRadius: 20.0,
                                           borderWidth: 1,
                                           showBorder: true,
@@ -328,12 +329,14 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                                         )
                                       : selectedTopics.length == 1
                                           ? LMTopicChip(
-                                              topic: TopicViewModel(
-                                                name: selectedTopics.first.name,
-                                                id: selectedTopics.first.id,
-                                                isEnabled: selectedTopics
-                                                    .first.isEnabled,
-                                              ),
+                                              topic: (TopicUIBuilder()
+                                                    ..id(
+                                                        selectedTopics.first.id)
+                                                    ..isEnabled(selectedTopics
+                                                        .first.isEnabled)
+                                                    ..name(selectedTopics
+                                                        .first.name))
+                                                  .build(),
                                               borderRadius: 20.0,
                                               showBorder: false,
                                               backgroundColor:
@@ -354,10 +357,11 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                                               ),
                                             )
                                           : LMTopicChip(
-                                              topic: TopicViewModel(
-                                                  name: "Topics",
-                                                  id: "0",
-                                                  isEnabled: true),
+                                              topic: (TopicUIBuilder()
+                                                    ..id("0")
+                                                    ..isEnabled(true)
+                                                    ..name("Topic"))
+                                                  .build(),
                                               borderRadius: 20.0,
                                               showBorder: false,
                                               backgroundColor:
@@ -538,6 +542,8 @@ class _FeedRoomViewState extends State<FeedRoomView> {
   @override
   void initState() {
     super.initState();
+    LMAnalytics.get()
+        .track(AnalyticsKeys.feedOpened, {'feed_type': "universal_feed"});
     _controller = widget.scrollController..addListener(_scrollListener);
     right = checkPostCreationRights();
   }
@@ -785,6 +791,10 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                   onTap: right
                                       ? () {
                                           if (!postUploading.value) {
+                                            LMAnalytics.get().track(
+                                                AnalyticsKeys
+                                                    .postCreationStarted,
+                                                {});
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(

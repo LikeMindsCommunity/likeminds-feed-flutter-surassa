@@ -49,7 +49,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   ValueNotifier<bool> rebuildLinkPreview = ValueNotifier(false);
-  List<TopicViewModel> selectedTopic = [];
+  List<TopicUI> selectedTopic = [];
   ValueNotifier<bool> rebuildTopicFloatingButton = ValueNotifier(false);
   CustomPopupMenuController _controllerPopUp = CustomPopupMenuController();
 
@@ -208,7 +208,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
             url: responseTags.url,
           ),
         );
-        LMAnalytics.get().logEvent(
+        LMAnalytics.get().track(
           AnalyticsKeys.linkAttachedInPost,
           {
             'link': previewLink,
@@ -508,61 +508,56 @@ class _NewPostScreenState extends State<NewPostScreen> {
                       child: ValueListenableBuilder(
                         valueListenable: rebuildTopicFloatingButton,
                         builder: (context, _, __) {
-                          return Flexible(
-                            child: Align(
+                          return CustomPopupMenu(
+                            controller: _controllerPopUp,
+                            showArrow: false,
+                            verticalMargin: 0,
+                            horizontalMargin: 0,
+                            pressType: PressType.singleClick,
+                            menuBuilder: () => TopicPopUp(
+                                selectedTopics: selectedTopic,
+                                onTopicSelected: (updatedTopics, tappedTopic) {
+                                  if (selectedTopic.isEmpty) {
+                                    selectedTopic.add(tappedTopic);
+                                  } else {
+                                    if (selectedTopic.first.id ==
+                                        tappedTopic.id) {
+                                      selectedTopic.clear();
+                                    } else {
+                                      selectedTopic.clear();
+                                      selectedTopic.add(tappedTopic);
+                                    }
+                                  }
+                                  _controllerPopUp.hideMenu();
+                                  rebuildTopicFloatingButton.value =
+                                      !rebuildTopicFloatingButton.value;
+                                }),
+                            child: Container(
+                              height: 36,
                               alignment: Alignment.bottomLeft,
-                              child: CustomPopupMenu(
-                                controller: _controllerPopUp,
-                                showArrow: false,
-                                verticalMargin: 0,
-                                horizontalMargin: 0,
-                                pressType: PressType.singleClick,
-                                menuBuilder: () => TopicPopUp(
-                                    selectedTopics: selectedTopic,
-                                    onTopicSelected:
-                                        (updatedTopics, tappedTopic) {
-                                      if (selectedTopic.isEmpty) {
-                                        selectedTopic.add(tappedTopic);
-                                      } else {
-                                        if (selectedTopic.first.id ==
-                                            tappedTopic.id) {
-                                          selectedTopic.clear();
-                                        } else {
-                                          selectedTopic.clear();
-                                          selectedTopic.add(tappedTopic);
-                                        }
-                                      }
-                                      _controllerPopUp.hideMenu();
-                                      rebuildTopicFloatingButton.value =
-                                          !rebuildTopicFloatingButton.value;
-                                    }),
-                                child: Container(
-                                  height: 36,
-                                  alignment: Alignment.bottomLeft,
-                                  margin: const EdgeInsets.only(left: 20),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(500),
-                                    border: Border.all(
-                                      color: kPrimaryColor,
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: LMTopicChip(
-                                    topic: selectedTopic.isEmpty
-                                        ? TopicViewModel(
-                                            id: "0",
-                                            isEnabled: true,
-                                            name: "Topic")
-                                        : selectedTopic.first,
-                                    textStyle:
-                                        const TextStyle(color: kPrimaryColor),
-                                    icon: const LMIcon(
-                                      type: LMIconType.icon,
-                                      icon: CupertinoIcons.chevron_down,
-                                      size: 16,
-                                      color: kPrimaryColor,
-                                    ),
-                                  ),
+                              margin: const EdgeInsets.only(left: 20),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(500),
+                                border: Border.all(
+                                  color: kPrimaryColor,
+                                  width: 1,
+                                ),
+                              ),
+                              child: LMTopicChip(
+                                topic: selectedTopic.isEmpty
+                                    ? (TopicUIBuilder()
+                                          ..id("0")
+                                          ..isEnabled(true)
+                                          ..name("Topic"))
+                                        .build()
+                                    : selectedTopic.first,
+                                textStyle:
+                                    const TextStyle(color: kPrimaryColor),
+                                icon: const LMIcon(
+                                  type: LMIconType.icon,
+                                  icon: CupertinoIcons.chevron_down,
+                                  size: 16,
+                                  color: kPrimaryColor,
                                 ),
                               ),
                             ),
@@ -602,6 +597,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                   size: 44,
                                 ),
                                 onTap: (active) async {
+                                  LMAnalytics.get().track(
+                                      AnalyticsKeys.clickedOnAttachment,
+                                      {'type': 'image'});
                                   final result =
                                       await handlePermissions(context, 1);
                                   if (result) {
@@ -655,6 +653,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                     return;
                                   }
                                   onUploading();
+                                  LMAnalytics.get().track(
+                                      AnalyticsKeys.clickedOnAttachment,
+                                      {'type': 'file'});
                                   List<MediaModel>? pickedMediaFiles =
                                       await PostMediaPicker.pickDocuments(
                                           postMedia.length);

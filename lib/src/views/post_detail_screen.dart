@@ -81,6 +81,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   @override
   void initState() {
     super.initState();
+    LMAnalytics.get().track(AnalyticsKeys.commentListOpen, {
+      'postId': widget.postId,
+    });
     newPostBloc = BlocProvider.of<NewPostBloc>(context);
     updatePostDetails(context);
     right = checkCommentRights();

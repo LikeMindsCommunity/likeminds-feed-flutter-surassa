@@ -129,7 +129,7 @@ class _LikesScreenState extends State<LikesScreen> {
 
   // Analytics event logging for Like Screen
   void logLikeListEvent(totalLikes) {
-    LMAnalytics.get().logEvent(
+    LMAnalytics.get().track(
       AnalyticsKeys.likeListOpen,
       {
         "post_id": widget.postId,

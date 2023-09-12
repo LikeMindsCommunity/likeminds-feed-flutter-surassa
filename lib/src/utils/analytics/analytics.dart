@@ -6,16 +6,7 @@ class LMAnalytics {
   static LMAnalytics? _instance;
   static LMAnalytics get() => _instance ??= LMAnalytics._();
 
-  late final LMSDKCallback sdkCallback;
-
   LMAnalytics._();
-
-  void initialize() {
-    sdkCallback = DIService.getIt.get<LMSDKCallback>(
-      instanceName: "LMCallback",
-    );
-    debugPrint("Analytics initialized");
-  }
 
   void logEvent(String eventKey, Map<String, dynamic> propertiesMap) {
     debugPrint('Event: $eventKey');
@@ -24,7 +15,7 @@ class LMAnalytics {
 
   void track(String eventKey, Map<String, dynamic> propertiesMap) {
     logEvent(eventKey, propertiesMap);
-    sdkCallback.eventFiredCallback(eventKey, propertiesMap);
+    // TODO: Add your analytics logic here
   }
 }
 
@@ -46,6 +37,7 @@ class AnalyticsKeys {
   static const String postCreationCompleted = 'Post creation completed';
   static const String postPinned = 'Post pinned';
   static const String postUnpinned = 'Post unpinned';
+  static const String postShared = 'Post shared';
   static const String postEdited = 'Post edited';
   static const String postReported = 'Post reported';
   static const String postDeleted = 'Post deleted';
@@ -67,4 +59,6 @@ class AnalyticsKeys {
   static const String hashtagFollowed = 'Hashtag followed';
   static const String hashtagUnfollowed = 'Hashtag unfollowed';
   static const String hashtagReported = 'Hashtag reported';
+  static const String notificationReceived = "Notification Received";
+  static const String notificationClicked = "Notification Clicked";
 }
