@@ -445,7 +445,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                       builder: (dialogContext) => AlertDialog(
                         title: const Text('Discard Post'),
                         content: const Text(
-                            'Are you sure want to discard the current post?'),
+                            'Are you sure you want to discard the post?'),
                         actions: <Widget>[
                           TextButton(
                             child: const Text('No'),
