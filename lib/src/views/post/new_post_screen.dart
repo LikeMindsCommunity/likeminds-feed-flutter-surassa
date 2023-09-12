@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,6 +23,8 @@ import 'package:likeminds_feed_ss_fl/src/utils/post/post_media_picker.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_utils.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/tagging/tagging_textfield_ta.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post/post_composer_header.dart';
+import 'package:likeminds_feed_ss_fl/src/widgets/topic/topic_bottom_sheet.dart';
+import 'package:likeminds_feed_ss_fl/src/widgets/topic/topic_popup.dart';
 
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:open_filex/open_filex.dart';
@@ -46,6 +49,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   ValueNotifier<bool> rebuildLinkPreview = ValueNotifier(false);
+  List<TopicViewModel> selectedTopic = [];
+  ValueNotifier<bool> rebuildTopicFloatingButton = ValueNotifier(false);
+  CustomPopupMenuController _controllerPopUp = CustomPopupMenuController();
 
   NewPostBloc? newPostBloc;
   late final User user;
@@ -295,18 +301,28 @@ class _NewPostScreenState extends State<NewPostScreen> {
                   title: "Create Post",
                   onTap: () {
                     _focusNode.unfocus();
+
                     String postText = _controller.text;
                     postText = postText.trim();
                     if (postText.isNotEmpty || postMedia.isNotEmpty) {
+                      if (selectedTopic.isEmpty) {
+                        toast(
+                          "Can't create a post without topic",
+                          duration: Toast.LENGTH_LONG,
+                        );
+                        return;
+                      }
                       checkTextLinks();
                       userTags =
                           TaggingHelper.matchTags(_controller.text, userTags);
+
                       result = TaggingHelper.encodeString(
                           _controller.text, userTags);
                       newPostBloc!.add(
                         CreateNewPost(
                           postText: result!,
                           postMedia: postMedia,
+                          selectedTopics: selectedTopic,
                         ),
                       );
                       Navigator.pop(context);
@@ -484,6 +500,81 @@ class _NewPostScreenState extends State<NewPostScreen> {
                   ),
                 ),
                 const Spacer(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Align(
+                      alignment: Alignment.bottomLeft,
+                      child: ValueListenableBuilder(
+                        valueListenable: rebuildTopicFloatingButton,
+                        builder: (context, _, __) {
+                          return Flexible(
+                            child: Align(
+                              alignment: Alignment.bottomLeft,
+                              child: CustomPopupMenu(
+                                controller: _controllerPopUp,
+                                showArrow: false,
+                                verticalMargin: 0,
+                                horizontalMargin: 0,
+                                pressType: PressType.singleClick,
+                                menuBuilder: () => TopicPopUp(
+                                    selectedTopics: selectedTopic,
+                                    onTopicSelected:
+                                        (updatedTopics, tappedTopic) {
+                                      if (selectedTopic.isEmpty) {
+                                        selectedTopic.add(tappedTopic);
+                                      } else {
+                                        if (selectedTopic.first.id ==
+                                            tappedTopic.id) {
+                                          selectedTopic.clear();
+                                        } else {
+                                          selectedTopic.clear();
+                                          selectedTopic.add(tappedTopic);
+                                        }
+                                      }
+                                      _controllerPopUp.hideMenu();
+                                      rebuildTopicFloatingButton.value =
+                                          !rebuildTopicFloatingButton.value;
+                                    }),
+                                child: Container(
+                                  height: 36,
+                                  alignment: Alignment.bottomLeft,
+                                  margin: const EdgeInsets.only(left: 20),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(500),
+                                    border: Border.all(
+                                      color: kPrimaryColor,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: LMTopicChip(
+                                    topic: selectedTopic.isEmpty
+                                        ? TopicViewModel(
+                                            id: "0",
+                                            isEnabled: true,
+                                            name: "Topic")
+                                        : selectedTopic.first,
+                                    textStyle:
+                                        const TextStyle(color: kPrimaryColor),
+                                    icon: const LMIcon(
+                                      type: LMIconType.icon,
+                                      icon: CupertinoIcons.chevron_down,
+                                      size: 16,
+                                      color: kPrimaryColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
                 Container(
                   decoration: BoxDecoration(
                     color: kWhiteColor,
@@ -506,8 +597,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                 icon: LMIcon(
                                   type: LMIconType.svg,
                                   assetPath: kAssetGalleryIcon,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
+                                  color: Theme.of(context).colorScheme.primary,
                                   boxPadding: 0,
                                   size: 44,
                                 ),
@@ -555,8 +645,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                 icon: LMIcon(
                                   type: LMIconType.svg,
                                   assetPath: kAssetDocPDFIcon,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
+                                  color: Theme.of(context).colorScheme.primary,
                                   boxPadding: 0,
                                   size: 44,
                                 ),

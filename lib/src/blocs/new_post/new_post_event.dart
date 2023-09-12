@@ -8,10 +8,12 @@ abstract class NewPostEvents extends Equatable {
 class CreateNewPost extends NewPostEvents {
   final List<MediaModel>? postMedia;
   final String postText;
+  final List<TopicViewModel> selectedTopics;
 
   CreateNewPost({
     this.postMedia,
     required this.postText,
+    required this.selectedTopics,
   });
 }
 
@@ -19,11 +21,13 @@ class EditPost extends NewPostEvents {
   final List<Attachment>? attachments;
   final String postText;
   final String postId;
+  final List<TopicViewModel> selectedTopics;
 
   EditPost({
     required this.postText,
     this.attachments,
     required this.postId,
+    required this.selectedTopics,
   });
 }
 

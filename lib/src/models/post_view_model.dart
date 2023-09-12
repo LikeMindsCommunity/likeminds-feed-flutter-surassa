@@ -6,6 +6,7 @@ import 'package:likeminds_feed/likeminds_feed.dart';
 class PostViewModel {
   final String id;
   String text;
+  List<String> topics;
   List<Attachment>? attachments;
   final int communityId;
   bool isPinned;
@@ -27,6 +28,7 @@ class PostViewModel {
     required this.userId,
     required this.likeCount,
     required this.isSaved,
+    required this.topics,
     required this.menuItems,
     required this.createdAt,
     required this.updatedAt,
@@ -43,6 +45,7 @@ class PostViewModel {
       attachments: post.attachments,
       communityId: post.communityId,
       isPinned: post.isPinned,
+      topics: post.topics ?? [],
       userId: post.userId,
       likeCount: post.likeCount,
       commentCount: post.commentCount,
@@ -58,6 +61,7 @@ class PostViewModel {
     return Post(
       id: id,
       text: text,
+      topics: topics,
       isEdited: isEdited,
       attachments: attachments,
       communityId: communityId,
