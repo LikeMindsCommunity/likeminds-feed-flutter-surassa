@@ -17,6 +17,7 @@ class PostComposerHeader extends StatelessWidget {
       height: 56,
       child: Container(
         decoration: const BoxDecoration(
+          color: kWhiteColor,
           border: Border(
             bottom: BorderSide(
               width: 0.1,
