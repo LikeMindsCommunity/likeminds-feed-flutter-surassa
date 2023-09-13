@@ -159,113 +159,66 @@ class _TopicBottomSheetState extends State<TopicBottomSheet> {
                       ),
                       const SizedBox(height: 16),
                       Expanded(
-                          child: SingleChildScrollView(
-                        controller: controller,
-                        child: Wrap(
-                          children: topicsPagingController.itemList?.map((e) {
-                                bool isTopicSelected =
-                                    selectedTopicId.contains(e.id);
-                                return GestureDetector(
-                                  onTap: () {
-                                    if (isTopicSelected) {
-                                      selectedTopicId.remove(e.id);
-                                      selectedTopics.removeWhere(
-                                          (element) => element.id == e.id);
-                                    } else {
-                                      selectedTopicId.add(e.id);
-                                      selectedTopics.add(e);
-                                    }
-                                    isTopicSelected = !isTopicSelected;
-                                    rebuildTopicsScreen.value =
-                                        !rebuildTopicsScreen.value;
-                                    widget.onTopicSelected(selectedTopics, e);
-                                  },
-                                  child: Container(
-                                    margin: const EdgeInsets.only(
-                                        right: 8.0, bottom: 8.0),
-                                    child: Chip(
-                                      label: LMTextView(
-                                        text: e.name,
-                                        textStyle: TextStyle(
-                                          color: isTopicSelected
-                                              ? Colors.white
-                                              : appBlack,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                          height: 1.30,
+                        child: SingleChildScrollView(
+                          controller: controller,
+                          child: Wrap(
+                            children: topicsPagingController.itemList?.map((e) {
+                                  bool isTopicSelected =
+                                      selectedTopicId.contains(e.id);
+                                  return GestureDetector(
+                                    onTap: () {
+                                      if (isTopicSelected) {
+                                        selectedTopicId.remove(e.id);
+                                        selectedTopics.removeWhere(
+                                            (element) => element.id == e.id);
+                                      } else {
+                                        selectedTopicId.add(e.id);
+                                        selectedTopics.add(e);
+                                      }
+                                      isTopicSelected = !isTopicSelected;
+                                      rebuildTopicsScreen.value =
+                                          !rebuildTopicsScreen.value;
+                                      widget.onTopicSelected(selectedTopics, e);
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.only(
+                                          right: 8.0, bottom: 8.0),
+                                      child: Chip(
+                                        label: LMTextView(
+                                          text: e.name,
+                                          textStyle: TextStyle(
+                                            color: isTopicSelected
+                                                ? Colors.white
+                                                : appBlack,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            height: 1.30,
+                                          ),
                                         ),
+                                        backgroundColor: isTopicSelected
+                                            ? theme.colorScheme.secondary
+                                            : kWhiteColor,
+                                        onDeleted: null,
+                                        clipBehavior: Clip.hardEdge,
+                                        materialTapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                        shape: RoundedRectangleBorder(
+                                            side: isTopicSelected
+                                                ? BorderSide.none
+                                                : const BorderSide(
+                                                    color: appSecondaryBlack,
+                                                    width: 1.0,
+                                                  ),
+                                            borderRadius:
+                                                BorderRadius.circular(21.0)),
                                       ),
-                                      backgroundColor: isTopicSelected
-                                          ? theme.colorScheme.secondary
-                                          : kWhiteColor,
-                                      onDeleted: null,
-                                      clipBehavior: Clip.hardEdge,
-                                      materialTapTargetSize:
-                                          MaterialTapTargetSize.shrinkWrap,
-                                      shape: RoundedRectangleBorder(
-                                          side: isTopicSelected
-                                              ? BorderSide.none
-                                              : const BorderSide(
-                                                  color: appSecondaryBlack,
-                                                  width: 1.0,
-                                                ),
-                                          borderRadius:
-                                              BorderRadius.circular(21.0)),
                                     ),
-                                  ),
-                                );
-                              }).toList() ??
-                              [],
-                        ),
-                      )
-                          // child: PagedListView(
-                          //   pagingController: topicsPagingController,
-                          //   padding: EdgeInsets.zero,
-                          //   physics: const ClampingScrollPhysics(),
-                          //   builderDelegate:
-                          //       PagedChildBuilderDelegate<TopicViewModel>(
-                          //     noItemsFoundIndicatorBuilder: (context) =>
-                          //         const Center(
-                          //             child: Text(
-                          //       "Opps, no topics found!",
-                          //     )),
-
-                          //     itemBuilder: (context, item, index) => TopicTile(
-                          //       isSelected: checkSelectedTopicExistsInList(item),
-                          //       topic: item,
-                          //       height: 50,
-                          //       text: LMTextView(
-                          //         text: item.name,
-                          //         textStyle: const TextStyle(
-                          //           color: kGrey1Color,
-                          //           fontWeight: FontWeight.w600,
-                          //         ),
-                          //       ),
-                          //       backgroundColor: kWhiteColor,
-                          //       padding: const EdgeInsets.symmetric(
-                          //           horizontal: 20.0, vertical: 16.0),
-                          //       icon: const Icon(
-                          //         Icons.check_circle,
-                          //         color: kPrimaryColor,
-                          //       ),
-                          //       onTap: (TopicViewModel tappedTopic) {
-                          //         int index = selectedTopics.indexWhere(
-                          //             (element) => element.id == tappedTopic.id);
-                          //         if (index != -1) {
-                          //           selectedTopics.removeAt(index);
-                          //           selectedTopicId.remove(tappedTopic.id);
-                          //         } else {
-                          //           selectedTopics.add(tappedTopic);
-                          //           selectedTopicId.add(tappedTopic.id);
-                          //         }
-                          //         rebuildTopicsScreen.value =
-                          //             !rebuildTopicsScreen.value;
-                          //       },
-                          //     ),
-                          //   ),
-                          // ),
-
+                                  );
+                                }).toList() ??
+                                [],
                           ),
+                        ),
+                      ),
                     ],
                   );
                 });

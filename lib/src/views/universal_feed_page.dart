@@ -107,7 +107,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
         postSomethingNotifier.value = !postSomethingNotifier.value;
       }
     }
-    if (_controller!.position.userScrollDirection == ScrollDirection.forward) {
+    if (_controller.position.userScrollDirection == ScrollDirection.forward) {
       if (iconContainerHeight == 0) {
         iconContainerHeight = 88.0;
         postSomethingNotifier.value = !postSomethingNotifier.value;
@@ -119,7 +119,6 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
     selectedTopics = topics;
     rebuildTopicFeed.value = !rebuildTopicFeed.value;
     clearPagingController();
-    _pageFeed = 1;
     _feedBloc.add(
       GetUniversalFeed(
         offset: 1,
@@ -189,7 +188,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
   void clearPagingController() {
     /* Clearing paging controller while changing the
      event to prevent duplication of list */
-    if (_pagingController.itemList != null) _pagingController.itemList!.clear();
+    if (_pagingController.itemList != null) _pagingController.itemList?.clear();
     _pageFeed = 1;
   }
 
@@ -265,6 +264,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                             ConnectionState.waiting) {
                           height = 0;
                         } else if (snapshot.hasData &&
+                            snapshot.data != null &&
                             snapshot.data!.success == true) {
                           if (snapshot.data!.topics!.isNotEmpty) {
                             height = 50;
@@ -549,13 +549,15 @@ class _FeedRoomViewState extends State<FeedRoomView> {
   }
 
   void _scrollListener() {
-    if (_controller!.position.userScrollDirection == ScrollDirection.reverse) {
+    if (_controller != null &&
+        _controller!.position.userScrollDirection == ScrollDirection.reverse) {
       if (iconContainerHeight != 0) {
         iconContainerHeight = 0;
         postSomethingNotifier.value = !postSomethingNotifier.value;
       }
     }
-    if (_controller!.position.userScrollDirection == ScrollDirection.forward) {
+    if (_controller != null &&
+        _controller!.position.userScrollDirection == ScrollDirection.forward) {
       if (iconContainerHeight == 0) {
         iconContainerHeight = 90.0;
         postSomethingNotifier.value = !postSomethingNotifier.value;
@@ -576,7 +578,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
               if (curr is PostDeleted) {
                 List<PostViewModel>? feedRoomItemList =
                     widget.feedRoomPagingController.itemList;
-                feedRoomItemList!.removeWhere((item) => item.id == curr.postId);
+                feedRoomItemList?.removeWhere((item) => item.id == curr.postId);
                 widget.feedRoomPagingController.itemList = feedRoomItemList;
                 rebuildPostWidget.value = !rebuildPostWidget.value;
               }
@@ -713,7 +715,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                   value: (snapshot.data == null ||
                                           snapshot.data == 0.0
                                       ? null
-                                      : snapshot.data!.toDouble()),
+                                      : snapshot.data?.toDouble()),
                                   backgroundColor: kGrey3Color,
                                   valueColor: const AlwaysStoppedAnimation(
                                       kPrimaryColor),
@@ -839,7 +841,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                       List<PostViewModel>? feedRoomItemList =
                                           widget.feedRoomPagingController
                                               .itemList;
-                                      feedRoomItemList!.removeAt(index);
+                                      feedRoomItemList?.removeAt(index);
                                       widget.feedRoomPagingController.itemList =
                                           feedRoomItemList;
                                       rebuildPostWidget.value =
