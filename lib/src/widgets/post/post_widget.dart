@@ -18,6 +18,7 @@ import 'package:likeminds_feed_ss_fl/src/widgets/topic/topic_chip_widget.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:url_launcher/url_launcher.dart';
 
 class SSPostWidget extends StatefulWidget {
   final PostViewModel post;
@@ -303,23 +304,70 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                       : const SizedBox(),
                   postDetails!.attachments != null &&
                           postDetails!.attachments!.isNotEmpty
-                      ? SizedBox(
-                          child: LMPostMedia(
-                            attachments: postDetails!.attachments!,
-                            borderRadius: 16.0,
-                            width: screenSize.width - 32,
-                            height: screenSize.width - 32,
-                            documentIcon: const LMIcon(
-                              type: LMIconType.svg,
-                              assetPath: kAssetDocPDFIcon,
-                              size: 50,
-                              boxPadding: 0,
-                              fit: BoxFit.cover,
-                              color: Colors.red,
-                            ),
-                            // postId: postDetails!.id,
-                          ),
-                        )
+                      ? postDetails!.attachments!.first.attachmentType == 4
+                          ? LMLinkPreview(
+                              attachment: postDetails!.attachments![0],
+                              backgroundColor: kSecondary100,
+                              showLinkUrl: false,
+                              onTap: () {
+                                if (postDetails!.attachments!.first
+                                        .attachmentMeta.url !=
+                                    null) {
+                                  launchUrl(
+                                    Uri.parse(postDetails!.attachments!.first
+                                        .attachmentMeta.url!),
+                                    mode: LaunchMode.externalApplication,
+                                  );
+                                }
+                              },
+                              border: Border.all(
+                                width: 1,
+                                color: kSecondary100,
+                              ),
+                              title: LMTextView(
+                                text: postDetails!.attachments!.first
+                                        .attachmentMeta.ogTags?.title ??
+                                    "--",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textStyle: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: kHeadingBlackColor,
+                                  height: 1.30,
+                                ),
+                              ),
+                              subtitle: LMTextView(
+                                text: postDetails!.attachments!.first
+                                        .attachmentMeta.ogTags?.description ??
+                                    "--",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textStyle: const TextStyle(
+                                  color: kHeadingBlackColor,
+                                  fontWeight: FontWeight.w400,
+                                  height: 1.30,
+                                ),
+                              ),
+                            )
+                          : SizedBox(
+                              child: LMPostMedia(
+                                attachments: postDetails!.attachments!,
+                                borderRadius: 16.0,
+                                width: screenSize.width - 32,
+                                height: screenSize.width - 32,
+                                showLinkUrl: false,
+                                backgroundColor: kSecondary100,
+                                documentIcon: const LMIcon(
+                                  type: LMIconType.svg,
+                                  assetPath: kAssetDocPDFIcon,
+                                  size: 50,
+                                  boxPadding: 0,
+                                  fit: BoxFit.cover,
+                                  color: Colors.red,
+                                ),
+                                // postId: postDetails!.id,
+                              ),
+                            )
                       : const SizedBox(),
                   const SizedBox(height: 18),
                   ValueListenableBuilder(

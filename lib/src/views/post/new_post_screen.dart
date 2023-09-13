@@ -30,6 +30,7 @@ import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NewPostScreen extends StatefulWidget {
   final String? populatePostText;
@@ -243,8 +244,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
           context: context,
           builder: (dialogContext) => AlertDialog(
             title: const Text('Discard Post'),
-            content:
-                const Text('Are you sure want to discard the current post?'),
+            content: const Text(
+                'Are you sure you want to discard the current post?'),
             actions: <Widget>[
               TextButton(
                 child: const Text('No'),
@@ -279,7 +280,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                       builder: (dialogContext) => AlertDialog(
                         title: const Text('Discard Post'),
                         content: const Text(
-                            'Are you sure want to discard the current post?'),
+                            'Are you sure you want to discard the current post?'),
                         actions: <Widget>[
                           TextButton(
                             child: const Text('No'),
@@ -393,7 +394,47 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                         showLinkPreview)
                                     ? Stack(
                                         children: [
-                                          LMLinkPreview(linkModel: linkModel),
+                                          LMLinkPreview(
+                                            linkModel: linkModel,
+                                            backgroundColor: kSecondary100,
+                                            showLinkUrl: false,
+                                            onTap: () {
+                                              launchUrl(
+                                                Uri.parse(
+                                                    linkModel?.ogTags?.url ??
+                                                        ''),
+                                                mode: LaunchMode
+                                                    .externalApplication,
+                                              );
+                                            },
+                                            border: Border.all(
+                                              width: 1,
+                                              color: kSecondary100,
+                                            ),
+                                            title: LMTextView(
+                                              text: linkModel?.ogTags?.title ??
+                                                  "--",
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              textStyle: const TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                color: kHeadingBlackColor,
+                                                height: 1.30,
+                                              ),
+                                            ),
+                                            subtitle: LMTextView(
+                                              text: linkModel
+                                                      ?.ogTags?.description ??
+                                                  "--",
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              textStyle: const TextStyle(
+                                                color: kHeadingBlackColor,
+                                                fontWeight: FontWeight.w400,
+                                                height: 1.30,
+                                              ),
+                                            ),
+                                          ),
                                           Positioned(
                                             top: 5,
                                             right: 5,
@@ -796,6 +837,13 @@ class _NewPostScreenState extends State<NewPostScreen> {
             return;
           }
         }
+        List<File> pickedFiles = list.files.map((e) => File(e.path!)).toList();
+        List<MediaModel> mediaFiles = pickedFiles
+            .map((e) =>
+                MediaModel(mediaFile: File(e.path), mediaType: MediaType.image))
+            .toList();
+        setPickedMediaFiles(mediaFiles);
+        onUploadedDocument(true);
         // MultiImageCrop.startCropping(
         //   context: context,
         //   activeColor: kWhiteColor,
@@ -811,7 +859,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
         //     return;
         //   },
         // );
-       
+
         mediaFiles = list.files
             .map((image) => MediaModel(
                 mediaFile: File(image.path!), mediaType: MediaType.image))
