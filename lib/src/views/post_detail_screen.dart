@@ -81,6 +81,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   @override
   void initState() {
     super.initState();
+    LMAnalytics.get().track(AnalyticsKeys.commentListOpen, {
+      'postId': widget.postId,
+    });
     newPostBloc = BlocProvider.of<NewPostBloc>(context);
     updatePostDetails(context);
     right = checkCommentRights();
@@ -795,6 +798,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                         )
                                       : SSPostWidget(
                                           post: postData!,
+                                          topics:
+                                              postDetailResponse!.topics ?? {},
                                           user: postDetailResponse!.users![
                                               postDetailResponse!
                                                   .postReplies!.userId]!,

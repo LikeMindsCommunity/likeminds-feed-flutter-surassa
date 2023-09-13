@@ -47,3 +47,22 @@ String getFileSizeString({required int bytes, int decimals = 0}) {
 double getFileSizeInDouble(int bytes) {
   return (bytes / pow(1024, 2));
 }
+
+String? getPostType(int postType) {
+  String? postTypeString;
+  switch (postType) {
+    case 1: // Image
+      postTypeString = "image";
+      break;
+    case 2: // Video
+      postTypeString = "video";
+      break;
+    case 3: // Document
+      postTypeString = "document";
+      break;
+    case 4: // Link
+      postTypeString = "link";
+      break;
+  }
+  return postTypeString;
+}

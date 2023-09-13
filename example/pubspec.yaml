@@ -42,6 +42,7 @@ dependencies:
   uni_links: 
   share_plus: 
   shared_preferences: 
+  overlay_support:
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -51,6 +52,7 @@ dependencies:
 dependency_overrides:
   test_api: 0.5.2
   matcher: 0.12.16
+  sliver_tools: 0.2.12
   
 dev_dependencies:
   flutter_test:

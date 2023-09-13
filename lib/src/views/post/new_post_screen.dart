@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,7 +11,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:likeminds_feed/likeminds_feed.dart';
-import 'package:likeminds_feed_ss_fl/packages/multi_image_crop/lib/multi_image_crop.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
@@ -22,11 +22,14 @@ import 'package:likeminds_feed_ss_fl/src/utils/post/post_media_picker.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_utils.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/tagging/tagging_textfield_ta.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post/post_composer_header.dart';
+import 'package:likeminds_feed_ss_fl/src/widgets/topic/topic_bottom_sheet.dart';
+import 'package:likeminds_feed_ss_fl/src/widgets/topic/topic_popup.dart';
 
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NewPostScreen extends StatefulWidget {
   final String? populatePostText;
@@ -46,6 +49,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   ValueNotifier<bool> rebuildLinkPreview = ValueNotifier(false);
+  List<TopicUI> selectedTopic = [];
+  ValueNotifier<bool> rebuildTopicFloatingButton = ValueNotifier(false);
+  CustomPopupMenuController _controllerPopUp = CustomPopupMenuController();
 
   NewPostBloc? newPostBloc;
   late final User user;
@@ -202,7 +208,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
             url: responseTags.url,
           ),
         );
-        LMAnalytics.get().logEvent(
+        LMAnalytics.get().track(
           AnalyticsKeys.linkAttachedInPost,
           {
             'link': previewLink,
@@ -237,8 +243,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
           context: context,
           builder: (dialogContext) => AlertDialog(
             title: const Text('Discard Post'),
-            content:
-                const Text('Are you sure want to discard the current post?'),
+            content: const Text(
+                'Are you sure you want to discard the current post?'),
             actions: <Widget>[
               TextButton(
                 child: const Text('No'),
@@ -264,8 +270,329 @@ class _NewPostScreenState extends State<NewPostScreen> {
         child: Scaffold(
           backgroundColor: kWhiteColor,
           body: SafeArea(
-            child: Column(
+            child: Stack(
               children: [
+                kVerticalPaddingMedium,
+                SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      left: 16.0,
+                      right: 16.0,
+                      top: 60.0,
+                      bottom: 40.0,
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4.0),
+                              child: LMProfilePicture(
+                                fallbackText: user.name,
+                                imageUrl: user.imageUrl,
+                                onTap: () {
+                                  if (user.sdkClientInfo != null) {
+                                    locator<LikeMindsService>().routeToProfile(
+                                        user.sdkClientInfo!.userUniqueId);
+                                  }
+                                },
+                                size: 36,
+                              ),
+                            ),
+                            kHorizontalPaddingMedium,
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  Container(
+                                    decoration: const BoxDecoration(
+                                      color: kWhiteColor,
+                                    ),
+                                    child: TaggingAheadTextField(
+                                      isDown: true,
+                                      onTagSelected: (tag) {
+                                        userTags.add(tag);
+                                      },
+                                      controller: _controller,
+                                      focusNode: _focusNode,
+                                      onChange: _onTextChanged,
+                                    ),
+                                  ),
+                                  kVerticalPaddingXLarge,
+                                  if (isUploading)
+                                    const Padding(
+                                      padding: EdgeInsets.only(
+                                        top: kPaddingMedium,
+                                        bottom: kPaddingLarge,
+                                      ),
+                                      child: LMLoader(),
+                                    ),
+                                  ValueListenableBuilder(
+                                      valueListenable: rebuildLinkPreview,
+                                      builder: (context, value, child) =>
+                                          (postMedia.isEmpty &&
+                                                  linkModel != null &&
+                                                  showLinkPreview)
+                                              ? Stack(
+                                                  children: [
+                                                    LMLinkPreview(
+                                                      linkModel: linkModel,
+                                                      backgroundColor:
+                                                          kSecondary100,
+                                                      showLinkUrl: false,
+                                                      onTap: () {
+                                                        launchUrl(
+                                                          Uri.parse(linkModel
+                                                                  ?.ogTags
+                                                                  ?.url ??
+                                                              ''),
+                                                          mode: LaunchMode
+                                                              .externalApplication,
+                                                        );
+                                                      },
+                                                      border: Border.all(
+                                                        width: 1,
+                                                        color: kSecondary100,
+                                                      ),
+                                                      title: LMTextView(
+                                                        text: linkModel?.ogTags
+                                                                ?.title ??
+                                                            "--",
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        textStyle:
+                                                            const TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          color:
+                                                              kHeadingBlackColor,
+                                                          height: 1.30,
+                                                        ),
+                                                      ),
+                                                      subtitle: LMTextView(
+                                                        text: linkModel?.ogTags
+                                                                ?.description ??
+                                                            "--",
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        textStyle:
+                                                            const TextStyle(
+                                                          color:
+                                                              kHeadingBlackColor,
+                                                          fontWeight:
+                                                              FontWeight.w400,
+                                                          height: 1.30,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Positioned(
+                                                      top: 5,
+                                                      right: 5,
+                                                      child: GestureDetector(
+                                                        onTap: () {
+                                                          showLinkPreview =
+                                                              false;
+                                                          rebuildLinkPreview
+                                                                  .value =
+                                                              !rebuildLinkPreview
+                                                                  .value;
+                                                        },
+                                                        child:
+                                                            const CloseButtonIcon(),
+                                                      ),
+                                                    )
+                                                  ],
+                                                )
+                                              : const SizedBox()),
+                                  if (postMedia.isNotEmpty)
+                                    postMedia.first.mediaType ==
+                                            MediaType.document
+                                        ? getPostDocument(screenSize.width)
+                                        : Container(
+                                            padding: const EdgeInsets.only(
+                                              top: kPaddingSmall,
+                                            ),
+                                            height: 180,
+                                            alignment: Alignment.center,
+                                            child: ListView.builder(
+                                              itemCount: postMedia.length,
+                                              scrollDirection: Axis.horizontal,
+                                              itemBuilder:
+                                                  (BuildContext context,
+                                                      int index) {
+                                                return ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          18.0),
+                                                  clipBehavior: Clip.hardEdge,
+                                                  child: Stack(
+                                                    children: [
+                                                      Row(
+                                                        children: [
+                                                          SizedBox(
+                                                            height: 180,
+                                                            width: postMedia[
+                                                                            index]
+                                                                        .mediaType ==
+                                                                    MediaType
+                                                                        .video
+                                                                ? 300
+                                                                : 180,
+                                                            child: Stack(
+                                                              children: [
+                                                                postMedia[index]
+                                                                            .mediaType ==
+                                                                        MediaType
+                                                                            .video
+                                                                    ? LMVideo(
+                                                                        videoFile:
+                                                                            postMedia[index].mediaFile!,
+                                                                        height:
+                                                                            180,
+                                                                        boxFit:
+                                                                            BoxFit.cover,
+                                                                        showControls:
+                                                                            false,
+                                                                        width:
+                                                                            300,
+                                                                      )
+                                                                    : LMImage(
+                                                                        height:
+                                                                            180,
+                                                                        width:
+                                                                            180,
+                                                                        boxFit:
+                                                                            BoxFit.cover,
+                                                                        borderRadius:
+                                                                            18,
+                                                                        imageFile:
+                                                                            postMedia[index].mediaFile!,
+                                                                      ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                              width: 8),
+                                                        ],
+                                                      ),
+                                                      Positioned(
+                                                        top: -8,
+                                                        right: 0,
+                                                        child: IconButton(
+                                                            onPressed: () =>
+                                                                removeAttachmenetAtIndex(
+                                                                    index),
+                                                            icon: Icon(
+                                                              CupertinoIcons
+                                                                  .xmark_circle_fill,
+                                                              shadows: [
+                                                                Shadow(
+                                                                  offset:
+                                                                      Offset(
+                                                                          1, 1),
+                                                                  color: Colors
+                                                                      .black38,
+                                                                )
+                                                              ],
+                                                              color: kWhiteColor
+                                                                  .withOpacity(
+                                                                      0.8),
+                                                            )),
+                                                      )
+                                                    ],
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                  kVerticalPaddingMedium,
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        kVerticalPaddingXLarge,
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 42.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Align(
+                                alignment: Alignment.bottomLeft,
+                                child: ValueListenableBuilder(
+                                  valueListenable: rebuildTopicFloatingButton,
+                                  builder: (context, _, __) {
+                                    return CustomPopupMenu(
+                                      controller: _controllerPopUp,
+                                      showArrow: false,
+                                      verticalMargin: 0,
+                                      horizontalMargin: 0,
+                                      pressType: PressType.singleClick,
+                                      menuBuilder: () => TopicPopUp(
+                                          selectedTopics: selectedTopic,
+                                          onTopicSelected:
+                                              (updatedTopics, tappedTopic) {
+                                            if (selectedTopic.isEmpty) {
+                                              selectedTopic.add(tappedTopic);
+                                            } else {
+                                              if (selectedTopic.first.id ==
+                                                  tappedTopic.id) {
+                                                selectedTopic.clear();
+                                              } else {
+                                                selectedTopic.clear();
+                                                selectedTopic.add(tappedTopic);
+                                              }
+                                            }
+                                            _controllerPopUp.hideMenu();
+                                            rebuildTopicFloatingButton.value =
+                                                !rebuildTopicFloatingButton
+                                                    .value;
+                                          }),
+                                      child: Container(
+                                        height: 36,
+                                        alignment: Alignment.bottomLeft,
+                                        margin: const EdgeInsets.only(left: 20),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(500),
+                                          border: Border.all(
+                                            color: kPrimaryColor,
+                                            width: 1,
+                                          ),
+                                        ),
+                                        child: LMTopicChip(
+                                          topic: selectedTopic.isEmpty
+                                              ? (TopicUIBuilder()
+                                                    ..id("0")
+                                                    ..isEnabled(true)
+                                                    ..name("Topic"))
+                                                  .build()
+                                              : selectedTopic.first,
+                                          textStyle: const TextStyle(
+                                              color: kPrimaryColor),
+                                          icon: const LMIcon(
+                                            type: LMIconType.icon,
+                                            icon: CupertinoIcons.chevron_down,
+                                            size: 16,
+                                            color: kPrimaryColor,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                // const Spacer(),
                 PostComposerHeader(
                   onPressedBack: () {
                     showDialog(
@@ -273,7 +600,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                       builder: (dialogContext) => AlertDialog(
                         title: const Text('Discard Post'),
                         content: const Text(
-                            'Are you sure want to discard the current post?'),
+                            'Are you sure you want to discard the current post?'),
                         actions: <Widget>[
                           TextButton(
                             child: const Text('No'),
@@ -295,18 +622,28 @@ class _NewPostScreenState extends State<NewPostScreen> {
                   title: "Create Post",
                   onTap: () {
                     _focusNode.unfocus();
+
                     String postText = _controller.text;
                     postText = postText.trim();
                     if (postText.isNotEmpty || postMedia.isNotEmpty) {
+                      if (selectedTopic.isEmpty) {
+                        toast(
+                          "Can't create a post without topic",
+                          duration: Toast.LENGTH_LONG,
+                        );
+                        return;
+                      }
                       checkTextLinks();
                       userTags =
                           TaggingHelper.matchTags(_controller.text, userTags);
+
                       result = TaggingHelper.encodeString(
                           _controller.text, userTags);
                       newPostBloc!.add(
                         CreateNewPost(
                           postText: result!,
                           postMedia: postMedia,
+                          selectedTopics: selectedTopic,
                         ),
                       );
                       Navigator.pop(context);
@@ -318,277 +655,124 @@ class _NewPostScreenState extends State<NewPostScreen> {
                     }
                   },
                 ),
-                kVerticalPaddingMedium,
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 6.0,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4.0),
-                        child: LMProfilePicture(
-                          fallbackText: user.name,
-                          imageUrl: user.imageUrl,
-                          onTap: () {
-                            if (user.sdkClientInfo != null) {
-                              locator<LikeMindsService>().routeToProfile(
-                                  user.sdkClientInfo!.userUniqueId);
-                            }
-                          },
-                          size: 36,
-                        ),
-                      ),
-                      kHorizontalPaddingMedium,
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Container(
-                              decoration: const BoxDecoration(
-                                color: kWhiteColor,
-                              ),
-                              child: TaggingAheadTextField(
-                                isDown: true,
-                                onTagSelected: (tag) {
-                                  userTags.add(tag);
-                                },
-                                controller: _controller,
-                                focusNode: _focusNode,
-                                onChange: _onTextChanged,
-                              ),
-                            ),
-                            kVerticalPaddingXLarge,
-                            if (isUploading)
-                              const Padding(
-                                padding: EdgeInsets.only(
-                                  top: kPaddingMedium,
-                                  bottom: kPaddingLarge,
-                                ),
-                                child: LMLoader(),
-                              ),
-                            ValueListenableBuilder(
-                                valueListenable: rebuildLinkPreview,
-                                builder: (context, value, child) => (postMedia
-                                            .isEmpty &&
-                                        linkModel != null &&
-                                        showLinkPreview)
-                                    ? Stack(
-                                        children: [
-                                          LMLinkPreview(linkModel: linkModel),
-                                          Positioned(
-                                            top: 5,
-                                            right: 5,
-                                            child: GestureDetector(
-                                              onTap: () {
-                                                showLinkPreview = false;
-                                                rebuildLinkPreview.value =
-                                                    !rebuildLinkPreview.value;
-                                              },
-                                              child: const CloseButtonIcon(),
-                                            ),
-                                          )
-                                        ],
-                                      )
-                                    : const SizedBox()),
-                            if (postMedia.isNotEmpty)
-                              postMedia.first.mediaType == MediaType.document
-                                  ? getPostDocument(screenSize.width)
-                                  : Container(
-                                      padding: const EdgeInsets.only(
-                                        top: kPaddingSmall,
-                                      ),
-                                      height: 180,
-                                      alignment: Alignment.center,
-                                      child: ListView.builder(
-                                        itemCount: postMedia.length,
-                                        scrollDirection: Axis.horizontal,
-                                        itemBuilder:
-                                            (BuildContext context, int index) {
-                                          return ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(18.0),
-                                            clipBehavior: Clip.hardEdge,
-                                            child: Stack(
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    SizedBox(
-                                                      height: 180,
-                                                      width: postMedia[index]
-                                                                  .mediaType ==
-                                                              MediaType.video
-                                                          ? 300
-                                                          : 180,
-                                                      child: Stack(
-                                                        children: [
-                                                          postMedia[index]
-                                                                      .mediaType ==
-                                                                  MediaType
-                                                                      .video
-                                                              ? LMVideo(
-                                                                  videoFile: postMedia[
-                                                                          index]
-                                                                      .mediaFile!,
-                                                                  height: 180,
-                                                                  boxFit: BoxFit
-                                                                      .cover,
-                                                                  showControls:
-                                                                      false,
-                                                                  width: 300,
-                                                                )
-                                                              : LMImage(
-                                                                  height: 180,
-                                                                  width: 180,
-                                                                  boxFit: BoxFit
-                                                                      .cover,
-                                                                  borderRadius:
-                                                                      18,
-                                                                  imageFile: postMedia[
-                                                                          index]
-                                                                      .mediaFile!,
-                                                                ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    const SizedBox(width: 8),
-                                                  ],
-                                                ),
-                                                Positioned(
-                                                  top: -8,
-                                                  right: 0,
-                                                  child: IconButton(
-                                                      onPressed: () =>
-                                                          removeAttachmenetAtIndex(
-                                                              index),
-                                                      icon: Icon(
-                                                        CupertinoIcons
-                                                            .xmark_circle_fill,
-                                                        color: kWhiteColor
-                                                            .withOpacity(0.5),
-                                                      )),
-                                                )
-                                              ],
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                            kVerticalPaddingMedium,
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+
+                const SizedBox(
+                  height: 30,
                 ),
-                const Spacer(),
-                Container(
-                  decoration: BoxDecoration(
-                    color: kWhiteColor,
-                    boxShadow: [
-                      BoxShadow(
-                        color: kGrey3Color.withOpacity(0.4),
-                        offset: const Offset(0.0, -1.0),
-                        blurRadius: 1.0,
-                      ), //BoxShadow
-                    ],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        isMediaPost
-                            ? const SizedBox.shrink()
-                            : LMIconButton(
-                                icon: LMIcon(
-                                  type: LMIconType.svg,
-                                  assetPath: kAssetGalleryIcon,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                  boxPadding: 0,
-                                  size: 44,
-                                ),
-                                onTap: (active) async {
-                                  final result =
-                                      await handlePermissions(context, 1);
-                                  if (result) {
-                                    pickImages(context);
-                                  }
-                                },
-                              ),
-                        // isMediaPost
-                        //     ? const SizedBox.shrink()
-                        //     : const SizedBox(width: 8),
-                        // isMediaPost
-                        //     ? const SizedBox.shrink()
-                        //     : LMIconButton(
-                        //         icon: LMIcon(
-                        //           type: LMIconType.svg,
-                        //           assetPath: kAssetVideoIcon,
-                        //           color:
-                        //               Theme.of(context).colorScheme.secondary,
-                        //           boxPadding: 0,
-                        //           size: 44,
-                        //         ),
-                        //         onTap: (active) async {
-                        //           onUploading();
-                        //           List<MediaModel>? pickedMediaFiles =
-                        //               await PostMediaPicker.pickVideos(
-                        //                   postMedia.length);
-                        //           if (pickedMediaFiles != null) {
-                        //             setPickedMediaFiles(pickedMediaFiles);
-                        //             onUploadedMedia(true);
-                        //           } else {
-                        //             onUploadedMedia(false);
-                        //           }
-                        //         },
-                        //       ),
-                        isDocumentPost
-                            ? const SizedBox.shrink()
-                            : const SizedBox(width: 8),
-                        isDocumentPost
-                            ? const SizedBox.shrink()
-                            : LMIconButton(
-                                icon: LMIcon(
-                                  type: LMIconType.svg,
-                                  assetPath: kAssetDocPDFIcon,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                  boxPadding: 0,
-                                  size: 44,
-                                ),
-                                onTap: (active) async {
-                                  if (postMedia.length >= 3) {
-                                    //  TODO: Add your own toast message for document limit
-                                    return;
-                                  }
-                                  onUploading();
-                                  List<MediaModel>? pickedMediaFiles =
-                                      await PostMediaPicker.pickDocuments(
-                                          postMedia.length);
-                                  if (pickedMediaFiles != null) {
-                                    setPickedMediaFiles(pickedMediaFiles);
-                                    onUploadedMedia(true);
-                                  } else {
-                                    onUploadedMedia(false);
-                                  }
-                                },
-                              ),
-                        const SizedBox(width: 8),
-                        // LMIconButton(
-                        //   icon: LMIcon(
-                        //     type: LMIconType.svg,
-                        //     assetPath: kAssetPollIcon,
-                        //     color: Theme.of(context).colorScheme.secondary,
-                        //     boxPadding: 0,
-                        //     size: 44,
-                        //   ),
-                        //   onTap: (active) {},
-                        // ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: kWhiteColor,
+                      boxShadow: [
+                        BoxShadow(
+                          color: kGrey3Color.withOpacity(0.4),
+                          offset: const Offset(0.0, -1.0),
+                          blurRadius: 1.0,
+                        ), //BoxShadow
                       ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          isMediaPost
+                              ? const SizedBox.shrink()
+                              : LMIconButton(
+                                  icon: LMIcon(
+                                    type: LMIconType.svg,
+                                    assetPath: kAssetGalleryIcon,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    boxPadding: 0,
+                                    size: 44,
+                                  ),
+                                  onTap: (active) async {
+                                    LMAnalytics.get().track(
+                                        AnalyticsKeys.clickedOnAttachment,
+                                        {'type': 'image'});
+                                    final result =
+                                        await handlePermissions(context, 1);
+                                    if (result) {
+                                      pickImages(context);
+                                    }
+                                  },
+                                ),
+                          // isMediaPost
+                          //     ? const SizedBox.shrink()
+                          //     : const SizedBox(width: 8),
+                          // isMediaPost
+                          //     ? const SizedBox.shrink()
+                          //     : LMIconButton(
+                          //         icon: LMIcon(
+                          //           type: LMIconType.svg,
+                          //           assetPath: kAssetVideoIcon,
+                          //           color:
+                          //               Theme.of(context).colorScheme.secondary,
+                          //           boxPadding: 0,
+                          //           size: 44,
+                          //         ),
+                          //         onTap: (active) async {
+                          //           onUploading();
+                          //           List<MediaModel>? pickedMediaFiles =
+                          //               await PostMediaPicker.pickVideos(
+                          //                   postMedia.length);
+                          //           if (pickedMediaFiles != null) {
+                          //             setPickedMediaFiles(pickedMediaFiles);
+                          //             onUploadedMedia(true);
+                          //           } else {
+                          //             onUploadedMedia(false);
+                          //           }
+                          //         },
+                          //       ),
+                          isDocumentPost
+                              ? const SizedBox.shrink()
+                              : const SizedBox(width: 8),
+                          isDocumentPost
+                              ? const SizedBox.shrink()
+                              : LMIconButton(
+                                  icon: LMIcon(
+                                    type: LMIconType.svg,
+                                    assetPath: kAssetDocPDFIcon,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    boxPadding: 0,
+                                    size: 44,
+                                  ),
+                                  onTap: (active) async {
+                                    if (postMedia.length >= 3) {
+                                      //  TODO: Add your own toast message for document limit
+                                      return;
+                                    }
+                                    onUploading();
+                                    LMAnalytics.get().track(
+                                        AnalyticsKeys.clickedOnAttachment,
+                                        {'type': 'file'});
+                                    List<MediaModel>? pickedMediaFiles =
+                                        await PostMediaPicker.pickDocuments(
+                                            postMedia.length);
+                                    if (pickedMediaFiles != null) {
+                                      setPickedMediaFiles(pickedMediaFiles);
+                                      onUploadedMedia(true);
+                                    } else {
+                                      onUploadedMedia(false);
+                                    }
+                                  },
+                                ),
+                          const SizedBox(width: 8),
+                          // LMIconButton(
+                          //   icon: LMIcon(
+                          //     type: LMIconType.svg,
+                          //     assetPath: kAssetPollIcon,
+                          //     color: Theme.of(context).colorScheme.secondary,
+                          //     boxPadding: 0,
+                          //     size: 44,
+                          //   ),
+                          //   onTap: (active) {},
+                          // ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -706,6 +890,13 @@ class _NewPostScreenState extends State<NewPostScreen> {
             return;
           }
         }
+        List<File> pickedFiles = list.files.map((e) => File(e.path!)).toList();
+        List<MediaModel> mediaFiles = pickedFiles
+            .map((e) =>
+                MediaModel(mediaFile: File(e.path), mediaType: MediaType.image))
+            .toList();
+        setPickedMediaFiles(mediaFiles);
+        onUploadedDocument(true);
         // MultiImageCrop.startCropping(
         //   context: context,
         //   activeColor: kWhiteColor,
@@ -721,12 +912,12 @@ class _NewPostScreenState extends State<NewPostScreen> {
         //     return;
         //   },
         // );
-       
-        mediaFiles = list.files
-            .map((image) => MediaModel(
-                mediaFile: File(image.path!), mediaType: MediaType.image))
-            .toList();
-        setPickedMediaFiles(mediaFiles);
+
+        // mediaFiles = list.files
+        //     .map((image) => MediaModel(
+        //         mediaFile: File(image.path!), mediaType: MediaType.image))
+        //     .toList();
+        // setPickedMediaFiles(mediaFiles);
         onUploadedDocument(false);
         return;
       } else {

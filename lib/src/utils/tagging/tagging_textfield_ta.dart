@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
+import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_fl/packages/flutter_typeahead-4.3.7/lib/flutter_typeahead.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
@@ -218,6 +219,10 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
                 TextPosition(offset: _controller.text.length));
             tagValue = '';
             textValue = _controller.value.text;
+            LMAnalytics.get().track(AnalyticsKeys.userTaggedInPost, {
+              'tagged_user_id': suggestion.sdkClientInfo?.userUniqueId,
+              'tagged_user_count': tagCount
+            });
           });
         }),
       ),
