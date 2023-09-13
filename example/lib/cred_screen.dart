@@ -4,6 +4,7 @@ import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_sample/likeminds_callback.dart';
 import 'package:likeminds_feed_ss_sample/network_handling.dart';
 import 'package:flutter/material.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
     GlobalKey<ScaffoldMessengerState>();
@@ -13,19 +14,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Integration App for UI + SDK package',
-      debugShowCheckedModeBanner: false,
-      scaffoldMessengerKey: rootScaffoldMessengerKey,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color.fromARGB(255, 70, 102, 246),
-          primary: const Color.fromARGB(255, 70, 102, 246),
-          secondary: const Color.fromARGB(255, 59, 130, 246),
+    return OverlaySupport.global(
+      child: MaterialApp(
+        title: 'Integration App for UI + SDK package',
+        debugShowCheckedModeBanner: false,
+        scaffoldMessengerKey: rootScaffoldMessengerKey,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 70, 102, 246),
+            primary: const Color.fromARGB(255, 70, 102, 246),
+            secondary: const Color.fromARGB(255, 59, 130, 246),
+          ),
+          useMaterial3: true,
         ),
-        useMaterial3: true,
+        home: const CredScreen(),
       ),
-      home: const CredScreen(),
     );
   }
 }
