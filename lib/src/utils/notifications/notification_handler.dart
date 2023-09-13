@@ -2,8 +2,10 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
+import 'package:likeminds_feed_ss_fl/src/services/navigation_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
+import 'package:likeminds_feed_ss_fl/src/views/post_detail_screen.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 //TODO: Check for LM notifications
@@ -61,30 +63,25 @@ class LMNotificationHandler {
   /// and is needed to be handled, i.e. shown and routed to the appropriate screen
   Future<void> handleNotification(RemoteMessage message, bool show) async {
     debugPrint("--- Notification received in LEVEL 2 ---");
-    message.toMap().forEach((key, value) {
-      debugPrint("$key: $value");
-      if (key == "data") {
-        message.data.forEach((key, value) {
-          debugPrint("$key: $value");
-        });
-      }
-    });
+    if (message.data["category"] == "Feed") {
+      message.toMap().forEach((key, value) {
+        debugPrint("$key: $value");
+        if (key == "data") {
+          message.data.forEach((key, value) {
+            debugPrint("$key: $value");
+          });
+        }
+      });
 
-    // First, check if the message contains a data payload.
-    if (show && message.data.isNotEmpty) {
-      //TODO: Add LM check for showing LM notifications
-      showNotification(message);
-    } else if (message.data.isNotEmpty) {
-      // Second, extract the notification data and routes to the appropriate screen
-      routeNotification(message);
+      // First, check if the message contains a data payload.
+      if (show && message.data.isNotEmpty) {
+        //TODO: Add LM check for showing LM notifications
+        showNotification(message);
+      } else if (message.data.isNotEmpty) {
+        // Second, extract the notification data and routes to the appropriate screen
+        routeNotification(message);
+      }
     }
-    // Third, check if the message contains a notification payload.
-    // else if (message.notification != null) {
-    //   print("Notification data is empty");
-    //   message.toMap().forEach((key, value) {
-    //     print("$key: $value");
-    //   });
-    // }
   }
 
   void routeNotification(RemoteMessage message) async {
@@ -116,13 +113,10 @@ class LMNotificationHandler {
     // If the notification is post related, route to the post detail screen
     if (host == "post_detail") {
       final String postId = queryParams["post_id"]!;
-      // locator<NavigationService>().navigateTo(
-      //   AllCommentsScreen.route,
-      //   arguments: AllCommentsScreenArguments(
-      //     postId: postId,
-      //     feedRoomId: locator<LikeMindsService>().feedroomId!,
-      //   ),
-      // );
+      locator<NavigationService>()
+          .navigateTo(MaterialPageRoute(builder: (context) {
+        return PostDetailScreen(postId: postId);
+      }));
     }
   }
 
@@ -136,6 +130,7 @@ class LMNotificationHandler {
           onTap: () {
             routeNotification(message);
           },
+          behavior: HitTestBehavior.opaque,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

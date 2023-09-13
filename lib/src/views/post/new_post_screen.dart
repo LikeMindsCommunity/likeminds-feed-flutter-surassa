@@ -796,21 +796,27 @@ class _NewPostScreenState extends State<NewPostScreen> {
             return;
           }
         }
-        MultiImageCrop.startCropping(
-          context: context,
-          activeColor: kWhiteColor,
-          aspectRatio: 1,
-          files: list.files.map((e) => File(e.path!)).toList(),
-          callBack: (List<File> images) {
-            List<MediaModel> mediaFiles = images
-                .map((e) => MediaModel(
-                    mediaFile: File(e.path), mediaType: MediaType.image))
-                .toList();
-            setPickedMediaFiles(mediaFiles);
-            onUploadedDocument(true);
-            return;
-          },
-        );
+        // MultiImageCrop.startCropping(
+        //   context: context,
+        //   activeColor: kWhiteColor,
+        //   aspectRatio: 1,
+        //   files: list.files.map((e) => File(e.path!)).toList(),
+        //   callBack: (List<File> images) {
+        //     List<MediaModel> mediaFiles = images
+        //         .map((e) => MediaModel(
+        //             mediaFile: File(e.path), mediaType: MediaType.image))
+        //         .toList();
+        //     setPickedMediaFiles(mediaFiles);
+        //     onUploadedDocument(true);
+        //     return;
+        //   },
+        // );
+       
+        mediaFiles = list.files
+            .map((image) => MediaModel(
+                mediaFile: File(image.path!), mediaType: MediaType.image))
+            .toList();
+        setPickedMediaFiles(mediaFiles);
         onUploadedDocument(false);
         return;
       } else {
