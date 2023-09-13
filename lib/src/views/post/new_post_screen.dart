@@ -859,6 +859,12 @@ class _NewPostScreenState extends State<NewPostScreen> {
         //     return;
         //   },
         // );
+
+        mediaFiles = list.files
+            .map((image) => MediaModel(
+                mediaFile: File(image.path!), mediaType: MediaType.image))
+            .toList();
+        setPickedMediaFiles(mediaFiles);
         onUploadedDocument(false);
         return;
       } else {
