@@ -70,7 +70,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
 
   final ValueNotifier postSomethingNotifier = ValueNotifier(false);
   bool userPostingRights = true;
-  var iconContainerHeight = 88.00;
+  var iconContainerHeight = 92.00;
 
   @override
   void initState() {
@@ -378,7 +378,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                                                   kHorizontalPaddingXSmall,
                                                   Container(
                                                     padding: const EdgeInsets
-                                                            .symmetric(
+                                                        .symmetric(
                                                         horizontal: 4),
                                                     decoration: ShapeDecoration(
                                                       color: Colors.white,

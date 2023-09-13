@@ -25,12 +25,15 @@ class PostSomething extends StatelessWidget {
           : () => toast("You do not have permission to create a post"),
       child: Container(
         width: screenSize.width,
-        height: 88,
+        height: 92,
         color: Colors.transparent,
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
         child: Container(
-          height: 60,
-          padding: const EdgeInsets.all(10.0),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 10.0,
+            vertical: 4,
+          ),
+          height: 80,
           decoration: BoxDecoration(
             color: kWhiteColor,
             borderRadius: BorderRadius.circular(50.0),
