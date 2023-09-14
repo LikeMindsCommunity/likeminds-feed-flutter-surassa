@@ -14,13 +14,16 @@ import 'package:likeminds_feed_ss_fl/src/views/likes/likes_screen.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post/edit_post_screen.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post_detail_screen.dart';
 import 'package:likeminds_feed_ss_fl/src/widgets/delete_dialog.dart';
+import 'package:likeminds_feed_ss_fl/src/widgets/topic/topic_chip_widget.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:url_launcher/url_launcher.dart';
 
 class SSPostWidget extends StatefulWidget {
   final PostViewModel post;
   final User user;
+  final Map<String, Topic> topics;
   final bool isFeed;
   final Function() onTap;
   final Function(bool isDeleted) refresh;
@@ -30,6 +33,7 @@ class SSPostWidget extends StatefulWidget {
     required this.post,
     required this.user,
     required this.onTap,
+    required this.topics,
     required this.refresh,
     required this.isFeed,
   }) : super(key: key);
@@ -242,10 +246,38 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                           actionText: 'Delete',
                                         ));
                               } else if (id == postPinId || id == postUnpinId) {
+                                String? postType = getPostType(postDetails!
+                                        .attachments?.first.attachmentType ??
+                                    0);
+                                if (isPinned!) {
+                                  LMAnalytics.get()
+                                      .track(AnalyticsKeys.postUnpinned, {
+                                    "created_by_id": postDetails!.userId,
+                                    "post_id": postDetails!.id,
+                                    "post_type": postType,
+                                  });
+                                } else {
+                                  LMAnalytics.get()
+                                      .track(AnalyticsKeys.postPinned, {
+                                    "created_by_id": postDetails!.userId,
+                                    "post_id": postDetails!.id,
+                                    "post_type": postType,
+                                  });
+                                }
                                 newPostBloc.add(TogglePinPost(
                                     postId: postDetails!.id,
                                     isPinned: !isPinned!));
                               } else if (id == postEditId) {
+                                String? postType;
+                                postType = getPostType(postDetails!
+                                        .attachments?.first.attachmentType ??
+                                    0);
+                                LMAnalytics.get()
+                                    .track(AnalyticsKeys.postEdited, {
+                                  "created_by_id": postDetails!.userId,
+                                  "post_id": postDetails!.id,
+                                  "post_type": postType,
+                                });
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => EditPostScreen(
                                           postId: postDetails!.id,
@@ -256,7 +288,12 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                           ),
                         );
                       }),
-                  SizedBox(height: widget.post.text.isEmpty ? 0 : 8),
+                  postDetails!.topics.isEmpty
+                      ? const SizedBox()
+                      : TopicChipWidget(
+                          postTopic: TopicUI.fromTopic(
+                              widget.topics[postDetails!.topics.first]!),
+                        ),
                   LMPostContent(
                     onTagTap: (String userId) {
                       locator<LikeMindsService>().routeToProfile(userId);
@@ -267,23 +304,70 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                       : const SizedBox(),
                   postDetails!.attachments != null &&
                           postDetails!.attachments!.isNotEmpty
-                      ? SizedBox(
-                          child: LMPostMedia(
-                            attachments: postDetails!.attachments!,
-                            borderRadius: 16.0,
-                            width: screenSize.width - 32,
-                            height: screenSize.width - 32,
-                            documentIcon: const LMIcon(
-                              type: LMIconType.svg,
-                              assetPath: kAssetDocPDFIcon,
-                              size: 50,
-                              boxPadding: 0,
-                              fit: BoxFit.cover,
-                              color: Colors.red,
-                            ),
-                            // postId: postDetails!.id,
-                          ),
-                        )
+                      ? postDetails!.attachments!.first.attachmentType == 4
+                          ? LMLinkPreview(
+                              attachment: postDetails!.attachments![0],
+                              backgroundColor: kSecondary100,
+                              showLinkUrl: false,
+                              onTap: () {
+                                if (postDetails!.attachments!.first
+                                        .attachmentMeta.url !=
+                                    null) {
+                                  launchUrl(
+                                    Uri.parse(postDetails!.attachments!.first
+                                        .attachmentMeta.url!),
+                                    mode: LaunchMode.externalApplication,
+                                  );
+                                }
+                              },
+                              border: Border.all(
+                                width: 1,
+                                color: kSecondary100,
+                              ),
+                              title: LMTextView(
+                                text: postDetails!.attachments!.first
+                                        .attachmentMeta.ogTags?.title ??
+                                    "--",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textStyle: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: kHeadingBlackColor,
+                                  height: 1.30,
+                                ),
+                              ),
+                              subtitle: LMTextView(
+                                text: postDetails!.attachments!.first
+                                        .attachmentMeta.ogTags?.description ??
+                                    "--",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textStyle: const TextStyle(
+                                  color: kHeadingBlackColor,
+                                  fontWeight: FontWeight.w400,
+                                  height: 1.30,
+                                ),
+                              ),
+                            )
+                          : SizedBox(
+                              child: LMPostMedia(
+                                attachments: postDetails!.attachments!,
+                                borderRadius: 16.0,
+                                width: screenSize.width - 32,
+                                height: screenSize.width - 32,
+                                showLinkUrl: false,
+                                backgroundColor: kSecondary100,
+                                documentIcon: const LMIcon(
+                                  type: LMIconType.svg,
+                                  assetPath: kAssetDocPDFIcon,
+                                  size: 50,
+                                  boxPadding: 0,
+                                  fit: BoxFit.cover,
+                                  color: Colors.red,
+                                ),
+                                // postId: postDetails!.id,
+                              ),
+                            )
                       : const SizedBox(),
                   const SizedBox(height: 18),
                   ValueListenableBuilder(

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -20,6 +21,7 @@ import 'package:likeminds_feed_ss_fl/src/views/post/new_post_screen.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post_detail_screen.dart';
 import 'package:likeminds_feed_ss_fl/src/widgets/post/post_something.dart';
 import 'package:likeminds_feed_ss_fl/src/widgets/post/post_widget.dart';
+import 'package:likeminds_feed_ss_fl/src/widgets/topic/topic_bottom_sheet.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:overlay_support/overlay_support.dart';
 
@@ -35,7 +37,21 @@ class UniversalFeedScreen extends StatefulWidget {
 }
 
 class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
+  /* 
+  * defines the height of topic feed bar
+  * initialy set to 0, after fetching the topics
+  * it is set to 62 if the topics are not empty
+  */
+  double height = 0;
   final ScrollController _controller = ScrollController();
+  // notifies value listenable builder to rebuild the topic feed
+  ValueNotifier<bool> rebuildTopicFeed = ValueNotifier(false);
+  // future to get the topics
+  Future<GetTopicsResponse>? getTopicsResponse;
+  // list of selected topics by the user
+  List<TopicUI> selectedTopics = [];
+
+  // bloc to handle universal feed
   late final UniversalFeedBloc _feedBloc; // bloc to fetch the feedroom data
   bool isCm = UserLocalPreference.instance
       .fetchMemberState(); // whether the logged in user is a community manager or not
@@ -52,14 +68,63 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
   final PagingController<int, PostViewModel> _pagingController =
       PagingController(firstPageKey: 1);
 
+  final ValueNotifier postSomethingNotifier = ValueNotifier(false);
+  bool userPostingRights = true;
+  var iconContainerHeight = 92.00;
+
   @override
   void initState() {
     super.initState();
     _addPaginationListener();
+    getTopicsResponse = locator<LikeMindsService>().getTopics(
+      (GetTopicsRequestBuilder()
+            ..page(1)
+            ..pageSize(20))
+          .build(),
+    );
     Bloc.observer = SimpleBlocObserver();
     _feedBloc = UniversalFeedBloc();
-    _feedBloc.add(const GetUniversalFeed(offset: 1, forLoadMore: false));
+    _feedBloc.add(GetUniversalFeed(offset: 1, topics: selectedTopics));
     updateUnreadNotificationCount();
+    _controller.addListener(_scrollListener);
+    userPostingRights = checkPostCreationRights();
+  }
+
+  bool checkPostCreationRights() {
+    final MemberStateResponse memberStateResponse =
+        UserLocalPreference.instance.fetchMemberRights();
+    if (memberStateResponse.state == 1) {
+      return true;
+    }
+    final memberRights = UserLocalPreference.instance.fetchMemberRight(9);
+    return memberRights;
+  }
+
+  void _scrollListener() {
+    if (_controller.position.userScrollDirection == ScrollDirection.reverse) {
+      if (iconContainerHeight != 0) {
+        iconContainerHeight = 0;
+        postSomethingNotifier.value = !postSomethingNotifier.value;
+      }
+    }
+    if (_controller.position.userScrollDirection == ScrollDirection.forward) {
+      if (iconContainerHeight == 0) {
+        iconContainerHeight = 88.0;
+        postSomethingNotifier.value = !postSomethingNotifier.value;
+      }
+    }
+  }
+
+  void updateSelectedTopics(List<TopicUI> topics) {
+    selectedTopics = topics;
+    rebuildTopicFeed.value = !rebuildTopicFeed.value;
+    clearPagingController();
+    _feedBloc.add(
+      GetUniversalFeed(
+        offset: 1,
+        topics: selectedTopics,
+      ),
+    );
   }
 
   // This function fetches the unread notification count
@@ -90,9 +155,16 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
   int _pageFeed = 1; // current index of FeedRoom
 
   void _addPaginationListener() {
-    _pagingController.addPageRequestListener((pageKey) {
-      _feedBloc.add(GetUniversalFeed(offset: pageKey, forLoadMore: true));
-    });
+    _pagingController.addPageRequestListener(
+      (pageKey) {
+        _feedBloc.add(
+          GetUniversalFeed(
+            offset: pageKey,
+            topics: selectedTopics,
+          ),
+        );
+      },
+    );
   }
 
   void refresh() => _pagingController.refresh();
@@ -116,13 +188,16 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
   void clearPagingController() {
     /* Clearing paging controller while changing the
      event to prevent duplication of list */
-    if (_pagingController.itemList != null) _pagingController.itemList!.clear();
+    if (_pagingController.itemList != null) _pagingController.itemList?.clear();
     _pageFeed = 1;
   }
 
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.of(context).size;
+    ThemeData theme = Theme.of(context);
     return Scaffold(
+      backgroundColor: kWhiteColor,
       appBar: AppBar(
         backgroundColor: kWhiteColor,
         centerTitle: false,
@@ -164,39 +239,226 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
           refresh();
           clearPagingController();
         },
-        child: BlocConsumer(
-          bloc: _feedBloc,
-          buildWhen: (prev, curr) {
-            // Prevents changin the state while paginating the feed
-            if (prev is UniversalFeedLoaded &&
-                (curr is PaginatedUniversalFeedLoading ||
-                    curr is UniversalFeedLoading)) {
-              return false;
-            }
-            return true;
-          },
-          listener: (context, state) => updatePagingControllers(state),
-          builder: ((context, state) {
-            if (state is UniversalFeedLoaded) {
-              // Log the event in the analytics
-              return FeedRoomView(
-                isCm: isCm,
-                feedResponse: state.feed,
-                feedRoomPagingController: _pagingController,
-                user: user,
-                onRefresh: refresh,
-                scrollController: _controller,
-              );
-            } else if (state is UniversalFeedError) {
-              return FeedRoomErrorView(message: state.message);
-            }
-            return const Scaffold(
-              backgroundColor: kBackgroundColor,
-              body: Center(
-                child: CircularProgressIndicator(),
+        child: Column(
+          children: [
+            ValueListenableBuilder(
+              valueListenable: postSomethingNotifier,
+              builder: (context, _, __) {
+                return AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    height: iconContainerHeight,
+                    clipBehavior: Clip.hardEdge,
+                    decoration: BoxDecoration(),
+                    child: PostSomething(
+                      enabled: userPostingRights,
+                    ));
+              },
+            ),
+            ValueListenableBuilder(
+                valueListenable: rebuildTopicFeed,
+                builder: (context, _, __) {
+                  return FutureBuilder<GetTopicsResponse>(
+                      future: getTopicsResponse,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          height = 0;
+                        } else if (snapshot.hasData &&
+                            snapshot.data != null &&
+                            snapshot.data!.success == true) {
+                          if (snapshot.data!.topics!.isNotEmpty) {
+                            height = 50;
+                          } else {
+                            height = 0;
+                          }
+                        }
+                        return AnimatedContainer(
+                          duration: const Duration(milliseconds: 400),
+                          height: height,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20.0, vertical: 10.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  elevation: 5,
+                                  isDismissible: true,
+                                  backgroundColor: kWhiteColor,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(28.0),
+                                      topRight: Radius.circular(28.0),
+                                    ),
+                                  ),
+                                  enableDrag: true,
+                                  clipBehavior: Clip.hardEdge,
+                                  builder: (context) => TopicBottomSheet(
+                                    selectedTopics: selectedTopics,
+                                    onTopicSelected:
+                                        (updatedTopics, tappedTopic) {
+                                      updateSelectedTopics(updatedTopics);
+                                    },
+                                  ),
+                                );
+                              },
+                              child: Row(
+                                children: [
+                                  selectedTopics.isEmpty
+                                      ? LMTopicChip(
+                                          topic: (TopicUIBuilder()
+                                                ..id("0")
+                                                ..isEnabled(true)
+                                                ..name("Topic"))
+                                              .build(),
+                                          borderRadius: 20.0,
+                                          borderWidth: 1,
+                                          showBorder: true,
+                                          borderColor: appSecondaryBlack,
+                                          textStyle: const TextStyle(
+                                            color: appBlack,
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 12.0, vertical: 4.0),
+                                          icon: const LMIcon(
+                                            type: LMIconType.icon,
+                                            icon: CupertinoIcons.chevron_down,
+                                            size: 16,
+                                            color: appBlack,
+                                          ),
+                                        )
+                                      : selectedTopics.length == 1
+                                          ? LMTopicChip(
+                                              topic: (TopicUIBuilder()
+                                                    ..id(
+                                                        selectedTopics.first.id)
+                                                    ..isEnabled(selectedTopics
+                                                        .first.isEnabled)
+                                                    ..name(selectedTopics
+                                                        .first.name))
+                                                  .build(),
+                                              borderRadius: 20.0,
+                                              showBorder: false,
+                                              backgroundColor:
+                                                  theme.colorScheme.secondary,
+                                              textStyle: const TextStyle(
+                                                color: kWhiteColor,
+                                              ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 12.0,
+                                                      vertical: 4.0),
+                                              icon: const LMIcon(
+                                                type: LMIconType.icon,
+                                                icon:
+                                                    CupertinoIcons.chevron_down,
+                                                size: 16,
+                                                color: kWhiteColor,
+                                              ),
+                                            )
+                                          : LMTopicChip(
+                                              topic: (TopicUIBuilder()
+                                                    ..id("0")
+                                                    ..isEnabled(true)
+                                                    ..name("Topic"))
+                                                  .build(),
+                                              borderRadius: 20.0,
+                                              showBorder: false,
+                                              backgroundColor:
+                                                  theme.colorScheme.secondary,
+                                              textStyle: const TextStyle(
+                                                color: kWhiteColor,
+                                              ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 12.0,
+                                                      vertical: 4.0),
+                                              icon: Row(
+                                                children: [
+                                                  kHorizontalPaddingXSmall,
+                                                  Container(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 4),
+                                                    decoration: ShapeDecoration(
+                                                      color: Colors.white,
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          4)),
+                                                    ),
+                                                    child: Text(
+                                                      selectedTopics.length
+                                                          .toString(),
+                                                      style: const TextStyle(
+                                                        color:
+                                                            Color(0xFF4666F6),
+                                                        fontSize: 12,
+                                                        fontFamily: 'Inter',
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        height: 1.30,
+                                                        letterSpacing: -0.48,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  kHorizontalPaddingSmall,
+                                                  const LMIcon(
+                                                    type: LMIconType.icon,
+                                                    icon: CupertinoIcons
+                                                        .chevron_down,
+                                                    size: 16,
+                                                    color: kWhiteColor,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      });
+                }),
+            Expanded(
+              child: BlocConsumer(
+                bloc: _feedBloc,
+                buildWhen: (prev, curr) {
+                  // Prevents changin the state while paginating the feed
+                  if (prev is UniversalFeedLoaded &&
+                      (curr is PaginatedUniversalFeedLoading ||
+                          curr is UniversalFeedLoading)) {
+                    return false;
+                  }
+                  return true;
+                },
+                listener: (context, state) => updatePagingControllers(state),
+                builder: ((context, state) {
+                  if (state is UniversalFeedLoaded) {
+                    // Log the event in the analytics
+                    return FeedRoomView(
+                      isCm: isCm,
+                      feedResponse: state.feed,
+                      feedRoomPagingController: _pagingController,
+                      user: user,
+                      onRefresh: refresh,
+                      scrollController: _controller,
+                    );
+                  } else if (state is UniversalFeedError) {
+                    return FeedRoomErrorView(message: state.message);
+                  }
+                  return const Scaffold(
+                    backgroundColor: kBackgroundColor,
+                    body: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }),
               ),
-            );
-          }),
+            ),
+          ],
         ),
       ),
     );
@@ -280,18 +542,22 @@ class _FeedRoomViewState extends State<FeedRoomView> {
   @override
   void initState() {
     super.initState();
+    LMAnalytics.get()
+        .track(AnalyticsKeys.feedOpened, {'feed_type': "universal_feed"});
     _controller = widget.scrollController..addListener(_scrollListener);
     right = checkPostCreationRights();
   }
 
   void _scrollListener() {
-    if (_controller!.position.userScrollDirection == ScrollDirection.reverse) {
+    if (_controller != null &&
+        _controller!.position.userScrollDirection == ScrollDirection.reverse) {
       if (iconContainerHeight != 0) {
         iconContainerHeight = 0;
         postSomethingNotifier.value = !postSomethingNotifier.value;
       }
     }
-    if (_controller!.position.userScrollDirection == ScrollDirection.forward) {
+    if (_controller != null &&
+        _controller!.position.userScrollDirection == ScrollDirection.forward) {
       if (iconContainerHeight == 0) {
         iconContainerHeight = 90.0;
         postSomethingNotifier.value = !postSomethingNotifier.value;
@@ -312,7 +578,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
               if (curr is PostDeleted) {
                 List<PostViewModel>? feedRoomItemList =
                     widget.feedRoomPagingController.itemList;
-                feedRoomItemList!.removeWhere((item) => item.id == curr.postId);
+                feedRoomItemList?.removeWhere((item) => item.id == curr.postId);
                 widget.feedRoomPagingController.itemList = feedRoomItemList;
                 rebuildPostWidget.value = !rebuildPostWidget.value;
               }
@@ -348,6 +614,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                   feedRoomItemList.removeLast();
                 }
                 widget.feedResponse.users.addAll(curr.userData);
+                widget.feedResponse.topics.addAll(curr.topics);
                 widget.feedRoomPagingController.itemList = feedRoomItemList;
                 postUploading.value = false;
                 rebuildPostWidget.value = !rebuildPostWidget.value;
@@ -363,6 +630,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                   feedRoomItemList?[index] = item;
                 }
                 widget.feedResponse.users.addAll(curr.userData);
+                widget.feedResponse.topics.addAll(curr.topics);
                 postUploading.value = false;
                 rebuildPostWidget.value = !rebuildPostWidget.value;
               }
@@ -447,7 +715,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                   value: (snapshot.data == null ||
                                           snapshot.data == 0.0
                                       ? null
-                                      : snapshot.data!.toDouble()),
+                                      : snapshot.data?.toDouble()),
                                   backgroundColor: kGrey3Color,
                                   valueColor: const AlwaysStoppedAnimation(
                                       kPrimaryColor),
@@ -465,16 +733,6 @@ class _FeedRoomViewState extends State<FeedRoomView> {
           Expanded(
             child: Column(
               children: [
-                ValueListenableBuilder(
-                    valueListenable: postSomethingNotifier,
-                    builder: (context, _, __) {
-                      return AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          height: iconContainerHeight,
-                          child: PostSomething(
-                            enabled: right,
-                          ));
-                    }),
                 Expanded(
                   child: ValueListenableBuilder(
                     valueListenable: rebuildPostWidget,
@@ -535,6 +793,10 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                   onTap: right
                                       ? () {
                                           if (!postUploading.value) {
+                                            LMAnalytics.get().track(
+                                                AnalyticsKeys
+                                                    .postCreationStarted,
+                                                {});
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
@@ -561,6 +823,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                 const SizedBox(height: 8),
                                 SSPostWidget(
                                   post: item,
+                                  topics: widget.feedResponse.topics,
                                   user: widget.feedResponse.users[item.userId]!,
                                   onTap: () {
                                     Navigator.push(
@@ -578,7 +841,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                       List<PostViewModel>? feedRoomItemList =
                                           widget.feedRoomPagingController
                                               .itemList;
-                                      feedRoomItemList!.removeAt(index);
+                                      feedRoomItemList?.removeAt(index);
                                       widget.feedRoomPagingController.itemList =
                                           feedRoomItemList;
                                       rebuildPostWidget.value =

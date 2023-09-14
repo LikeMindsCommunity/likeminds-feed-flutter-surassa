@@ -34,7 +34,6 @@ void main() async {
   LMFeed.setupFeed(
       apiKey: debug ? CredsDev.apiKey : CredsProd.apiKey,
       lmCallBack: LikeMindsCallback());
-
   runApp(const MyApp());
 }
 

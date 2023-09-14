@@ -32,6 +32,7 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
       int imageCount = 0;
       int videoCount = 0;
       int documentCount = 0;
+      int linkCount = 0;
       List<Attachment> attachments = [];
       int index = 0;
 
@@ -65,6 +66,7 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
                     )),
               ),
             );
+            linkCount = 1;
           } else {
             File mediaFile = media.mediaFile!;
             index += 1;
@@ -110,9 +112,12 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
           ),
         );
       }
+      List<Topic> postTopics =
+          event.selectedTopics.map((e) => e.toTopic()).toList() as List<Topic>;
       final AddPostRequest request = (AddPostRequestBuilder()
             ..text(event.postText)
-            ..attachments(attachments))
+            ..attachments(attachments)
+            ..topics(postTopics))
           .build();
 
       final AddPostResponse response =
@@ -123,33 +128,32 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
           AnalyticsKeys.postCreationCompleted,
           {
             "user_tagged": "no",
-            "link_attached": "no",
+            "link_attached": linkCount == 0
+                ? "no"
+                : {"yes": attachments.first.attachmentMeta.ogTags?.url ?? ""},
             "image_attached": imageCount == 0
                 ? "no"
                 : {
-                    "yes": {
-                      "image_count": imageCount,
-                    },
+                    "yes": {"image_count": imageCount},
                   },
             "video_attached": videoCount == 0
                 ? "no"
                 : {
-                    "yes": {
-                      "video_count": videoCount,
-                    },
+                    "yes": {"video_count": videoCount},
                   },
             "document_attached": documentCount == 0
                 ? "no"
                 : {
-                    "yes": {
-                      "document_count": documentCount,
-                    },
+                    "yes": {"document_count": documentCount},
                   },
           },
         );
-        emit(NewPostUploaded(
-            postData: PostViewModel.fromPost(post: response.post!),
-            userData: response.user!));
+        emit(
+          NewPostUploaded(
+              postData: PostViewModel.fromPost(post: response.post!),
+              userData: response.user!,
+              topics: response.topics ?? <String, Topic>{}),
+        );
       } else {
         emit(NewPostError(message: response.errorMessage!));
       }
@@ -177,6 +181,7 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
           EditPostUploaded(
             postData: PostViewModel.fromPost(post: response.post!),
             userData: response.user!,
+            topics: response.topics ?? <String, Topic>{},
           ),
         );
       } else {

@@ -312,6 +312,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                 postText: result,
                 attachments: attachments,
                 postId: postId,
+                selectedTopics: [],
               ));
               Navigator.of(context).pop();
             } else {
