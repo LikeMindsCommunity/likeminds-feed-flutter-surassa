@@ -269,6 +269,72 @@ class _NewPostScreenState extends State<NewPostScreen> {
         value: SystemUiOverlayStyle.dark,
         child: Scaffold(
           backgroundColor: kWhiteColor,
+          floatingActionButton: Align(
+            alignment: Alignment.bottomLeft,
+            child: Padding(
+              padding: const EdgeInsets.only(
+                bottom: 48.0,
+                left: 12.0,
+              ),
+              child: ValueListenableBuilder(
+                valueListenable: rebuildTopicFloatingButton,
+                builder: (context, _, __) {
+                  return CustomPopupMenu(
+                    controller: _controllerPopUp,
+                    showArrow: false,
+                    verticalMargin: 0,
+                    horizontalMargin: 0,
+                    pressType: PressType.singleClick,
+                    menuBuilder: () => TopicPopUp(
+                        selectedTopics: selectedTopic,
+                        onTopicSelected: (updatedTopics, tappedTopic) {
+                          if (selectedTopic.isEmpty) {
+                            selectedTopic.add(tappedTopic);
+                          } else {
+                            if (selectedTopic.first.id == tappedTopic.id) {
+                              selectedTopic.clear();
+                            } else {
+                              selectedTopic.clear();
+                              selectedTopic.add(tappedTopic);
+                            }
+                          }
+                          _controllerPopUp.hideMenu();
+                          rebuildTopicFloatingButton.value =
+                              !rebuildTopicFloatingButton.value;
+                        }),
+                    child: Container(
+                      height: 36,
+                      width: 96,
+                      margin: const EdgeInsets.only(left: 20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(500),
+                        border: Border.all(
+                          color: kPrimaryColor,
+                          width: 1,
+                        ),
+                      ),
+                      child: LMTopicChip(
+                        topic: selectedTopic.isEmpty
+                            ? (TopicUIBuilder()
+                                  ..id("0")
+                                  ..isEnabled(true)
+                                  ..name("Topic"))
+                                .build()
+                            : selectedTopic.first,
+                        textStyle: const TextStyle(color: kPrimaryColor),
+                        icon: const LMIcon(
+                          type: LMIconType.icon,
+                          icon: CupertinoIcons.chevron_down,
+                          size: 16,
+                          color: kPrimaryColor,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
           body: SafeArea(
             child: Stack(
               children: [
@@ -514,80 +580,80 @@ class _NewPostScreenState extends State<NewPostScreen> {
                             ),
                           ],
                         ),
-                        kVerticalPaddingXLarge,
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 42.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Align(
-                                alignment: Alignment.bottomLeft,
-                                child: ValueListenableBuilder(
-                                  valueListenable: rebuildTopicFloatingButton,
-                                  builder: (context, _, __) {
-                                    return CustomPopupMenu(
-                                      controller: _controllerPopUp,
-                                      showArrow: false,
-                                      verticalMargin: 0,
-                                      horizontalMargin: 0,
-                                      pressType: PressType.singleClick,
-                                      menuBuilder: () => TopicPopUp(
-                                          selectedTopics: selectedTopic,
-                                          onTopicSelected:
-                                              (updatedTopics, tappedTopic) {
-                                            if (selectedTopic.isEmpty) {
-                                              selectedTopic.add(tappedTopic);
-                                            } else {
-                                              if (selectedTopic.first.id ==
-                                                  tappedTopic.id) {
-                                                selectedTopic.clear();
-                                              } else {
-                                                selectedTopic.clear();
-                                                selectedTopic.add(tappedTopic);
-                                              }
-                                            }
-                                            _controllerPopUp.hideMenu();
-                                            rebuildTopicFloatingButton.value =
-                                                !rebuildTopicFloatingButton
-                                                    .value;
-                                          }),
-                                      child: Container(
-                                        height: 36,
-                                        alignment: Alignment.bottomLeft,
-                                        margin: const EdgeInsets.only(left: 20),
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(500),
-                                          border: Border.all(
-                                            color: kPrimaryColor,
-                                            width: 1,
-                                          ),
-                                        ),
-                                        child: LMTopicChip(
-                                          topic: selectedTopic.isEmpty
-                                              ? (TopicUIBuilder()
-                                                    ..id("0")
-                                                    ..isEnabled(true)
-                                                    ..name("Topic"))
-                                                  .build()
-                                              : selectedTopic.first,
-                                          textStyle: const TextStyle(
-                                              color: kPrimaryColor),
-                                          icon: const LMIcon(
-                                            type: LMIconType.icon,
-                                            icon: CupertinoIcons.chevron_down,
-                                            size: 16,
-                                            color: kPrimaryColor,
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        // kVerticalPaddingXLarge,
+                        // Padding(
+                        //   padding: const EdgeInsets.only(bottom: 42.0),
+                        //   child: Row(
+                        //     mainAxisAlignment: MainAxisAlignment.start,
+                        //     children: [
+                        //       Align(
+                        //         alignment: Alignment.bottomLeft,
+                        //         child: ValueListenableBuilder(
+                        //           valueListenable: rebuildTopicFloatingButton,
+                        //           builder: (context, _, __) {
+                        //             return CustomPopupMenu(
+                        //               controller: _controllerPopUp,
+                        //               showArrow: false,
+                        //               verticalMargin: 0,
+                        //               horizontalMargin: 0,
+                        //               pressType: PressType.singleClick,
+                        //               menuBuilder: () => TopicPopUp(
+                        //                   selectedTopics: selectedTopic,
+                        //                   onTopicSelected:
+                        //                       (updatedTopics, tappedTopic) {
+                        //                     if (selectedTopic.isEmpty) {
+                        //                       selectedTopic.add(tappedTopic);
+                        //                     } else {
+                        //                       if (selectedTopic.first.id ==
+                        //                           tappedTopic.id) {
+                        //                         selectedTopic.clear();
+                        //                       } else {
+                        //                         selectedTopic.clear();
+                        //                         selectedTopic.add(tappedTopic);
+                        //                       }
+                        //                     }
+                        //                     _controllerPopUp.hideMenu();
+                        //                     rebuildTopicFloatingButton.value =
+                        //                         !rebuildTopicFloatingButton
+                        //                             .value;
+                        //                   }),
+                        //               child: Container(
+                        //                 height: 36,
+                        //                 alignment: Alignment.bottomLeft,
+                        //                 margin: const EdgeInsets.only(left: 20),
+                        //                 decoration: BoxDecoration(
+                        //                   borderRadius:
+                        //                       BorderRadius.circular(500),
+                        //                   border: Border.all(
+                        //                     color: kPrimaryColor,
+                        //                     width: 1,
+                        //                   ),
+                        //                 ),
+                        //                 child: LMTopicChip(
+                        //                   topic: selectedTopic.isEmpty
+                        //                       ? (TopicUIBuilder()
+                        //                             ..id("0")
+                        //                             ..isEnabled(true)
+                        //                             ..name("Topic"))
+                        //                           .build()
+                        //                       : selectedTopic.first,
+                        //                   textStyle: const TextStyle(
+                        //                       color: kPrimaryColor),
+                        //                   icon: const LMIcon(
+                        //                     type: LMIconType.icon,
+                        //                     icon: CupertinoIcons.chevron_down,
+                        //                     size: 16,
+                        //                     color: kPrimaryColor,
+                        //                   ),
+                        //                 ),
+                        //               ),
+                        //             );
+                        //           },
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -868,7 +934,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
         allowMultiple: true,
         type: FileType.image,
       );
-
+      final config =
+          await UserLocalPreference.instance.getCommunityConfigurations();
+      final sizeLimit = config.value!["max_image_size"]! / 1024;
       if (list != null && list.files.isNotEmpty) {
         if (postMedia.length + list.files.length > 10) {
           toast(
@@ -881,9 +949,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
         for (PlatformFile image in list.files) {
           int fileBytes = image.size;
           double fileSize = getFileSizeInDouble(fileBytes);
-          if (fileSize > 100) {
+          if (fileSize > sizeLimit) {
             toast(
-              'File size should be smaller than 100MB',
+              'File size should be smaller than ${sizeLimit.floor()}MB',
               duration: Toast.LENGTH_LONG,
             );
             onUploadedDocument(false);
@@ -934,4 +1002,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
       return;
     }
   }
+
+  void pickVideos(BuildContext context) async {}
 }

@@ -353,8 +353,8 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                               child: LMPostMedia(
                                 attachments: postDetails!.attachments!,
                                 borderRadius: 16.0,
-                                width: screenSize.width - 32,
-                                height: screenSize.width - 32,
+                                // width: screenSize.width - 32,
+                                // height: screenSize.width - 32,
                                 showLinkUrl: false,
                                 backgroundColor: kSecondary100,
                                 documentIcon: const LMIcon(

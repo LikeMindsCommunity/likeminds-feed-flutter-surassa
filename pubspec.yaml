@@ -47,6 +47,7 @@ dependencies:
     path: ../LikeMinds-Flutter-Feed-UI
 
   likeminds_feed:
+    path: ../LikeMinds-Flutter-Feed-SDK
 
 dependency_override:
   sliver_tools: 0.2.12

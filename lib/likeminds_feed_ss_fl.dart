@@ -175,6 +175,9 @@ class _LMFeedState extends State<LMFeed> {
                   if (response.success) {
                     user = response.initiateUser?.user;
 
+                    //Get community configurations
+                    locator<LikeMindsService>().getCommunityConfigurations();
+
                     LMNotificationHandler.instance.registerDevice(user!.id);
                     return BlocProvider(
                       create: (context) => NewPostBloc(),
