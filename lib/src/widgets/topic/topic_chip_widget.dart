@@ -9,23 +9,26 @@ class TopicChipWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          margin: const EdgeInsets.only(top: 10.0, bottom: 8.0),
-          child: LMTopicChip(
-            topic: postTopic,
-            backgroundColor: kPrimaryColorLight,
-            borderRadius: 43,
-            textStyle: const TextStyle(
-              color: kPrimaryColor,
-              fontSize: kFontSmallMed,
-              fontWeight: FontWeight.w500,
-              height: 1.30,
+    return Container(
+      color: Colors.transparent,
+      child: Row(
+        children: [
+          Container(
+            margin: const EdgeInsets.only(top: 10.0, bottom: 8.0),
+            child: LMTopicChip(
+              topic: postTopic,
+              backgroundColor: kPrimaryColorLight,
+              borderRadius: 43,
+              textStyle: const TextStyle(
+                color: kPrimaryColor,
+                fontSize: kFontSmallMed,
+                fontWeight: FontWeight.w500,
+                height: 1.30,
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
