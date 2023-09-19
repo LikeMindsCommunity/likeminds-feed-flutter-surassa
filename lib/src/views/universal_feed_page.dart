@@ -70,7 +70,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
 
   final ValueNotifier postSomethingNotifier = ValueNotifier(false);
   bool userPostingRights = true;
-  var iconContainerHeight = 92.00;
+  var iconContainerHeight = 60.00;
 
   @override
   void initState() {
@@ -109,7 +109,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
     }
     if (_controller.position.userScrollDirection == ScrollDirection.forward) {
       if (iconContainerHeight == 0) {
-        iconContainerHeight = 88.0;
+        iconContainerHeight = 60.0;
         postSomethingNotifier.value = !postSomethingNotifier.value;
       }
     }
@@ -192,6 +192,30 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
     _pageFeed = 1;
   }
 
+  void showTopicSelectSheet() {
+    showModalBottomSheet(
+      context: context,
+      elevation: 5,
+      isDismissible: true,
+      backgroundColor: kWhiteColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(28.0),
+          topRight: Radius.circular(28.0),
+        ),
+      ),
+      enableDrag: true,
+      clipBehavior: Clip.hardEdge,
+      builder: (context) => TopicBottomSheet(
+        key: GlobalKey(),
+        selectedTopics: selectedTopics,
+        onTopicSelected: (updatedTopics, tappedTopic) {
+          updateSelectedTopics(updatedTopics);
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
@@ -241,17 +265,19 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
         },
         child: Column(
           children: [
+            kVerticalPaddingLarge,
             ValueListenableBuilder(
               valueListenable: postSomethingNotifier,
               builder: (context, _, __) {
                 return AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    height: iconContainerHeight,
-                    clipBehavior: Clip.hardEdge,
-                    decoration: BoxDecoration(),
-                    child: PostSomething(
-                      enabled: userPostingRights,
-                    ));
+                  duration: const Duration(milliseconds: 200),
+                  height: iconContainerHeight,
+                  clipBehavior: Clip.hardEdge,
+                  decoration: const BoxDecoration(),
+                  child: PostSomething(
+                    enabled: userPostingRights,
+                  ),
+                );
               },
             ),
             ValueListenableBuilder(
@@ -267,7 +293,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                             snapshot.data != null &&
                             snapshot.data!.success == true) {
                           if (snapshot.data!.topics!.isNotEmpty) {
-                            height = 50;
+                            height = 54;
                           } else {
                             height = 0;
                           }
@@ -275,33 +301,12 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                         return AnimatedContainer(
                           duration: const Duration(milliseconds: 400),
                           height: height,
-                          child: Padding(
+                          child: Container(
+                            height: height,
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 20.0, vertical: 10.0),
+                                horizontal: 20.0, vertical: 12.0),
                             child: GestureDetector(
-                              onTap: () {
-                                showModalBottomSheet(
-                                  context: context,
-                                  elevation: 5,
-                                  isDismissible: true,
-                                  backgroundColor: kWhiteColor,
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(28.0),
-                                      topRight: Radius.circular(28.0),
-                                    ),
-                                  ),
-                                  enableDrag: true,
-                                  clipBehavior: Clip.hardEdge,
-                                  builder: (context) => TopicBottomSheet(
-                                    selectedTopics: selectedTopics,
-                                    onTopicSelected:
-                                        (updatedTopics, tappedTopic) {
-                                      updateSelectedTopics(updatedTopics);
-                                    },
-                                  ),
-                                );
-                              },
+                              onTap: () => showTopicSelectSheet(),
                               child: Row(
                                 children: [
                                   selectedTopics.isEmpty
@@ -440,11 +445,13 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                     // Log the event in the analytics
                     return FeedRoomView(
                       isCm: isCm,
+                      universalFeedBloc: _feedBloc,
                       feedResponse: state.feed,
                       feedRoomPagingController: _pagingController,
                       user: user,
                       onRefresh: refresh,
                       scrollController: _controller,
+                      openTopicBottomSheet: showTopicSelectSheet,
                     );
                   } else if (state is UniversalFeedError) {
                     return FeedRoomErrorView(message: state.message);
@@ -479,19 +486,23 @@ class FeedRoomErrorView extends StatelessWidget {
 class FeedRoomView extends StatefulWidget {
   final bool isCm;
   final User user;
+  final UniversalFeedBloc universalFeedBloc;
   final GetFeedResponse feedResponse;
   final PagingController<int, PostViewModel> feedRoomPagingController;
   final ScrollController scrollController;
   final VoidCallback onRefresh;
+  final VoidCallback openTopicBottomSheet;
 
   const FeedRoomView({
     super.key,
     required this.isCm,
+    required this.universalFeedBloc,
     required this.feedResponse,
     required this.feedRoomPagingController,
     required this.user,
     required this.onRefresh,
     required this.scrollController,
+    required this.openTopicBottomSheet,
   });
 
   @override
@@ -743,81 +754,135 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                         padding: EdgeInsets.zero,
                         builderDelegate:
                             PagedChildBuilderDelegate<PostViewModel>(
-                          noItemsFoundIndicatorBuilder: (context) => Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const LMIcon(
-                                  type: LMIconType.icon,
-                                  icon: Icons.post_add,
-                                  size: 48,
-                                ),
-                                const SizedBox(height: 12),
-                                const Text("No posts to show",
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                    )),
-                                const SizedBox(height: 12),
-                                const Text("Be the first one to post here",
-                                    style: TextStyle(
+                          noItemsFoundIndicatorBuilder: (context) {
+                            if (widget.universalFeedBloc.state
+                                    is UniversalFeedLoaded &&
+                                (widget.universalFeedBloc.state
+                                        as UniversalFeedLoaded)
+                                    .topics
+                                    .isNotEmpty) {
+                              return Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const SizedBox(height: 12),
+                                    const LMTextView(
+                                      text: "There are no posts for this topic",
+                                      textStyle: TextStyle(
                                         fontSize: 16,
-                                        fontWeight: FontWeight.w300,
-                                        color: kGrey2Color)),
-                                const SizedBox(height: 28),
-                                LMTextButton(
-                                  borderRadius: 28,
-                                  height: 44,
-                                  width: 153,
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 12, horizontal: 20),
-                                  backgroundColor:
-                                      Theme.of(context).colorScheme.primary,
-                                  text: LMTextView(
-                                    text: "Create Post",
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 28),
+                                    LMTextButton(
+                                      borderRadius: 28,
+                                      height: 44,
+                                      width: 153,
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 12, horizontal: 20),
+                                      backgroundColor:
+                                          Theme.of(context).colorScheme.primary,
+                                      text: LMTextView(
+                                        text: "Change Filter",
+                                        textStyle: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onPrimary,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      placement: LMIconPlacement.end,
+                                      onTap: () =>
+                                          widget.openTopicBottomSheet(),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                            return Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const LMIcon(
+                                    type: LMIconType.icon,
+                                    icon: Icons.post_add,
+                                    size: 48,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  const LMTextView(
+                                    text: 'No posts to show',
                                     textStyle: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary,
+                                      fontSize: 24,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  placement: LMIconPlacement.end,
-                                  icon: LMIcon(
-                                    type: LMIconType.icon,
-                                    icon: Icons.add,
-                                    size: 18,
-                                    color:
-                                        Theme.of(context).colorScheme.onPrimary,
-                                  ),
-                                  onTap: right
-                                      ? () {
-                                          if (!postUploading.value) {
-                                            LMAnalytics.get().track(
-                                                AnalyticsKeys
-                                                    .postCreationStarted,
-                                                {});
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const NewPostScreen(),
-                                              ),
-                                            );
-                                          } else {
-                                            toast(
-                                              'A post is already uploading.',
-                                              duration: Toast.LENGTH_LONG,
-                                            );
+                                  const SizedBox(height: 12),
+                                  const LMTextView(
+                                      text: "Be the first one to post here",
+                                      textStyle: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w300,
+                                          color: kGrey2Color)),
+                                  const SizedBox(height: 28),
+                                  LMTextButton(
+                                    borderRadius: 28,
+                                    height: 44,
+                                    width: 153,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12, horizontal: 20),
+                                    backgroundColor:
+                                        Theme.of(context).colorScheme.primary,
+                                    text: LMTextView(
+                                      text: "Create Post",
+                                      textStyle: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    placement: LMIconPlacement.end,
+                                    icon: LMIcon(
+                                      type: LMIconType.icon,
+                                      icon: Icons.add,
+                                      size: 18,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimary,
+                                    ),
+                                    onTap: right
+                                        ? () {
+                                            if (!postUploading.value) {
+                                              LMAnalytics.get().track(
+                                                  AnalyticsKeys
+                                                      .postCreationStarted,
+                                                  {});
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const NewPostScreen(),
+                                                ),
+                                              );
+                                            } else {
+                                              toast(
+                                                'A post is already uploading.',
+                                                duration: Toast.LENGTH_LONG,
+                                              );
+                                            }
                                           }
-                                        }
-                                      : () => toast(
-                                          "You do not have permission to create a post"),
-                                ),
-                              ],
-                            ),
-                          ),
+                                        : () => toast(
+                                            "You do not have permission to create a post"),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
                           itemBuilder: (context, item, index) {
+                            if (widget.feedResponse.users[item.userId] ==
+                                null) {
+                              return const SizedBox();
+                            }
                             return Column(
                               children: [
                                 const SizedBox(height: 8),

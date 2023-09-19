@@ -467,6 +467,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                           controller: _commentController!,
                                           decoration: InputDecoration(
                                             enabled: right,
+                                            border: InputBorder.none,
                                             hintText: right
                                                 ? 'Write a comment'
                                                 : "You do not have permission to comment.",

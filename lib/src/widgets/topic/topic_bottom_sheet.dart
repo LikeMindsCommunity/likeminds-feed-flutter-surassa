@@ -103,7 +103,10 @@ class _TopicBottomSheetState extends State<TopicBottomSheet> {
     ThemeData theme = Theme.of(context);
     return Container(
       width: screenSize.width,
-      height: 500,
+      constraints: BoxConstraints(
+        maxHeight: 300,
+        minHeight: screenSize.height * 0.2,
+      ),
       margin: const EdgeInsets.only(top: 32),
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: BlocConsumer<TopicBloc, TopicState>(
@@ -143,6 +146,8 @@ class _TopicBottomSheetState extends State<TopicBottomSheet> {
                 valueListenable: rebuildTopicsScreen,
                 builder: (context, _, __) {
                   return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Align(
                         alignment: Alignment.topLeft,
@@ -162,6 +167,8 @@ class _TopicBottomSheetState extends State<TopicBottomSheet> {
                         child: SingleChildScrollView(
                           controller: controller,
                           child: Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.start,
+                            alignment: WrapAlignment.start,
                             children: topicsPagingController.itemList?.map((e) {
                                   bool isTopicSelected =
                                       selectedTopicId.contains(e.id);

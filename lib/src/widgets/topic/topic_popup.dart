@@ -175,35 +175,35 @@ class _TopicPopUpState extends State<TopicPopUp> {
                                       widget.onTopicSelected(selectedTopics, e);
                                     },
                                     child: Container(
-                                      width: double.infinity,
-                                      color: isTopicSelected
-                                          ? kSecondaryColorLight
-                                          : kWhiteColor,
-                                      alignment: Alignment.topLeft,
-                                      margin: const EdgeInsets.only(
-                                          right: 8.0, bottom: 8.0),
-                                      child: Chip(
-                                        label: LMTextView(
-                                          text: e.name,
-                                          textStyle: TextStyle(
-                                            color: isTopicSelected
-                                                ? theme.colorScheme.secondary
-                                                : appBlack,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                            height: 1.30,
-                                          ),
-                                        ),
-                                        backgroundColor: isTopicSelected
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.0, vertical: 10.0),
+                                      decoration: BoxDecoration(
+                                        color: isTopicSelected
                                             ? kSecondaryColorLight
                                             : kWhiteColor,
-                                        onDeleted: null,
-                                        clipBehavior: Clip.hardEdge,
-                                        materialTapTargetSize:
-                                            MaterialTapTargetSize.shrinkWrap,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(0.0)),
+                                      ),
+                                      alignment: Alignment.topLeft,
+                                      clipBehavior: Clip.hardEdge,
+                                      margin: const EdgeInsets.only(
+                                          right: 8.0, bottom: 8.0),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: LMTextView(
+                                              text: e.name,
+                                              maxLines: 2,
+                                              textStyle: TextStyle(
+                                                color: isTopicSelected
+                                                    ? theme
+                                                        .colorScheme.secondary
+                                                    : appBlack,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500,
+                                                height: 1.30,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   );
