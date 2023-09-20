@@ -767,33 +767,42 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                   children: [
                                     const SizedBox(height: 12),
                                     const LMTextView(
-                                      text: "There are no posts for this topic",
+                                      text:
+                                          "Looks like there are no posts for this topic yet.",
                                       textStyle: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
+                                        fontSize: 15,
+                                        color: onSurface500,
+                                        fontWeight: FontWeight.w600,
+                                        height: 0,
                                       ),
                                     ),
-                                    const SizedBox(height: 28),
-                                    LMTextButton(
-                                      borderRadius: 28,
-                                      height: 44,
-                                      width: 153,
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 12, horizontal: 20),
-                                      backgroundColor:
-                                          Theme.of(context).colorScheme.primary,
-                                      text: LMTextView(
-                                        text: "Change Filter",
-                                        textStyle: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onPrimary,
-                                          fontWeight: FontWeight.bold,
+                                    const SizedBox(height: 16),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        LMTextButton(
+                                          borderRadius: 48,
+                                          height: 40,
+                                          border: Border.all(
+                                            color: primary500,
+                                            width: 2,
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 8, horizontal: 12),
+                                          text: const LMTextView(
+                                            text: "Change Filter",
+                                            textAlign: TextAlign.center,
+                                            textStyle: TextStyle(
+                                              color: primary500,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          onTap: () =>
+                                              widget.openTopicBottomSheet(),
                                         ),
-                                      ),
-                                      placement: LMIconPlacement.end,
-                                      onTap: () =>
-                                          widget.openTopicBottomSheet(),
+                                      ],
                                     ),
                                   ],
                                 ),
