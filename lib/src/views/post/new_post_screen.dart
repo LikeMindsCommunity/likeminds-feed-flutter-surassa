@@ -136,7 +136,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
       });
     } else {
       if (postMedia.isEmpty) {
-        isMediaPost = false;
+        isMediaPost = true;
         showLinkPreview = true;
       }
       setState(() {
