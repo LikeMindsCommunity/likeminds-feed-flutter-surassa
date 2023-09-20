@@ -395,6 +395,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                     child: TaggingAheadTextField(
                                       isDown: true,
                                       maxLines: 5,
+                                      minLines: 3,
                                       decoration: const InputDecoration(
                                         border: InputBorder.none,
                                       ),

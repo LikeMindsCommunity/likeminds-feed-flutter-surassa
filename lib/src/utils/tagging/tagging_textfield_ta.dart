@@ -16,6 +16,7 @@ class TaggingAheadTextField extends StatefulWidget {
   final InputDecoration? decoration;
   final Function(String)? onChange;
   final int maxLines;
+  final int minLines;
 
   const TaggingAheadTextField({
     super.key,
@@ -26,6 +27,7 @@ class TaggingAheadTextField extends StatefulWidget {
     this.decoration,
     required this.onChange,
     this.maxLines = 200,
+    this.minLines = 1,
   });
 
   @override
@@ -133,7 +135,7 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
           keyboardType: TextInputType.multiline,
           controller: _controller,
           focusNode: _focusNode,
-          minLines: 1,
+          minLines: widget.minLines,
           maxLines: widget.maxLines,
           decoration: widget.decoration ??
               const InputDecoration(
