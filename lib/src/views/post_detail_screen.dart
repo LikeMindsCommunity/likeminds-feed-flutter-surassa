@@ -462,7 +462,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                       Expanded(
                                         child: TaggingAheadTextField(
                                           isDown: false,
-                                          maxLines: 4,
+                                          maxLines: 5,
                                           onTagSelected: (tag) {
                                             userTags.add(tag);
                                           },

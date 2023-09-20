@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
@@ -22,7 +21,6 @@ import 'package:likeminds_feed_ss_fl/src/utils/post/post_media_picker.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_utils.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/tagging/tagging_textfield_ta.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post/post_composer_header.dart';
-import 'package:likeminds_feed_ss_fl/src/widgets/topic/topic_bottom_sheet.dart';
 import 'package:likeminds_feed_ss_fl/src/widgets/topic/topic_popup.dart';
 
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
@@ -51,7 +49,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
   ValueNotifier<bool> rebuildLinkPreview = ValueNotifier(false);
   List<TopicUI> selectedTopic = [];
   ValueNotifier<bool> rebuildTopicFloatingButton = ValueNotifier(false);
-  CustomPopupMenuController _controllerPopUp = CustomPopupMenuController();
+  final CustomPopupMenuController _controllerPopUp =
+      CustomPopupMenuController();
 
   NewPostBloc? newPostBloc;
   late final User user;
@@ -86,6 +85,10 @@ class _NewPostScreenState extends State<NewPostScreen> {
     }
   }
 
+  /* 
+  * Removes the media from the list
+  * whenever the user taps on the X button
+  */
   void removeAttachmenetAtIndex(int index) {
     if (postMedia.isNotEmpty) {
       postMedia.removeAt(index);
@@ -108,17 +111,21 @@ class _NewPostScreenState extends State<NewPostScreen> {
     }
   }
 
-  /* Changes state to uploading
-  for showing a circular loader while the user is
-  picking files */
+  /* 
+  * Changes state to uploading
+  * for showing a circular loader while the user is
+  * picking files 
+  */
   void onUploading() {
     setState(() {
       isUploading = true;
     });
   }
 
-  /* Changes state to uploaded
-  for showing the picked files */
+  /* 
+  * Changes state to uploaded
+  * for showing the picked files 
+  */
   void onUploadedMedia(bool uploadResponse) {
     if (uploadResponse) {
       isMediaPost = true;
@@ -155,6 +162,11 @@ class _NewPostScreenState extends State<NewPostScreen> {
     }
   }
 
+  /*
+  * This function return a list 
+  * containing LMDocument widget
+  * which generates preview for a document 
+  */
   Widget getPostDocument(double width) {
     return ListView.builder(
       itemCount: postMedia.length,
@@ -179,15 +191,12 @@ class _NewPostScreenState extends State<NewPostScreen> {
     );
   }
 
-  // void _onTextChanged(String p0) {
-  //   if (_debounce?.isActive ?? false) {
-  //     _debounce?.cancel();
-  //   }
-  //   _debounce = Timer(const Duration(milliseconds: 500), () {
-  //     handleTextLinks(p0);
-  //   });
-  // }
-
+  /*
+  * Takes a string as input
+  * extracts the first valid link from the string
+  * decodes the url using LikeMinds SDK
+  * and generates a preview for the link
+  */
   void handleTextLinks(String text) async {
     String link = getFirstValidLinkFromString(text);
     if (link.isNotEmpty) {
@@ -224,6 +233,11 @@ class _NewPostScreenState extends State<NewPostScreen> {
     }
   }
 
+  /* 
+  * This function adds the link model in attachemnt
+  * If the link model is not present in the attachment
+  * and the link preview is enabled (no media is there)
+  */
   void checkTextLinks() {
     String link = getFirstValidLinkFromString(_controller.text);
     if (link.isEmpty) {
@@ -285,11 +299,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
                         verticalMargin: 10,
                         horizontalMargin: 16.0,
                         menuOnChange: (bool value) {
-                          // if (value) {
-                          //   _controllerPopUp.showMenu();
-                          // } else {
-                          //   _controllerPopUp.hideMenu();
-                          // }
                           if (value) {
                             if (_focusNode.hasFocus) {
                               _focusNode.unfocus(
@@ -714,33 +723,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                     }
                                   },
                                 ),
-                          // isMediaPost
-                          //     ? const SizedBox.shrink()
-                          //     : const SizedBox(width: 8),
-                          // isMediaPost
-                          //     ? const SizedBox.shrink()
-                          //     : LMIconButton(
-                          //         icon: LMIcon(
-                          //           type: LMIconType.svg,
-                          //           assetPath: kAssetVideoIcon,
-                          //           color:
-                          //               Theme.of(context).colorScheme.secondary,
-                          //           boxPadding: 0,
-                          //           size: 44,
-                          //         ),
-                          //         onTap: (active) async {
-                          //           onUploading();
-                          //           List<MediaModel>? pickedMediaFiles =
-                          //               await PostMediaPicker.pickVideos(
-                          //                   postMedia.length);
-                          //           if (pickedMediaFiles != null) {
-                          //             setPickedMediaFiles(pickedMediaFiles);
-                          //             onUploadedMedia(true);
-                          //           } else {
-                          //             onUploadedMedia(false);
-                          //           }
-                          //         },
-                          //       ),
                           isDocumentPost
                               ? const SizedBox.shrink()
                               : const SizedBox(width: 8),
@@ -776,16 +758,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                   },
                                 ),
                           const SizedBox(width: 8),
-                          // LMIconButton(
-                          //   icon: LMIcon(
-                          //     type: LMIconType.svg,
-                          //     assetPath: kAssetPollIcon,
-                          //     color: Theme.of(context).colorScheme.secondary,
-                          //     boxPadding: 0,
-                          //     size: 44,
-                          //   ),
-                          //   onTap: (active) {},
-                          // ),
                         ],
                       ),
                     ),
@@ -878,7 +850,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
   void pickImages(BuildContext context) async {
     onUploading();
     try {
-      List<MediaModel> mediaFiles = [];
       final FilePickerResult? list = await FilePicker.platform.pickFiles(
         allowMultiple: true,
         type: FileType.image,
@@ -945,7 +916,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
         duration: Toast.LENGTH_LONG,
       );
       onUploadedDocument(false);
-      print(e.toString());
+      debugPrint(e.toString());
       return;
     }
   }

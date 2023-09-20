@@ -136,14 +136,8 @@ class _TopicBottomSheetState extends State<TopicBottomSheet> {
               listener: (context, state) {
                 if (state is TopicLoaded) {
                   _page++;
-                  if (state.getTopicFeedResponse.topics!.isEmpty ||
-                      state.getTopicFeedResponse.topics!.length < pageSize) {
-                    topicsPagingController.appendLastPage(state
-                            .getTopicFeedResponse.topics
-                            ?.map((e) => TopicUI.fromTopic(e))
-                            .toList() ??
-                        []);
-                    controller.removeListener(paginationListener);
+                  if (state.getTopicFeedResponse.topics!.isEmpty) {
+                    topicsPagingController.appendLastPage([]);
                   } else {
                     state.getTopicFeedResponse.topics?.removeWhere(
                         (element) => selectedTopicId.contains(element.id));
