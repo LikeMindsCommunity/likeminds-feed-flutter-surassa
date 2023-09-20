@@ -11,6 +11,7 @@ import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_action_id.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_utils.dart';
 import 'package:likeminds_feed_ss_fl/src/views/likes/likes_screen.dart';
+import 'package:likeminds_feed_ss_fl/src/views/media_preview.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post/edit_post_screen.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post_detail_screen.dart';
 import 'package:likeminds_feed_ss_fl/src/widgets/delete_dialog.dart';
@@ -288,6 +289,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                           ),
                         );
                       }),
+                  const SizedBox(height: 2),
                   postDetails!.topics.isEmpty
                       ? const SizedBox()
                       : TopicChipWidget(
@@ -299,8 +301,9 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                       locator<LikeMindsService>().routeToProfile(userId);
                     },
                   ),
-                  postDetails!.attachments != null
-                      ? const SizedBox(height: 12)
+                  postDetails!.attachments != null &&
+                          postDetails!.text.isNotEmpty
+                      ? const SizedBox(height: 10)
                       : const SizedBox(),
                   postDetails!.attachments != null &&
                           postDetails!.attachments!.isNotEmpty
@@ -350,22 +353,35 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                               ),
                             )
                           : SizedBox(
-                              child: LMPostMedia(
-                                attachments: postDetails!.attachments!,
-                                borderRadius: 16.0,
-                                width: screenSize.width - 32,
-                                height: screenSize.width - 32,
-                                showLinkUrl: false,
-                                backgroundColor: kSecondary100,
-                                documentIcon: const LMIcon(
-                                  type: LMIconType.svg,
-                                  assetPath: kAssetDocPDFIcon,
-                                  size: 50,
-                                  boxPadding: 0,
-                                  fit: BoxFit.cover,
-                                  color: Colors.red,
+                              child: GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) {
+                                      return MediaPreview(
+                                        postAttachments:
+                                            postDetails!.attachments!,
+                                        post: postDetails!.toPost(),
+                                        user: widget.user,
+                                      );
+                                    }),
+                                  );
+                                },
+                                child: LMPostMedia(
+                                  attachments: postDetails!.attachments!,
+                                  borderRadius: 16.0,
+                                  showLinkUrl: false,
+                                  backgroundColor: kSecondary100,
+                                  documentIcon: const LMIcon(
+                                    type: LMIconType.svg,
+                                    assetPath: kAssetDocPDFIcon,
+                                    size: 50,
+                                    boxPadding: 0,
+                                    fit: BoxFit.cover,
+                                    color: Colors.red,
+                                  ),
                                 ),
-                                // postId: postDetails!.id,
                               ),
                             )
                       : const SizedBox(),

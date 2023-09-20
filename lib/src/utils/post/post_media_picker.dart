@@ -4,6 +4,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:likeminds_feed_ss_fl/src/utils/local_preference/user_local_preference.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_utils.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -85,10 +86,19 @@ class PostMediaPicker {
 
   static Future<List<MediaModel>?> pickVideos(int currentMediaLength) async {
     try {
-      final XFile? pickedFile =
-          await ImagePicker().pickVideo(source: ImageSource.gallery);
+      // final XFile? pickedFile =
+      List<MediaModel> videoFiles = [];
+      final FilePickerResult? pickedFiles = await FilePicker.platform.pickFiles(
+        allowMultiple: true,
+        type: FileType.video,
+        // allowedExtensions: videoExtentions,
+      );
 
-      if (pickedFile != null) {
+      final config =
+          await UserLocalPreference.instance.getCommunityConfigurations();
+      final sizeLimit = (config.value!["max_video_size"]! / 1024).floor();
+
+      if (pickedFiles!.files.isNotEmpty) {
         if (currentMediaLength + 1 > 10) {
           toast(
             'A total of 10 attachments can be added to a post',
@@ -96,32 +106,34 @@ class PostMediaPicker {
           );
           return null;
         } else {
-          List<MediaModel> videoFiles = [];
-          int fileBytes = await pickedFile!.length();
-          double fileSize = getFileSizeInDouble(fileBytes);
-          if (fileSize > 100) {
-            toast(
-              'File size should be smaller than 100MB',
-              duration: Toast.LENGTH_LONG,
-            );
-          } else {
-            File video = File(pickedFile.path);
-            VideoPlayerController controller = VideoPlayerController.file(
-              video,
-              videoPlayerOptions: VideoPlayerOptions(
-                mixWithOthers: false,
-              ),
-            );
-            await controller.initialize();
-            Duration videoDuration = controller.value.duration;
-            MediaModel videoFile = MediaModel(
-              mediaType: MediaType.video,
-              mediaFile: video,
-              duration: videoDuration.inSeconds,
-              size: fileBytes,
-            );
-            videoFiles.add(videoFile);
-            controller.dispose();
+          for (PlatformFile pFile in pickedFiles.files) {
+            File file = File(pFile.path!);
+            int fileBytes = await file.length();
+            double fileSize = getFileSizeInDouble(fileBytes);
+            if (fileSize > sizeLimit) {
+              toast(
+                'Max file size allowed: ${sizeLimit}MB',
+                duration: Toast.LENGTH_LONG,
+              );
+            } else {
+              File video = File(file.path);
+              VideoPlayerController controller = VideoPlayerController.file(
+                video,
+                videoPlayerOptions: VideoPlayerOptions(
+                  mixWithOthers: false,
+                ),
+              );
+              await controller.initialize();
+              Duration videoDuration = controller.value.duration;
+              MediaModel videoFile = MediaModel(
+                mediaType: MediaType.video,
+                mediaFile: video,
+                duration: videoDuration.inSeconds,
+                size: fileBytes,
+              );
+              videoFiles.add(videoFile);
+              controller.dispose();
+            }
           }
 
           return videoFiles;
