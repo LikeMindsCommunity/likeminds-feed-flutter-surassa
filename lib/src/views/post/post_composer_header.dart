@@ -3,7 +3,7 @@ import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 
 class PostComposerHeader extends StatelessWidget {
-  final String title;
+  final LMTextView title;
   final Function onTap;
   final Function? onPressedBack;
 
@@ -45,10 +45,7 @@ class PostComposerHeader extends StatelessWidget {
                   : () => onPressedBack!(),
             ),
             const Spacer(),
-            LMTextView(
-              text: title,
-              textStyle: const TextStyle(fontSize: 18, color: kGrey1Color),
-            ),
+            title,
             const Spacer(),
             LMTextButton(
               text: LMTextView(

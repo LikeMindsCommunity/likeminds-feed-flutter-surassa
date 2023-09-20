@@ -298,7 +298,14 @@ class _EditPostScreenState extends State<EditPostScreen> {
               Navigator.of(context).pop();
             }
           },
-          title: "Edit Post",
+          title: const LMTextView(
+            text: "Edit Post",
+            textStyle: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: kGrey1Color,
+            ),
+          ),
           onTap: () async {
             if (textEditingController!.text.isNotEmpty ||
                 (postDetails!.attachments != null &&

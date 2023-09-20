@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 const Color kPrimaryColor = Color(0xFF3B82F6);
+const Color primary500 = Color(0xFF4666F6);
 const Color kHeadingBlackColor = Color(0xFF0F172A);
 const Color kPrimaryColorLight = Color(0xFFDBEAFE);
 const Color kSecondary100 = Color(0xFFF1F5F9);
 const Color kSecondaryColor700 = Color(0xFF334155);
 const Color kSecondaryColorLight = Color(0xFFEDF0FE);
 const Color onSurface = Color(0xFFE2E8F0);
+const Color onSurface500 = Color(0xFF64748B);
 const Color kBackgroundColor = Color(0xffF5F5F5);
 const Color kWhiteColor = Color(0xffFFFFFF);
 const Color appBlack = Color(0xFF334155);
