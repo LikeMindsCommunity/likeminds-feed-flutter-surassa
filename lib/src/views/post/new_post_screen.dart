@@ -60,8 +60,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
   List<UserTag> userTags = [];
   String? result;
 
-  bool isDocumentPost = false; // flag for document or media post
-  bool isMediaPost = false;
+  bool isDocumentPost = true; // flag for document or media post
+  bool isMediaPost = true;
   bool isUploading = false;
 
   String previewLink = '';
@@ -123,6 +123,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
     if (uploadResponse) {
       isMediaPost = true;
       showLinkPreview = false;
+      isDocumentPost = false;
       setState(() {
         isUploading = false;
       });
@@ -141,6 +142,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
     if (uploadResponse) {
       isDocumentPost = true;
       showLinkPreview = false;
+      isMediaPost = true;
       setState(() {
         isUploading = false;
       });
@@ -344,7 +346,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                     padding: const EdgeInsets.only(
                       left: 16.0,
                       right: 16.0,
-                      top: 60.0,
+                      top: 72.0,
                       bottom: 40.0,
                     ),
                     child: Column(
@@ -481,7 +483,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                             padding: const EdgeInsets.only(
                                               top: kPaddingSmall,
                                             ),
-                                            height: 180,
+                                            height: 200,
                                             alignment: Alignment.center,
                                             child: ListView.builder(
                                               itemCount: postMedia.length,
@@ -489,87 +491,112 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                               itemBuilder:
                                                   (BuildContext context,
                                                       int index) {
-                                                return ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          18.0),
-                                                  clipBehavior: Clip.hardEdge,
-                                                  child: Stack(
-                                                    children: [
-                                                      Row(
-                                                        children: [
-                                                          SizedBox(
-                                                            height: 180,
-                                                            width: postMedia[
-                                                                            index]
-                                                                        .mediaType ==
-                                                                    MediaType
-                                                                        .video
-                                                                ? 300
-                                                                : 180,
-                                                            child: Stack(
-                                                              children: [
-                                                                postMedia[index]
-                                                                            .mediaType ==
-                                                                        MediaType
-                                                                            .video
-                                                                    ? LMVideo(
-                                                                        videoFile:
-                                                                            postMedia[index].mediaFile!,
+                                                return Stack(
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        SizedBox(
+                                                          // height: 180,
+                                                          // width: postMedia[
+                                                          //                 index]
+                                                          //             .mediaType ==
+                                                          //         MediaType
+                                                          //             .video
+                                                          //     ? 200
+                                                          //     : 180,
+                                                          child: Stack(
+                                                            children: [
+                                                              postMedia[index]
+                                                                          .mediaType ==
+                                                                      MediaType
+                                                                          .video
+                                                                  ? ClipRRect(
+                                                                      borderRadius:
+                                                                          BorderRadius.all(
+                                                                              Radius.circular(12)),
+                                                                      child:
+                                                                          Container(
                                                                         height:
-                                                                            180,
-                                                                        boxFit:
-                                                                            BoxFit.cover,
-                                                                        showControls:
-                                                                            false,
+                                                                            200,
                                                                         width:
-                                                                            300,
-                                                                      )
-                                                                    : LMImage(
-                                                                        height:
-                                                                            180,
-                                                                        width:
-                                                                            180,
-                                                                        boxFit:
-                                                                            BoxFit.cover,
-                                                                        borderRadius:
-                                                                            18,
-                                                                        imageFile:
-                                                                            postMedia[index].mediaFile!,
+                                                                            200,
+                                                                        color: Colors
+                                                                            .black,
+                                                                        child:
+                                                                            LMVideo(
+                                                                          videoFile:
+                                                                              postMedia[index].mediaFile!,
+                                                                          // height:
+                                                                          //     180,
+                                                                          boxFit:
+                                                                              BoxFit.contain,
+                                                                          showControls:
+                                                                              false,
+                                                                          // width:
+                                                                          //     300,
+                                                                          borderRadius:
+                                                                              18,
+                                                                        ),
                                                                       ),
-                                                              ],
-                                                            ),
+                                                                    )
+                                                                  : ClipRRect(
+                                                                      borderRadius:
+                                                                          BorderRadius.all(
+                                                                              Radius.circular(12)),
+                                                                      child:
+                                                                          Container(
+                                                                        height:
+                                                                            200,
+                                                                        width:
+                                                                            200,
+                                                                        color: Colors
+                                                                            .black,
+                                                                        child:
+                                                                            LMImage(
+                                                                          // height:
+                                                                          //     180,
+                                                                          // width:
+                                                                          //     180,
+                                                                          boxFit:
+                                                                              BoxFit.contain,
+                                                                          borderRadius:
+                                                                              18,
+                                                                          imageFile:
+                                                                              postMedia[index].mediaFile!,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                            ],
                                                           ),
-                                                          const SizedBox(
-                                                              width: 8),
-                                                        ],
-                                                      ),
-                                                      Positioned(
-                                                        top: -8,
-                                                        right: 0,
-                                                        child: IconButton(
-                                                            onPressed: () =>
-                                                                removeAttachmenetAtIndex(
-                                                                    index),
-                                                            icon: Icon(
-                                                              CupertinoIcons
-                                                                  .xmark_circle_fill,
-                                                              shadows: [
-                                                                Shadow(
-                                                                  offset:
-                                                                      Offset(
-                                                                          1, 1),
-                                                                  color: Colors
-                                                                      .black38,
-                                                                )
-                                                              ],
-                                                              color: kWhiteColor
-                                                                  .withOpacity(
-                                                                      0.8),
-                                                            )),
-                                                      )
-                                                    ],
-                                                  ),
+                                                        ),
+                                                        const SizedBox(
+                                                            width: 8),
+                                                      ],
+                                                    ),
+                                                    Positioned(
+                                                      top: -8,
+                                                      right: 0,
+                                                      child: IconButton(
+                                                          onPressed: () =>
+                                                              removeAttachmenetAtIndex(
+                                                                  index),
+                                                          icon: Icon(
+                                                            CupertinoIcons
+                                                                .xmark_circle_fill,
+                                                            shadows: [
+                                                              Shadow(
+                                                                offset: Offset(
+                                                                    1, 1),
+                                                                color: Colors
+                                                                    .black38,
+                                                              )
+                                                            ],
+                                                            color: kWhiteColor
+                                                                .withOpacity(
+                                                                    0.8),
+                                                          )),
+                                                    )
+                                                  ],
                                                 );
                                               },
                                             ),
@@ -580,80 +607,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
                             ),
                           ],
                         ),
-                        // kVerticalPaddingXLarge,
-                        // Padding(
-                        //   padding: const EdgeInsets.only(bottom: 42.0),
-                        //   child: Row(
-                        //     mainAxisAlignment: MainAxisAlignment.start,
-                        //     children: [
-                        //       Align(
-                        //         alignment: Alignment.bottomLeft,
-                        //         child: ValueListenableBuilder(
-                        //           valueListenable: rebuildTopicFloatingButton,
-                        //           builder: (context, _, __) {
-                        //             return CustomPopupMenu(
-                        //               controller: _controllerPopUp,
-                        //               showArrow: false,
-                        //               verticalMargin: 0,
-                        //               horizontalMargin: 0,
-                        //               pressType: PressType.singleClick,
-                        //               menuBuilder: () => TopicPopUp(
-                        //                   selectedTopics: selectedTopic,
-                        //                   onTopicSelected:
-                        //                       (updatedTopics, tappedTopic) {
-                        //                     if (selectedTopic.isEmpty) {
-                        //                       selectedTopic.add(tappedTopic);
-                        //                     } else {
-                        //                       if (selectedTopic.first.id ==
-                        //                           tappedTopic.id) {
-                        //                         selectedTopic.clear();
-                        //                       } else {
-                        //                         selectedTopic.clear();
-                        //                         selectedTopic.add(tappedTopic);
-                        //                       }
-                        //                     }
-                        //                     _controllerPopUp.hideMenu();
-                        //                     rebuildTopicFloatingButton.value =
-                        //                         !rebuildTopicFloatingButton
-                        //                             .value;
-                        //                   }),
-                        //               child: Container(
-                        //                 height: 36,
-                        //                 alignment: Alignment.bottomLeft,
-                        //                 margin: const EdgeInsets.only(left: 20),
-                        //                 decoration: BoxDecoration(
-                        //                   borderRadius:
-                        //                       BorderRadius.circular(500),
-                        //                   border: Border.all(
-                        //                     color: kPrimaryColor,
-                        //                     width: 1,
-                        //                   ),
-                        //                 ),
-                        //                 child: LMTopicChip(
-                        //                   topic: selectedTopic.isEmpty
-                        //                       ? (TopicUIBuilder()
-                        //                             ..id("0")
-                        //                             ..isEnabled(true)
-                        //                             ..name("Topic"))
-                        //                           .build()
-                        //                       : selectedTopic.first,
-                        //                   textStyle: const TextStyle(
-                        //                       color: kPrimaryColor),
-                        //                   icon: const LMIcon(
-                        //                     type: LMIconType.icon,
-                        //                     icon: CupertinoIcons.chevron_down,
-                        //                     size: 16,
-                        //                     color: kPrimaryColor,
-                        //                   ),
-                        //                 ),
-                        //               ),
-                        //             );
-                        //           },
-                        //         ),
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
                       ],
                     ),
                   ),
@@ -692,13 +645,13 @@ class _NewPostScreenState extends State<NewPostScreen> {
                     String postText = _controller.text;
                     postText = postText.trim();
                     if (postText.isNotEmpty || postMedia.isNotEmpty) {
-                      if (selectedTopic.isEmpty) {
-                        toast(
-                          "Can't create a post without topic",
-                          duration: Toast.LENGTH_LONG,
-                        );
-                        return;
-                      }
+                      // if (selectedTopic.isEmpty) {
+                      //   toast(
+                      //     "Can't create a post without topic",
+                      //     duration: Toast.LENGTH_LONG,
+                      //   );
+                      //   return;
+                      // }
                       checkTextLinks();
                       userTags =
                           TaggingHelper.matchTags(_controller.text, userTags);
@@ -728,6 +681,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Container(
+                    // height: 32,
                     decoration: BoxDecoration(
                       color: kWhiteColor,
                       boxShadow: [
@@ -744,8 +698,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           isMediaPost
-                              ? const SizedBox.shrink()
-                              : LMIconButton(
+                              ? LMIconButton(
                                   icon: LMIcon(
                                     type: LMIconType.svg,
                                     assetPath: kAssetGalleryIcon,
@@ -761,43 +714,43 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                     final result =
                                         await handlePermissions(context, 1);
                                     if (result) {
-                                      pickImages(context);
+                                      pickImages();
                                     }
                                   },
-                                ),
-                          // isMediaPost
-                          //     ? const SizedBox.shrink()
-                          //     : const SizedBox(width: 8),
-                          // isMediaPost
-                          //     ? const SizedBox.shrink()
-                          //     : LMIconButton(
-                          //         icon: LMIcon(
-                          //           type: LMIconType.svg,
-                          //           assetPath: kAssetVideoIcon,
-                          //           color:
-                          //               Theme.of(context).colorScheme.secondary,
-                          //           boxPadding: 0,
-                          //           size: 44,
-                          //         ),
-                          //         onTap: (active) async {
-                          //           onUploading();
-                          //           List<MediaModel>? pickedMediaFiles =
-                          //               await PostMediaPicker.pickVideos(
-                          //                   postMedia.length);
-                          //           if (pickedMediaFiles != null) {
-                          //             setPickedMediaFiles(pickedMediaFiles);
-                          //             onUploadedMedia(true);
-                          //           } else {
-                          //             onUploadedMedia(false);
-                          //           }
-                          //         },
-                          //       ),
+                                )
+                              : const SizedBox.shrink(),
+                          isMediaPost
+                              ? const SizedBox(width: 8)
+                              : const SizedBox.shrink(),
+                          isMediaPost
+                              ? LMIconButton(
+                                  icon: LMIcon(
+                                    type: LMIconType.svg,
+                                    assetPath: kAssetVideoIcon,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    boxPadding: 0,
+                                    size: 44,
+                                  ),
+                                  onTap: (active) async {
+                                    onUploading();
+                                    List<MediaModel>? pickedMediaFiles =
+                                        await PostMediaPicker.pickVideos(
+                                            postMedia.length);
+                                    if (pickedMediaFiles != null) {
+                                      setPickedMediaFiles(pickedMediaFiles);
+                                      onUploadedMedia(true);
+                                    } else {
+                                      onUploadedMedia(false);
+                                    }
+                                  },
+                                )
+                              : const SizedBox.shrink(),
                           isDocumentPost
-                              ? const SizedBox.shrink()
-                              : const SizedBox(width: 8),
+                              ? const SizedBox(width: 8)
+                              : const SizedBox.shrink(),
                           isDocumentPost
-                              ? const SizedBox.shrink()
-                              : LMIconButton(
+                              ? LMIconButton(
                                   icon: LMIcon(
                                     type: LMIconType.svg,
                                     assetPath: kAssetDocPDFIcon,
@@ -820,12 +773,13 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                             postMedia.length);
                                     if (pickedMediaFiles != null) {
                                       setPickedMediaFiles(pickedMediaFiles);
-                                      onUploadedMedia(true);
+                                      onUploadedDocument(true);
                                     } else {
-                                      onUploadedMedia(false);
+                                      onUploadedDocument(false);
                                     }
                                   },
-                                ),
+                                )
+                              : const SizedBox.shrink(),
                           const SizedBox(width: 8),
                           // LMIconButton(
                           //   icon: LMIcon(
@@ -926,7 +880,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
     return true;
   }
 
-  void pickImages(BuildContext context) async {
+  void pickImages() async {
     onUploading();
     try {
       List<MediaModel> mediaFiles = [];
@@ -943,7 +897,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
             'A total of 10 attachments can be added to a post',
             duration: Toast.LENGTH_LONG,
           );
-          onUploadedDocument(false);
+          onUploadedMedia(false);
           return;
         }
         for (PlatformFile image in list.files) {
@@ -951,10 +905,10 @@ class _NewPostScreenState extends State<NewPostScreen> {
           double fileSize = getFileSizeInDouble(fileBytes);
           if (fileSize > sizeLimit) {
             toast(
-              'File size should be smaller than ${sizeLimit.floor()}MB',
+              'Max file size allowed: ${sizeLimit}MB',
               duration: Toast.LENGTH_LONG,
             );
-            onUploadedDocument(false);
+            onUploadedMedia(false);
             return;
           }
         }
@@ -964,7 +918,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                 MediaModel(mediaFile: File(e.path), mediaType: MediaType.image))
             .toList();
         setPickedMediaFiles(mediaFiles);
-        onUploadedDocument(true);
+        onUploadedMedia(true);
         // MultiImageCrop.startCropping(
         //   context: context,
         //   activeColor: kWhiteColor,
@@ -986,10 +940,10 @@ class _NewPostScreenState extends State<NewPostScreen> {
         //         mediaFile: File(image.path!), mediaType: MediaType.image))
         //     .toList();
         // setPickedMediaFiles(mediaFiles);
-        onUploadedDocument(false);
+        // onUploadedDocument(false);
         return;
       } else {
-        onUploadedDocument(false);
+        onUploadedMedia(false);
         return;
       }
     } catch (e) {
@@ -997,7 +951,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
         'An error occurred',
         duration: Toast.LENGTH_LONG,
       );
-      onUploadedDocument(false);
+      onUploadedMedia(false);
       print(e.toString());
       return;
     }
@@ -1005,3 +959,81 @@ class _NewPostScreenState extends State<NewPostScreen> {
 
   void pickVideos(BuildContext context) async {}
 }
+
+
+
+
+// kVerticalPaddingXLarge,
+                        // Padding(
+                        //   padding: const EdgeInsets.only(bottom: 42.0),
+                        //   child: Row(
+                        //     mainAxisAlignment: MainAxisAlignment.start,
+                        //     children: [
+                        //       Align(
+                        //         alignment: Alignment.bottomLeft,
+                        //         child: ValueListenableBuilder(
+                        //           valueListenable: rebuildTopicFloatingButton,
+                        //           builder: (context, _, __) {
+                        //             return CustomPopupMenu(
+                        //               controller: _controllerPopUp,
+                        //               showArrow: false,
+                        //               verticalMargin: 0,
+                        //               horizontalMargin: 0,
+                        //               pressType: PressType.singleClick,
+                        //               menuBuilder: () => TopicPopUp(
+                        //                   selectedTopics: selectedTopic,
+                        //                   onTopicSelected:
+                        //                       (updatedTopics, tappedTopic) {
+                        //                     if (selectedTopic.isEmpty) {
+                        //                       selectedTopic.add(tappedTopic);
+                        //                     } else {
+                        //                       if (selectedTopic.first.id ==
+                        //                           tappedTopic.id) {
+                        //                         selectedTopic.clear();
+                        //                       } else {
+                        //                         selectedTopic.clear();
+                        //                         selectedTopic.add(tappedTopic);
+                        //                       }
+                        //                     }
+                        //                     _controllerPopUp.hideMenu();
+                        //                     rebuildTopicFloatingButton.value =
+                        //                         !rebuildTopicFloatingButton
+                        //                             .value;
+                        //                   }),
+                        //               child: Container(
+                        //                 height: 36,
+                        //                 alignment: Alignment.bottomLeft,
+                        //                 margin: const EdgeInsets.only(left: 20),
+                        //                 decoration: BoxDecoration(
+                        //                   borderRadius:
+                        //                       BorderRadius.circular(500),
+                        //                   border: Border.all(
+                        //                     color: kPrimaryColor,
+                        //                     width: 1,
+                        //                   ),
+                        //                 ),
+                        //                 child: LMTopicChip(
+                        //                   topic: selectedTopic.isEmpty
+                        //                       ? (TopicUIBuilder()
+                        //                             ..id("0")
+                        //                             ..isEnabled(true)
+                        //                             ..name("Topic"))
+                        //                           .build()
+                        //                       : selectedTopic.first,
+                        //                   textStyle: const TextStyle(
+                        //                       color: kPrimaryColor),
+                        //                   icon: const LMIcon(
+                        //                     type: LMIconType.icon,
+                        //                     icon: CupertinoIcons.chevron_down,
+                        //                     size: 16,
+                        //                     color: kPrimaryColor,
+                        //                   ),
+                        //                 ),
+                        //               ),
+                        //             );
+                        //           },
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),

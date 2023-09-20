@@ -6,7 +6,6 @@ import 'package:likeminds_feed_ss_sample/cred_screen.dart';
 import 'package:likeminds_feed_ss_sample/credentials/credentials.dart';
 import 'package:likeminds_feed_ss_sample/firebase_options.dart';
 import 'package:likeminds_feed_ss_sample/likeminds_callback.dart';
-import 'package:likeminds_feed_ss_sample/user_local_preference.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:device_info_plus/device_info_plus.dart';
