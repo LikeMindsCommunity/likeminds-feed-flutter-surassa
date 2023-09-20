@@ -542,7 +542,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                                         .video
                                                                 ? ClipRRect(
                                                                     borderRadius:
-                                                                        BorderRadius.all(
+                                                                        const BorderRadius
+                                                                            .all(
                                                                             Radius.circular(12)),
                                                                     child:
                                                                         Container(
@@ -571,7 +572,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                                   )
                                                                 : ClipRRect(
                                                                     borderRadius:
-                                                                        BorderRadius.all(
+                                                                        const BorderRadius
+                                                                            .all(
                                                                             Radius.circular(12)),
                                                                     child:
                                                                         Container(
