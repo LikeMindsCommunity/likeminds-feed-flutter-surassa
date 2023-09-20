@@ -78,23 +78,25 @@ class _TopicBottomSheetState extends State<TopicBottomSheet> {
     super.dispose();
   }
 
-  _addPaginationListener() {
-    controller.addListener(() {
-      if (controller.position.atEdge) {
-        bool isTop = controller.position.pixels == 0;
-        if (!isTop) {
-          topicBloc.add(GetTopic(
-            getTopicFeedRequest: (GetTopicsRequestBuilder()
-                  ..page(_page)
-                  ..isEnabled(widget.isEnabled)
-                  ..pageSize(pageSize)
-                  ..search(search)
-                  ..searchType(searchType))
-                .build(),
-          ));
-        }
+  void paginationListener() {
+    if (controller.position.atEdge) {
+      bool isTop = controller.position.pixels == 0;
+      if (!isTop) {
+        topicBloc.add(GetTopic(
+          getTopicFeedRequest: (GetTopicsRequestBuilder()
+                ..page(_page)
+                ..isEnabled(widget.isEnabled)
+                ..pageSize(pageSize)
+                ..search(search)
+                ..searchType(searchType))
+              .build(),
+        ));
       }
-    });
+    }
+  }
+
+  _addPaginationListener() {
+    controller.addListener(paginationListener);
   }
 
   @override
@@ -103,132 +105,162 @@ class _TopicBottomSheetState extends State<TopicBottomSheet> {
     ThemeData theme = Theme.of(context);
     return Container(
       width: screenSize.width,
-      height: 500,
-      margin: const EdgeInsets.only(top: 32),
+      constraints: BoxConstraints(
+        maxHeight: 300,
+        minHeight: screenSize.height * 0.2,
+      ),
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: BlocConsumer<TopicBloc, TopicState>(
-        bloc: topicBloc,
-        buildWhen: (previous, current) {
-          if (current is TopicLoading && _page != 1) {
-            return false;
-          }
-          return true;
-        },
-        listener: (context, state) {
-          if (state is TopicLoaded) {
-            _page++;
-            if (state.getTopicFeedResponse.topics!.isEmpty) {
-              topicsPagingController.appendLastPage([]);
-            } else {
-              state.getTopicFeedResponse.topics?.removeWhere(
-                  (element) => selectedTopicId.contains(element.id));
-              topicsPagingController.appendPage(
-                state.getTopicFeedResponse.topics!
-                    .map((e) => TopicUI.fromTopic(e))
-                    .toList(),
-                _page,
-              );
-            }
-          } else if (state is TopicError) {
-            topicsPagingController.error = state.errorMessage;
-          }
-        },
-        builder: (context, state) {
-          if (state is TopicLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      child: Column(
+        children: [
+          const SizedBox(height: 12),
+          Container(
+            width: 43.67,
+            height: 7.23,
+            decoration: ShapeDecoration(
+              color: onSurface,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(99),
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          Expanded(
+            child: BlocConsumer<TopicBloc, TopicState>(
+              bloc: topicBloc,
+              buildWhen: (previous, current) {
+                if (_page > 1 && current is TopicLoading) {
+                  return false;
+                }
+                return true;
+              },
+              listener: (context, state) {
+                if (state is TopicLoaded) {
+                  _page++;
+                  if (state.getTopicFeedResponse.topics!.isEmpty) {
+                    topicsPagingController.appendLastPage([]);
+                  } else {
+                    state.getTopicFeedResponse.topics?.removeWhere(
+                        (element) => selectedTopicId.contains(element.id));
+                    topicsPagingController.appendPage(
+                      state.getTopicFeedResponse.topics!
+                          .map((e) => TopicUI.fromTopic(e))
+                          .toList(),
+                      _page,
+                    );
+                  }
+                } else if (state is TopicError) {
+                  topicsPagingController.error = state.errorMessage;
+                }
+              },
+              builder: (context, state) {
+                if (state is TopicLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-          if (state is TopicLoaded) {
-            return ValueListenableBuilder(
-                valueListenable: rebuildTopicsScreen,
-                builder: (context, _, __) {
-                  return Column(
-                    children: [
-                      const Align(
-                        alignment: Alignment.topLeft,
-                        child: LMTextView(
-                          text: 'Topics',
-                          textAlign: TextAlign.center,
-                          textStyle: TextStyle(
-                            color: Color(0xFF1E293B),
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: -0.40,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          controller: controller,
-                          child: Wrap(
-                            children: topicsPagingController.itemList?.map((e) {
-                                  bool isTopicSelected =
-                                      selectedTopicId.contains(e.id);
-                                  return GestureDetector(
-                                    onTap: () {
-                                      if (isTopicSelected) {
-                                        selectedTopicId.remove(e.id);
-                                        selectedTopics.removeWhere(
-                                            (element) => element.id == e.id);
-                                      } else {
-                                        selectedTopicId.add(e.id);
-                                        selectedTopics.add(e);
-                                      }
-                                      isTopicSelected = !isTopicSelected;
-                                      rebuildTopicsScreen.value =
-                                          !rebuildTopicsScreen.value;
-                                      widget.onTopicSelected(selectedTopics, e);
-                                    },
-                                    child: Container(
-                                      margin: const EdgeInsets.only(
-                                          right: 8.0, bottom: 8.0),
-                                      child: Chip(
-                                        label: LMTextView(
-                                          text: e.name,
-                                          textStyle: TextStyle(
-                                            color: isTopicSelected
-                                                ? Colors.white
-                                                : appBlack,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                            height: 1.30,
+                if (state is TopicLoaded) {
+                  return ValueListenableBuilder(
+                      valueListenable: rebuildTopicsScreen,
+                      builder: (context, _, __) {
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Align(
+                              alignment: Alignment.topLeft,
+                              child: LMTextView(
+                                text: 'Topics',
+                                textAlign: TextAlign.center,
+                                textStyle: TextStyle(
+                                  color: Color(0xFF1E293B),
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: -0.40,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Expanded(
+                              child: SingleChildScrollView(
+                                controller: controller,
+                                child: Wrap(
+                                  crossAxisAlignment: WrapCrossAlignment.start,
+                                  alignment: WrapAlignment.start,
+                                  children: topicsPagingController.itemList
+                                          ?.map((e) {
+                                        bool isTopicSelected =
+                                            selectedTopicId.contains(e.id);
+                                        return GestureDetector(
+                                          onTap: () {
+                                            if (isTopicSelected) {
+                                              selectedTopicId.remove(e.id);
+                                              selectedTopics.removeWhere(
+                                                  (element) =>
+                                                      element.id == e.id);
+                                            } else {
+                                              selectedTopicId.add(e.id);
+                                              selectedTopics.add(e);
+                                            }
+                                            isTopicSelected = !isTopicSelected;
+                                            rebuildTopicsScreen.value =
+                                                !rebuildTopicsScreen.value;
+                                            widget.onTopicSelected(
+                                                selectedTopics, e);
+                                          },
+                                          child: Container(
+                                            margin: const EdgeInsets.only(
+                                                right: 8.0, bottom: 8.0),
+                                            child: Chip(
+                                              label: LMTextView(
+                                                text: e.name,
+                                                textStyle: TextStyle(
+                                                  color: isTopicSelected
+                                                      ? Colors.white
+                                                      : appBlack,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w500,
+                                                  height: 1.30,
+                                                ),
+                                              ),
+                                              backgroundColor: isTopicSelected
+                                                  ? theme.colorScheme.secondary
+                                                  : kWhiteColor,
+                                              onDeleted: null,
+                                              clipBehavior: Clip.hardEdge,
+                                              materialTapTargetSize:
+                                                  MaterialTapTargetSize
+                                                      .shrinkWrap,
+                                              shape: RoundedRectangleBorder(
+                                                  side: isTopicSelected
+                                                      ? BorderSide.none
+                                                      : const BorderSide(
+                                                          color:
+                                                              appSecondaryBlack,
+                                                          width: 1.0,
+                                                        ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          21.0)),
+                                            ),
                                           ),
-                                        ),
-                                        backgroundColor: isTopicSelected
-                                            ? theme.colorScheme.secondary
-                                            : kWhiteColor,
-                                        onDeleted: null,
-                                        clipBehavior: Clip.hardEdge,
-                                        materialTapTargetSize:
-                                            MaterialTapTargetSize.shrinkWrap,
-                                        shape: RoundedRectangleBorder(
-                                            side: isTopicSelected
-                                                ? BorderSide.none
-                                                : const BorderSide(
-                                                    color: appSecondaryBlack,
-                                                    width: 1.0,
-                                                  ),
-                                            borderRadius:
-                                                BorderRadius.circular(21.0)),
-                                      ),
-                                    ),
-                                  );
-                                }).toList() ??
-                                [],
-                          ),
-                        ),
-                      ),
-                    ],
+                                        );
+                                      }).toList() ??
+                                      [],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      });
+                } else if (state is TopicError) {
+                  return Center(
+                    child: Text(state.errorMessage),
                   );
-                });
-          } else if (state is TopicError) {
-            return Center(
-              child: Text(state.errorMessage),
-            );
-          }
-          return const SizedBox();
-        },
+                }
+                return const SizedBox();
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

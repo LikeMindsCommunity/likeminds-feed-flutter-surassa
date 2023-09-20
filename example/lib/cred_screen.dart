@@ -15,6 +15,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OverlaySupport.global(
+      toastTheme: ToastThemeData(
+        background: Colors.black,
+        textColor: Colors.white,
+        alignment: Alignment.bottomCenter,
+      ),
       child: MaterialApp(
         title: 'Integration App for UI + SDK package',
         debugShowCheckedModeBanner: false,

@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
@@ -22,7 +21,6 @@ import 'package:likeminds_feed_ss_fl/src/utils/post/post_media_picker.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_utils.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/tagging/tagging_textfield_ta.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post/post_composer_header.dart';
-import 'package:likeminds_feed_ss_fl/src/widgets/topic/topic_bottom_sheet.dart';
 import 'package:likeminds_feed_ss_fl/src/widgets/topic/topic_popup.dart';
 
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
@@ -51,7 +49,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
   ValueNotifier<bool> rebuildLinkPreview = ValueNotifier(false);
   List<TopicUI> selectedTopic = [];
   ValueNotifier<bool> rebuildTopicFloatingButton = ValueNotifier(false);
-  CustomPopupMenuController _controllerPopUp = CustomPopupMenuController();
+  final CustomPopupMenuController _controllerPopUp =
+      CustomPopupMenuController();
 
   NewPostBloc? newPostBloc;
   late final User user;
@@ -86,6 +85,10 @@ class _NewPostScreenState extends State<NewPostScreen> {
     }
   }
 
+  /* 
+  * Removes the media from the list
+  * whenever the user taps on the X button
+  */
   void removeAttachmenetAtIndex(int index) {
     if (postMedia.isNotEmpty) {
       postMedia.removeAt(index);
@@ -108,17 +111,21 @@ class _NewPostScreenState extends State<NewPostScreen> {
     }
   }
 
-  /* Changes state to uploading
-  for showing a circular loader while the user is
-  picking files */
+  /* 
+  * Changes state to uploading
+  * for showing a circular loader while the user is
+  * picking files 
+  */
   void onUploading() {
     setState(() {
       isUploading = true;
     });
   }
 
-  /* Changes state to uploaded
-  for showing the picked files */
+  /* 
+  * Changes state to uploaded
+  * for showing the picked files 
+  */
   void onUploadedMedia(bool uploadResponse) {
     if (uploadResponse) {
       isMediaPost = true;
@@ -157,6 +164,11 @@ class _NewPostScreenState extends State<NewPostScreen> {
     }
   }
 
+  /*
+  * This function return a list 
+  * containing LMDocument widget
+  * which generates preview for a document 
+  */
   Widget getPostDocument(double width) {
     return ListView.builder(
       itemCount: postMedia.length,
@@ -181,15 +193,12 @@ class _NewPostScreenState extends State<NewPostScreen> {
     );
   }
 
-  // void _onTextChanged(String p0) {
-  //   if (_debounce?.isActive ?? false) {
-  //     _debounce?.cancel();
-  //   }
-  //   _debounce = Timer(const Duration(milliseconds: 500), () {
-  //     handleTextLinks(p0);
-  //   });
-  // }
-
+  /*
+  * Takes a string as input
+  * extracts the first valid link from the string
+  * decodes the url using LikeMinds SDK
+  * and generates a preview for the link
+  */
   void handleTextLinks(String text) async {
     String link = getFirstValidLinkFromString(text);
     if (link.isNotEmpty) {
@@ -226,6 +235,11 @@ class _NewPostScreenState extends State<NewPostScreen> {
     }
   }
 
+  /* 
+  * This function adds the link model in attachemnt
+  * If the link model is not present in the attachment
+  * and the link preview is enabled (no media is there)
+  */
   void checkTextLinks() {
     String link = getFirstValidLinkFromString(_controller.text);
     if (link.isEmpty) {
@@ -271,70 +285,82 @@ class _NewPostScreenState extends State<NewPostScreen> {
         value: SystemUiOverlayStyle.dark,
         child: Scaffold(
           backgroundColor: kWhiteColor,
-          floatingActionButton: Align(
-            alignment: Alignment.bottomLeft,
-            child: Padding(
-              padding: const EdgeInsets.only(
-                bottom: 48.0,
-                left: 12.0,
-              ),
-              child: ValueListenableBuilder(
-                valueListenable: rebuildTopicFloatingButton,
-                builder: (context, _, __) {
-                  return CustomPopupMenu(
-                    controller: _controllerPopUp,
-                    showArrow: false,
-                    verticalMargin: 0,
-                    horizontalMargin: 0,
-                    pressType: PressType.singleClick,
-                    menuBuilder: () => TopicPopUp(
-                        selectedTopics: selectedTopic,
-                        onTopicSelected: (updatedTopics, tappedTopic) {
-                          if (selectedTopic.isEmpty) {
-                            selectedTopic.add(tappedTopic);
-                          } else {
-                            if (selectedTopic.first.id == tappedTopic.id) {
-                              selectedTopic.clear();
-                            } else {
-                              selectedTopic.clear();
-                              selectedTopic.add(tappedTopic);
+          floatingActionButton: Padding(
+            padding: const EdgeInsets.only(bottom: 64.0, left: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Align(
+                  alignment: Alignment.bottomLeft,
+                  child: ValueListenableBuilder(
+                    valueListenable: rebuildTopicFloatingButton,
+                    builder: (context, _, __) {
+                      return CustomPopupMenu(
+                        controller: _controllerPopUp,
+                        showArrow: false,
+                        verticalMargin: 10,
+                        horizontalMargin: 16.0,
+                        menuOnChange: (bool value) {
+                          if (value) {
+                            if (_focusNode.hasFocus) {
+                              _focusNode.unfocus(
+                                disposition:
+                                    UnfocusDisposition.previouslyFocusedChild,
+                              );
                             }
                           }
-                          _controllerPopUp.hideMenu();
-                          rebuildTopicFloatingButton.value =
-                              !rebuildTopicFloatingButton.value;
-                        }),
-                    child: Container(
-                      height: 36,
-                      width: 96,
-                      margin: const EdgeInsets.only(left: 20),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(500),
-                        border: Border.all(
-                          color: kPrimaryColor,
-                          width: 1,
+                        },
+                        pressType: PressType.singleClick,
+                        menuBuilder: () => TopicPopUp(
+                            selectedTopics: selectedTopic,
+                            onTopicSelected: (updatedTopics, tappedTopic) {
+                              if (selectedTopic.isEmpty) {
+                                selectedTopic.add(tappedTopic);
+                              } else {
+                                if (selectedTopic.first.id == tappedTopic.id) {
+                                  selectedTopic.clear();
+                                } else {
+                                  selectedTopic.clear();
+                                  selectedTopic.add(tappedTopic);
+                                }
+                              }
+                              _controllerPopUp.hideMenu();
+                              rebuildTopicFloatingButton.value =
+                                  !rebuildTopicFloatingButton.value;
+                            }),
+                        child: Container(
+                          height: 36,
+                          alignment: Alignment.bottomLeft,
+                          margin: const EdgeInsets.only(left: 16.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(500),
+                            border: Border.all(
+                              color: kPrimaryColor,
+                              width: 1,
+                            ),
+                          ),
+                          child: LMTopicChip(
+                            topic: selectedTopic.isEmpty
+                                ? (TopicUIBuilder()
+                                      ..id("0")
+                                      ..isEnabled(true)
+                                      ..name("Topic"))
+                                    .build()
+                                : selectedTopic.first,
+                            textStyle: const TextStyle(color: kPrimaryColor),
+                            icon: const LMIcon(
+                              type: LMIconType.icon,
+                              icon: CupertinoIcons.chevron_down,
+                              size: 16,
+                              color: kPrimaryColor,
+                            ),
+                          ),
                         ),
-                      ),
-                      child: LMTopicChip(
-                        topic: selectedTopic.isEmpty
-                            ? (TopicUIBuilder()
-                                  ..id("0")
-                                  ..isEnabled(true)
-                                  ..name("Topic"))
-                                .build()
-                            : selectedTopic.first,
-                        textStyle: const TextStyle(color: kPrimaryColor),
-                        icon: const LMIcon(
-                          type: LMIconType.icon,
-                          icon: CupertinoIcons.chevron_down,
-                          size: 16,
-                          color: kPrimaryColor,
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
           body: SafeArea(
@@ -379,6 +405,11 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                     ),
                                     child: TaggingAheadTextField(
                                       isDown: true,
+                                      maxLines: 5,
+                                      minLines: 3,
+                                      decoration: const InputDecoration(
+                                        border: InputBorder.none,
+                                      ),
                                       onTagSelected: (tag) {
                                         userTags.add(tag);
                                       },
@@ -491,113 +522,113 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                               itemBuilder:
                                                   (BuildContext context,
                                                       int index) {
-                                                return Stack(
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        SizedBox(
-                                                          // height: 180,
-                                                          // width: postMedia[
-                                                          //                 index]
-                                                          //             .mediaType ==
-                                                          //         MediaType
-                                                          //             .video
-                                                          //     ? 200
-                                                          //     : 180,
-                                                          child: Stack(
-                                                            children: [
-                                                              postMedia[index]
-                                                                          .mediaType ==
-                                                                      MediaType
-                                                                          .video
-                                                                  ? ClipRRect(
-                                                                      borderRadius:
-                                                                          BorderRadius.all(
-                                                                              Radius.circular(12)),
+                                                return Stack(children: [
+                                                  Row(
+                                                    children: [
+                                                      SizedBox(
+                                                        // height: 180,
+                                                        // width: postMedia[
+                                                        //                 index]
+                                                        //             .mediaType ==
+                                                        //         MediaType
+                                                        //             .video
+                                                        //     ? 200
+                                                        //     : 180,
+                                                        child: Stack(
+                                                          children: [
+                                                            postMedia[index]
+                                                                        .mediaType ==
+                                                                    MediaType
+                                                                        .video
+                                                                ? ClipRRect(
+                                                                    borderRadius:
+                                                                        BorderRadius.all(
+                                                                            Radius.circular(12)),
+                                                                    child:
+                                                                        Container(
+                                                                      height:
+                                                                          200,
+                                                                      width:
+                                                                          200,
+                                                                      color: Colors
+                                                                          .black,
                                                                       child:
-                                                                          Container(
-                                                                        height:
-                                                                            200,
-                                                                        width:
-                                                                            200,
-                                                                        color: Colors
-                                                                            .black,
-                                                                        child:
-                                                                            LMVideo(
-                                                                          videoFile:
-                                                                              postMedia[index].mediaFile!,
-                                                                          // height:
-                                                                          //     180,
-                                                                          boxFit:
-                                                                              BoxFit.contain,
-                                                                          showControls:
-                                                                              false,
-                                                                          // width:
-                                                                          //     300,
-                                                                          borderRadius:
-                                                                              18,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  : ClipRRect(
-                                                                      borderRadius:
-                                                                          BorderRadius.all(
-                                                                              Radius.circular(12)),
-                                                                      child:
-                                                                          Container(
-                                                                        height:
-                                                                            200,
-                                                                        width:
-                                                                            200,
-                                                                        color: Colors
-                                                                            .black,
-                                                                        child:
-                                                                            LMImage(
-                                                                          // height:
-                                                                          //     180,
-                                                                          // width:
-                                                                          //     180,
-                                                                          boxFit:
-                                                                              BoxFit.contain,
-                                                                          borderRadius:
-                                                                              18,
-                                                                          imageFile:
-                                                                              postMedia[index].mediaFile!,
-                                                                        ),
+                                                                          LMVideo(
+                                                                        videoFile:
+                                                                            postMedia[index].mediaFile!,
+                                                                        // height:
+                                                                        //     180,
+                                                                        boxFit:
+                                                                            BoxFit.contain,
+                                                                        showControls:
+                                                                            false,
+                                                                        // width:
+                                                                        //     300,
+                                                                        borderRadius:
+                                                                            18,
                                                                       ),
                                                                     ),
-                                                            ],
-                                                          ),
+                                                                  )
+                                                                : ClipRRect(
+                                                                    borderRadius:
+                                                                        BorderRadius.all(
+                                                                            Radius.circular(12)),
+                                                                    child:
+                                                                        Container(
+                                                                      height:
+                                                                          200,
+                                                                      width:
+                                                                          200,
+                                                                      color: Colors
+                                                                          .black,
+                                                                      child:
+                                                                          LMImage(
+                                                                        // height:
+                                                                        //     180,
+                                                                        // width:
+                                                                        //     180,
+                                                                        boxFit:
+                                                                            BoxFit.contain,
+                                                                        borderRadius:
+                                                                            18,
+                                                                        imageFile:
+                                                                            postMedia[index].mediaFile!,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                          ],
                                                         ),
-                                                        const SizedBox(
-                                                            width: 8),
-                                                      ],
-                                                    ),
-                                                    Positioned(
-                                                      top: -8,
-                                                      right: 0,
-                                                      child: IconButton(
-                                                          onPressed: () =>
-                                                              removeAttachmenetAtIndex(
-                                                                  index),
-                                                          icon: Icon(
-                                                            CupertinoIcons
-                                                                .xmark_circle_fill,
-                                                            shadows: [
-                                                              Shadow(
-                                                                offset: Offset(
-                                                                    1, 1),
-                                                                color: Colors
-                                                                    .black38,
-                                                              )
-                                                            ],
-                                                            color: kWhiteColor
-                                                                .withOpacity(
-                                                                    0.8),
-                                                          )),
-                                                    )
-                                                  ],
-                                                );
+                                                        // const SizedBox(
+                                                        //     width: 8),
+                                                        // ],
+                                                      ),
+                                                      Positioned(
+                                                        top: -8,
+                                                        right: 0,
+                                                        child: IconButton(
+                                                            onPressed: () =>
+                                                                removeAttachmenetAtIndex(
+                                                                    index),
+                                                            icon: Icon(
+                                                              CupertinoIcons
+                                                                  .xmark_circle_fill,
+                                                              shadows: const [
+                                                                Shadow(
+                                                                  offset:
+                                                                      Offset(
+                                                                          1, 1),
+                                                                  color: Colors
+                                                                      .black38,
+                                                                )
+                                                              ],
+                                                              color: kWhiteColor
+                                                                  .withOpacity(
+                                                                      0.8),
+                                                            )),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ]);
                                               },
                                             ),
                                           ),
@@ -607,6 +638,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                             ),
                           ],
                         ),
+                        kVerticalPaddingXLarge,
                       ],
                     ),
                   ),
@@ -638,20 +670,20 @@ class _NewPostScreenState extends State<NewPostScreen> {
                       ),
                     );
                   },
-                  title: "Create Post",
+                  title: const LMTextView(
+                    text: "Create Post",
+                    textStyle: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: kGrey1Color,
+                    ),
+                  ),
                   onTap: () {
                     _focusNode.unfocus();
 
                     String postText = _controller.text;
                     postText = postText.trim();
                     if (postText.isNotEmpty || postMedia.isNotEmpty) {
-                      // if (selectedTopic.isEmpty) {
-                      //   toast(
-                      //     "Can't create a post without topic",
-                      //     duration: Toast.LENGTH_LONG,
-                      //   );
-                      //   return;
-                      // }
                       checkTextLinks();
                       userTags =
                           TaggingHelper.matchTags(_controller.text, userTags);
@@ -781,16 +813,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                 )
                               : const SizedBox.shrink(),
                           const SizedBox(width: 8),
-                          // LMIconButton(
-                          //   icon: LMIcon(
-                          //     type: LMIconType.svg,
-                          //     assetPath: kAssetPollIcon,
-                          //     color: Theme.of(context).colorScheme.secondary,
-                          //     boxPadding: 0,
-                          //     size: 44,
-                          //   ),
-                          //   onTap: (active) {},
-                          // ),
                         ],
                       ),
                     ),
@@ -883,7 +905,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
   void pickImages() async {
     onUploading();
     try {
-      List<MediaModel> mediaFiles = [];
       final FilePickerResult? list = await FilePicker.platform.pickFiles(
         allowMultiple: true,
         type: FileType.image,
