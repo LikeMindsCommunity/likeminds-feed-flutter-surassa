@@ -66,9 +66,9 @@ class _MediaPreviewState extends State<MediaPreview> {
     final String formatted = formatter.format(post.createdAt);
     // setupFlickManager();
     return Scaffold(
-      backgroundColor: kGrey1Color,
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: kGrey1Color,
+        backgroundColor: Colors.black,
         centerTitle: false,
         leading: LMIconButton(
           onTap: (active) {
