@@ -15,6 +15,7 @@ class TaggingAheadTextField extends StatefulWidget {
   final TextEditingController controller;
   final InputDecoration? decoration;
   final Function(String)? onChange;
+  final int maxLines;
 
   const TaggingAheadTextField({
     super.key,
@@ -24,6 +25,7 @@ class TaggingAheadTextField extends StatefulWidget {
     required this.focusNode,
     this.decoration,
     required this.onChange,
+    this.maxLines = 200,
   });
 
   @override
@@ -123,7 +125,6 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
             maxHeight: MediaQuery.of(context).size.height * 0.22,
           ),
         ),
-        // keepSuggestionsOnLocading: true,
         noItemsFoundBuilder: (context) => const SizedBox.shrink(),
         hideOnEmpty: true,
         debounceDuration: const Duration(milliseconds: 500),
@@ -133,7 +134,7 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
           controller: _controller,
           focusNode: _focusNode,
           minLines: 1,
-          maxLines: 200,
+          maxLines: widget.maxLines,
           decoration: widget.decoration ??
               const InputDecoration(
                 hintText: 'Write something here...',

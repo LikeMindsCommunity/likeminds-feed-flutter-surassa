@@ -275,6 +275,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () {
         if (Navigator.of(context).canPop()) {
@@ -461,6 +462,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                       Expanded(
                                         child: TaggingAheadTextField(
                                           isDown: false,
+                                          maxLines: 4,
                                           onTagSelected: (tag) {
                                             userTags.add(tag);
                                           },

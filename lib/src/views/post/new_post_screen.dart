@@ -270,7 +270,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
         child: Scaffold(
           backgroundColor: kWhiteColor,
           floatingActionButton: Padding(
-            padding: const EdgeInsets.only(bottom: 70.0, left: 16.0),
+            padding: const EdgeInsets.only(bottom: 64.0, left: 16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -394,6 +394,10 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                     ),
                                     child: TaggingAheadTextField(
                                       isDown: true,
+                                      maxLines: 5,
+                                      decoration: const InputDecoration(
+                                        border: InputBorder.none,
+                                      ),
                                       onTagSelected: (tag) {
                                         userTags.add(tag);
                                       },

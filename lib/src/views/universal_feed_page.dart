@@ -204,7 +204,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
           topRight: Radius.circular(28.0),
         ),
       ),
-      enableDrag: true,
+      enableDrag: false,
       clipBehavior: Clip.hardEdge,
       builder: (context) => TopicBottomSheet(
         key: GlobalKey(),
@@ -365,7 +365,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                                               topic: (TopicUIBuilder()
                                                     ..id("0")
                                                     ..isEnabled(true)
-                                                    ..name("Topic"))
+                                                    ..name("Topics"))
                                                   .build(),
                                               borderRadius: 20.0,
                                               showBorder: false,
@@ -394,10 +394,12 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                                                                       .circular(
                                                                           4)),
                                                     ),
-                                                    child: Text(
-                                                      selectedTopics.length
+                                                    child: LMTextView(
+                                                      text: selectedTopics
+                                                          .length
                                                           .toString(),
-                                                      style: const TextStyle(
+                                                      textStyle:
+                                                          const TextStyle(
                                                         color:
                                                             Color(0xFF4666F6),
                                                         fontSize: 12,
@@ -765,7 +767,6 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const SizedBox(height: 12),
                                     const LMTextView(
                                       text:
                                           "Looks like there are no posts for this topic yet.",
