@@ -93,8 +93,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
     if (postMedia.isNotEmpty) {
       postMedia.removeAt(index);
       if (postMedia.isEmpty) {
-        isDocumentPost = false;
-        isMediaPost = false;
+        isDocumentPost = true;
+        isMediaPost = true;
         showLinkPreview = true;
       }
       setState(() {});
@@ -597,36 +597,34 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                                       ),
                                                                     ),
                                                                   ),
+                                                            Positioned(
+                                                              top: -8,
+                                                              right: 0,
+                                                              child: IconButton(
+                                                                  onPressed: () =>
+                                                                      removeAttachmenetAtIndex(
+                                                                          index),
+                                                                  icon: Icon(
+                                                                    CupertinoIcons
+                                                                        .xmark_circle_fill,
+                                                                    shadows: const [
+                                                                      Shadow(
+                                                                        offset: Offset(
+                                                                            1,
+                                                                            1),
+                                                                        color: Colors
+                                                                            .black38,
+                                                                      )
+                                                                    ],
+                                                                    color: kWhiteColor
+                                                                        .withOpacity(
+                                                                            0.8),
+                                                                  )),
+                                                            )
                                                           ],
                                                         ),
-                                                        // const SizedBox(
-                                                        //     width: 8),
-                                                        // ],
                                                       ),
-                                                      Positioned(
-                                                        top: -8,
-                                                        right: 0,
-                                                        child: IconButton(
-                                                            onPressed: () =>
-                                                                removeAttachmenetAtIndex(
-                                                                    index),
-                                                            icon: Icon(
-                                                              CupertinoIcons
-                                                                  .xmark_circle_fill,
-                                                              shadows: const [
-                                                                Shadow(
-                                                                  offset:
-                                                                      Offset(
-                                                                          1, 1),
-                                                                  color: Colors
-                                                                      .black38,
-                                                                )
-                                                              ],
-                                                              color: kWhiteColor
-                                                                  .withOpacity(
-                                                                      0.8),
-                                                            )),
-                                                      )
+                                                      const SizedBox(width: 8),
                                                     ],
                                                   ),
                                                 ]);
