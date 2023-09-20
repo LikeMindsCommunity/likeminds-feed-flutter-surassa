@@ -11,12 +11,14 @@ class MediaPreview extends StatefulWidget {
   final List<Attachment> postAttachments;
   final Post post;
   final User user;
+  final int? position;
 
   const MediaPreview({
     Key? key,
     required this.postAttachments,
     required this.post,
     required this.user,
+    this.position,
   }) : super(key: key);
 
   @override
@@ -27,11 +29,11 @@ class _MediaPreviewState extends State<MediaPreview> {
   late List<Attachment> postAttachments;
   late Post post;
   late User user;
+  late int? position;
 
   int currPosition = 0;
   CarouselController controller = CarouselController();
   ValueNotifier<bool> rebuildCurr = ValueNotifier<bool>(false);
-  // FlickManager? flickManager;
 
   bool checkIfMultipleAttachments() {
     return (postAttachments.length > 1);
@@ -42,29 +44,14 @@ class _MediaPreviewState extends State<MediaPreview> {
     postAttachments = widget.postAttachments;
     post = widget.post;
     user = widget.user;
+    position = widget.position;
     super.initState();
-  }
-
-  void setupFlickManager() {
-    for (int i = 0; i < postAttachments.length; i++) {
-      if (postAttachments[i].attachmentType == 2) {
-        // flickManager ??= FlickManager(
-        //   videoPlayerController: VideoPlayerController.network(
-        //     postAttachments[i].attachmentMeta.url!,
-        //   ),
-        //   autoPlay: true,
-        //   autoInitialize: true,
-        // );
-        break;
-      }
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     final DateFormat formatter = DateFormat('MMMM d, hh:mm');
     final String formatted = formatter.format(post.createdAt);
-    // setupFlickManager();
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -72,7 +59,6 @@ class _MediaPreviewState extends State<MediaPreview> {
         centerTitle: false,
         leading: LMIconButton(
           onTap: (active) {
-            // router.pop();
             Navigator.of(context).pop();
           },
           icon: const LMIcon(
@@ -81,7 +67,7 @@ class _MediaPreviewState extends State<MediaPreview> {
             icon: CupertinoIcons.xmark,
             size: 28,
             boxSize: 64,
-            boxPadding: 18,
+            boxPadding: 12,
           ),
         ),
         elevation: 0,
@@ -101,7 +87,7 @@ class _MediaPreviewState extends State<MediaPreview> {
               builder: (context, value, child) {
                 return LMTextView(
                   text:
-                      '${currPosition + 1} of ${postAttachments.length} media • ${formatted}',
+                      '${currPosition + 1} of ${postAttachments.length} media • $formatted',
                   textStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         fontSize: 12,
                         color: kWhiteColor,
@@ -117,27 +103,12 @@ class _MediaPreviewState extends State<MediaPreview> {
         top: false,
         child: Column(
           children: <Widget>[
-            // LMCarousel(
-            //   attachments: postAttachments,
-            //   inactiveIndicator: Container(
-            //     width: 8.0,
-            //     height: 8.0,
-            //     margin:
-            //         const EdgeInsets.symmetric(vertical: 8.0, horizontal: 2.0),
-            //     decoration: const BoxDecoration(
-            //       borderRadius: BorderRadius.all(
-            //         Radius.circular(4),
-            //       ),
-            //       color: kGrey3Color,
-            //     ),
-            //   ),
-            // ),
             Expanded(
               child: CarouselSlider.builder(
                   options: CarouselOptions(
                       clipBehavior: Clip.hardEdge,
                       scrollDirection: Axis.horizontal,
-                      initialPage: 0,
+                      initialPage: position ?? 0,
                       aspectRatio: 9 / 16,
                       enlargeCenterPage: false,
                       enableInfiniteScroll: false,
@@ -145,19 +116,6 @@ class _MediaPreviewState extends State<MediaPreview> {
                       viewportFraction: 1.0,
                       onPageChanged: (index, reason) {
                         currPosition = index;
-                        if (postAttachments[index].attachmentType == 2) {
-                          // if (flickManager == null) {
-                          //   setupFlickManager();
-                          // } else {
-                          //   flickManager?.handleChangeVideo(
-                          //     VideoPlayerController.network(
-                          //       postAttachments[currPosition]
-                          //           .attachmentMeta
-                          //           .url!,
-                          //     ),
-                          //   );
-                          // }
-                        }
                         rebuildCurr.value = !rebuildCurr.value;
                       }),
                   itemCount: postAttachments.length,
@@ -173,11 +131,7 @@ class _MediaPreviewState extends State<MediaPreview> {
                       color: Colors.black,
                       width: MediaQuery.of(context).size.width,
                       child: ExtendedImage.network(
-                        postAttachments![index].attachmentMeta.url!,
-                        // errorWidget: (context, url, error) =>
-                        // mediaErrorWidget(),
-                        // progressIndicatorBuilder: (context, url, progress) =>
-                        //     LMPostShimmer(),
+                        postAttachments[index].attachmentMeta.url!,
                         cache: true,
                         fit: BoxFit.contain,
                         mode: ExtendedImageMode.gesture,

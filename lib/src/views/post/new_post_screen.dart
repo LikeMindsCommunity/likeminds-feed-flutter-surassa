@@ -93,8 +93,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
     if (postMedia.isNotEmpty) {
       postMedia.removeAt(index);
       if (postMedia.isEmpty) {
-        isDocumentPost = false;
-        isMediaPost = false;
+        isDocumentPost = true;
+        isMediaPost = true;
         showLinkPreview = true;
       }
       setState(() {});
@@ -136,7 +136,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
       });
     } else {
       if (postMedia.isEmpty) {
-        isMediaPost = false;
+        isMediaPost = true;
         showLinkPreview = true;
       }
       setState(() {
@@ -334,6 +334,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                           margin: const EdgeInsets.only(left: 16.0),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(500),
+                            color: kWhiteColor,
                             border: Border.all(
                               color: kPrimaryColor,
                               width: 1,
@@ -598,36 +599,34 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                                       ),
                                                                     ),
                                                                   ),
+                                                            Positioned(
+                                                              top: -8,
+                                                              right: 0,
+                                                              child: IconButton(
+                                                                  onPressed: () =>
+                                                                      removeAttachmenetAtIndex(
+                                                                          index),
+                                                                  icon: Icon(
+                                                                    CupertinoIcons
+                                                                        .xmark_circle_fill,
+                                                                    shadows: const [
+                                                                      Shadow(
+                                                                        offset: Offset(
+                                                                            1,
+                                                                            1),
+                                                                        color: Colors
+                                                                            .black38,
+                                                                      )
+                                                                    ],
+                                                                    color: kWhiteColor
+                                                                        .withOpacity(
+                                                                            0.8),
+                                                                  )),
+                                                            )
                                                           ],
                                                         ),
-                                                        // const SizedBox(
-                                                        //     width: 8),
-                                                        // ],
                                                       ),
-                                                      Positioned(
-                                                        top: -8,
-                                                        right: 0,
-                                                        child: IconButton(
-                                                            onPressed: () =>
-                                                                removeAttachmenetAtIndex(
-                                                                    index),
-                                                            icon: Icon(
-                                                              CupertinoIcons
-                                                                  .xmark_circle_fill,
-                                                              shadows: const [
-                                                                Shadow(
-                                                                  offset:
-                                                                      Offset(
-                                                                          1, 1),
-                                                                  color: Colors
-                                                                      .black38,
-                                                                )
-                                                              ],
-                                                              color: kWhiteColor
-                                                                  .withOpacity(
-                                                                      0.8),
-                                                            )),
-                                                      )
+                                                      const SizedBox(width: 8),
                                                     ],
                                                   ),
                                                 ]);
@@ -942,28 +941,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
             .toList();
         setPickedMediaFiles(mediaFiles);
         onUploadedMedia(true);
-        // MultiImageCrop.startCropping(
-        //   context: context,
-        //   activeColor: kWhiteColor,
-        //   aspectRatio: 1,
-        //   files: list.files.map((e) => File(e.path!)).toList(),
-        //   callBack: (List<File> images) {
-        //     List<MediaModel> mediaFiles = images
-        //         .map((e) => MediaModel(
-        //             mediaFile: File(e.path), mediaType: MediaType.image))
-        //         .toList();
-        //     setPickedMediaFiles(mediaFiles);
-        //     onUploadedDocument(true);
-        //     return;
-        //   },
-        // );
 
-        // mediaFiles = list.files
-        //     .map((image) => MediaModel(
-        //         mediaFile: File(image.path!), mediaType: MediaType.image))
-        //     .toList();
-        // setPickedMediaFiles(mediaFiles);
-        // onUploadedDocument(false);
         return;
       } else {
         onUploadedMedia(false);
@@ -982,81 +960,3 @@ class _NewPostScreenState extends State<NewPostScreen> {
 
   void pickVideos(BuildContext context) async {}
 }
-
-
-
-
-// kVerticalPaddingXLarge,
-                        // Padding(
-                        //   padding: const EdgeInsets.only(bottom: 42.0),
-                        //   child: Row(
-                        //     mainAxisAlignment: MainAxisAlignment.start,
-                        //     children: [
-                        //       Align(
-                        //         alignment: Alignment.bottomLeft,
-                        //         child: ValueListenableBuilder(
-                        //           valueListenable: rebuildTopicFloatingButton,
-                        //           builder: (context, _, __) {
-                        //             return CustomPopupMenu(
-                        //               controller: _controllerPopUp,
-                        //               showArrow: false,
-                        //               verticalMargin: 0,
-                        //               horizontalMargin: 0,
-                        //               pressType: PressType.singleClick,
-                        //               menuBuilder: () => TopicPopUp(
-                        //                   selectedTopics: selectedTopic,
-                        //                   onTopicSelected:
-                        //                       (updatedTopics, tappedTopic) {
-                        //                     if (selectedTopic.isEmpty) {
-                        //                       selectedTopic.add(tappedTopic);
-                        //                     } else {
-                        //                       if (selectedTopic.first.id ==
-                        //                           tappedTopic.id) {
-                        //                         selectedTopic.clear();
-                        //                       } else {
-                        //                         selectedTopic.clear();
-                        //                         selectedTopic.add(tappedTopic);
-                        //                       }
-                        //                     }
-                        //                     _controllerPopUp.hideMenu();
-                        //                     rebuildTopicFloatingButton.value =
-                        //                         !rebuildTopicFloatingButton
-                        //                             .value;
-                        //                   }),
-                        //               child: Container(
-                        //                 height: 36,
-                        //                 alignment: Alignment.bottomLeft,
-                        //                 margin: const EdgeInsets.only(left: 20),
-                        //                 decoration: BoxDecoration(
-                        //                   borderRadius:
-                        //                       BorderRadius.circular(500),
-                        //                   border: Border.all(
-                        //                     color: kPrimaryColor,
-                        //                     width: 1,
-                        //                   ),
-                        //                 ),
-                        //                 child: LMTopicChip(
-                        //                   topic: selectedTopic.isEmpty
-                        //                       ? (TopicUIBuilder()
-                        //                             ..id("0")
-                        //                             ..isEnabled(true)
-                        //                             ..name("Topic"))
-                        //                           .build()
-                        //                       : selectedTopic.first,
-                        //                   textStyle: const TextStyle(
-                        //                       color: kPrimaryColor),
-                        //                   icon: const LMIcon(
-                        //                     type: LMIconType.icon,
-                        //                     icon: CupertinoIcons.chevron_down,
-                        //                     size: 16,
-                        //                     color: kPrimaryColor,
-                        //                   ),
-                        //                 ),
-                        //               ),
-                        //             );
-                        //           },
-                        //         ),
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
