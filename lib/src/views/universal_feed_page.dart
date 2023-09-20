@@ -521,11 +521,18 @@ class _FeedRoomViewState extends State<FeedRoomView> {
   Widget getLoaderThumbnail(MediaModel? media) {
     if (media != null) {
       if (media.mediaType == MediaType.image) {
-        return Image.file(
-          media.mediaFile!,
+        return Container(
           height: 50,
           width: 50,
-          fit: BoxFit.cover,
+          clipBehavior: Clip.hardEdge,
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.circular(6.0),
+          ),
+          child: LMImage(
+            imageFile: media.mediaFile!,
+            boxFit: BoxFit.contain,
+          ),
         );
       } else if (media.mediaType == MediaType.document) {
         return const LMIcon(

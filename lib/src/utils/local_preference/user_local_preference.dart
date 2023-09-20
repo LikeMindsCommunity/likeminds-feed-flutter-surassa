@@ -84,6 +84,21 @@ class UserLocalPreference {
     }
   }
 
+  Future<void> storeCommunityConfigurations(
+      CommunityConfigurations configurations) async {
+    final configString = jsonEncode(configurations.toEntity().toJson());
+    await _sharedPreferences!
+        .setString('communityConfigurations', configString);
+  }
+
+  Future<CommunityConfigurations> getCommunityConfigurations() async {
+    Map<String, dynamic> communityConfigurations =
+        jsonDecode(_sharedPreferences!.getString('communityConfigurations')!);
+    final entity =
+        CommunityConfigurationsEntity.fromJson(communityConfigurations);
+    return CommunityConfigurations.fromEntity(entity);
+  }
+
   Future<void> clearLocalPrefs() async {
     await _sharedPreferences!.clear();
   }

@@ -32,10 +32,11 @@ dependencies:
   open_filex:
   timeago:
   collection:
-  flick_video_player: 
   connectivity_plus:
   custom_pop_up_menu: ^1.2.4
   flutter_no_internet_widget: ^1.0.0+18-dev.1
+  extended_image: 8.1.1
+  http:
 
   flutter_typeahead_mm:
     path: lib/packages/flutter_typeahead-4.3.7
@@ -46,8 +47,8 @@ dependencies:
   likeminds_feed_ui_fl:
     path: ../LikeMinds-Flutter-Feed-UI
 
-  likeminds_feed: 1.4.0
-   # path: ../LikeMinds-Flutter-Feed-SDK
+  likeminds_feed:
+    path: ../LikeMinds-Flutter-Feed-SDK
 
 dependency_override:
   sliver_tools: 0.2.12

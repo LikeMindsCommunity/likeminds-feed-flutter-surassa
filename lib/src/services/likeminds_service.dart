@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/src/services/media_service.dart';
-import 'package:likeminds_feed_ss_fl/src/utils/analytics/analytics.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/credentials/credentials.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/local_preference/user_local_preference.dart';
 
@@ -51,6 +50,7 @@ abstract class ILikeMindsService {
       MarkReadNotificationRequest request);
   Future<GetDeleteReasonResponse> getReportTags(GetDeleteReasonRequest request);
   Future<GetTopicsResponse> getTopics(GetTopicsRequest request);
+  Future<GetCommunityConfigurationsResponse> getCommunityConfigurations();
   void routeToProfile(String userId);
 }
 
@@ -88,6 +88,17 @@ class LikeMindsService implements ILikeMindsService {
     InitiateUserResponse response = await _sdkApplication.initiateUser(request);
     await UserLocalPreference.instance
         .setUserDataFromInitiateUserResponse(response);
+    return response;
+  }
+
+  @override
+  Future<GetCommunityConfigurationsResponse>
+      getCommunityConfigurations() async {
+    final response = await _sdkApplication.getCommunityConfigurations();
+    if (response.success) {
+      UserLocalPreference.instance.storeCommunityConfigurations(
+          response.communityConfigurations!.first);
+    }
     return response;
   }
 
