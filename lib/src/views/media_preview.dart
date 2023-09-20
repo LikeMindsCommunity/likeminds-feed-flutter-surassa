@@ -1,12 +1,11 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flick_video_player/flick_video_player.dart';
+import 'package:extended_image/extended_image.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
-import 'package:video_player/video_player.dart';
 
 class MediaPreview extends StatefulWidget {
   final List<Attachment> postAttachments;
@@ -32,7 +31,7 @@ class _MediaPreviewState extends State<MediaPreview> {
   int currPosition = 0;
   CarouselController controller = CarouselController();
   ValueNotifier<bool> rebuildCurr = ValueNotifier<bool>(false);
-  FlickManager? flickManager;
+  // FlickManager? flickManager;
 
   bool checkIfMultipleAttachments() {
     return (postAttachments.length > 1);
@@ -49,13 +48,13 @@ class _MediaPreviewState extends State<MediaPreview> {
   void setupFlickManager() {
     for (int i = 0; i < postAttachments.length; i++) {
       if (postAttachments[i].attachmentType == 2) {
-        flickManager ??= FlickManager(
-          videoPlayerController: VideoPlayerController.network(
-            postAttachments[i].attachmentMeta.url!,
-          ),
-          autoPlay: true,
-          autoInitialize: true,
-        );
+        // flickManager ??= FlickManager(
+        //   videoPlayerController: VideoPlayerController.network(
+        //     postAttachments[i].attachmentMeta.url!,
+        //   ),
+        //   autoPlay: true,
+        //   autoInitialize: true,
+        // );
         break;
       }
     }
@@ -63,7 +62,9 @@ class _MediaPreviewState extends State<MediaPreview> {
 
   @override
   Widget build(BuildContext context) {
-    setupFlickManager();
+    final DateFormat formatter = DateFormat('MMMM d, hh:mm');
+    final String formatted = formatter.format(post.createdAt);
+    // setupFlickManager();
     return Scaffold(
       backgroundColor: kGrey1Color,
       appBar: AppBar(
@@ -95,13 +96,18 @@ class _MediaPreviewState extends State<MediaPreview> {
                     color: kWhiteColor,
                   ),
             ),
-            LMTextView(
-              text:
-                  '${currPosition + 1} of ${postAttachments.length} media • ${post.createdAt}',
-              textStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    fontSize: 12,
-                    color: kWhiteColor,
-                  ),
+            ValueListenableBuilder(
+              valueListenable: rebuildCurr,
+              builder: (context, value, child) {
+                return LMTextView(
+                  text:
+                      '${currPosition + 1} of ${postAttachments.length} media • ${formatted}',
+                  textStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        fontSize: 12,
+                        color: kWhiteColor,
+                      ),
+                );
+              },
             ),
           ],
         ),
@@ -132,6 +138,7 @@ class _MediaPreviewState extends State<MediaPreview> {
                       clipBehavior: Clip.hardEdge,
                       scrollDirection: Axis.horizontal,
                       initialPage: 0,
+                      aspectRatio: 9 / 16,
                       enlargeCenterPage: false,
                       enableInfiniteScroll: false,
                       enlargeFactor: 0.0,
@@ -139,17 +146,17 @@ class _MediaPreviewState extends State<MediaPreview> {
                       onPageChanged: (index, reason) {
                         currPosition = index;
                         if (postAttachments[index].attachmentType == 2) {
-                          if (flickManager == null) {
-                            setupFlickManager();
-                          } else {
-                            flickManager?.handleChangeVideo(
-                              VideoPlayerController.network(
-                                postAttachments[currPosition]
-                                    .attachmentMeta
-                                    .url!,
-                              ),
-                            );
-                          }
+                          // if (flickManager == null) {
+                          //   setupFlickManager();
+                          // } else {
+                          //   flickManager?.handleChangeVideo(
+                          //     VideoPlayerController.network(
+                          //       postAttachments[currPosition]
+                          //           .attachmentMeta
+                          //           .url!,
+                          //     ),
+                          //   );
+                          // }
                         }
                         rebuildCurr.value = !rebuildCurr.value;
                       }),
@@ -161,13 +168,69 @@ class _MediaPreviewState extends State<MediaPreview> {
                         showControls: true,
                       );
                     }
-                    return CachedNetworkImage(
-                      imageUrl: postAttachments![index].attachmentMeta.url!,
-                      // errorWidget: (context, url, error) =>
-                      // mediaErrorWidget(),
-                      progressIndicatorBuilder: (context, url, progress) =>
-                          LMPostShimmer(),
-                      fit: BoxFit.contain,
+
+                    return Container(
+                      color: Colors.black,
+                      width: MediaQuery.of(context).size.width,
+                      child: ExtendedImage.network(
+                        postAttachments![index].attachmentMeta.url!,
+                        // errorWidget: (context, url, error) =>
+                        // mediaErrorWidget(),
+                        // progressIndicatorBuilder: (context, url, progress) =>
+                        //     LMPostShimmer(),
+                        cache: true,
+                        fit: BoxFit.contain,
+                        mode: ExtendedImageMode.gesture,
+                        initGestureConfigHandler: (state) {
+                          return GestureConfig(
+                            hitTestBehavior: HitTestBehavior.opaque,
+                            minScale: 0.9,
+                            animationMinScale: 0.7,
+                            maxScale: 3.0,
+                            animationMaxScale: 3.5,
+                            speed: 1.0,
+                            inertialSpeed: 100.0,
+                            initialScale: 1.0,
+                            inPageView: true,
+                            initialAlignment: InitialAlignment.center,
+                          );
+                        },
+//                         onDoubleTap: (ExtendedImageGestureState state) {
+//   ///you can use define pointerDownPosition as you can,
+//   ///default value is double tap pointer down postion.
+//   var pointerDownPosition = state.pointerDownPosition;
+//   double begin = state.gestureDetails.totalScale;
+//   double end;
+
+//   //remove old
+//   _animation?.removeListener(animationListener);
+
+//   //stop pre
+//   _animationController.stop();
+
+//   //reset to use
+//   _animationController.reset();
+
+//   if (begin == doubleTapScales[0]) {
+//     end = doubleTapScales[1];
+//   } else {
+//     end = doubleTapScales[0];
+//   }
+
+//   animationListener = () {
+//     //print(_animation.value);
+//     state.handleDoubleTap(
+//         scale: _animation.value,
+//         doubleTapPosition: pointerDownPosition);
+//   };
+//   _animation = _animationController
+//       .drive(Tween<double>(begin: begin, end: end));
+
+//   _animation.addListener(animationListener);
+
+//   _animationController.forward();
+// },
+                      ),
                     );
                   }),
             ),
