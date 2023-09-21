@@ -57,7 +57,9 @@ class UniversalFeedBloc extends Bloc<UniversalFeedEvent, UniversalFeedState> {
       response.users.addAll(users);
       response.topics.addAll(topics);
       emit(UniversalFeedLoaded(
-          feed: response, hasReachedMax: response.posts.isEmpty));
+          topics: event.topics ?? [],
+          feed: response,
+          hasReachedMax: response.posts.isEmpty));
     }
   }
 }

@@ -1,5 +1,8 @@
+import 'dart:io';
 import 'dart:math';
+import 'package:http/http.dart' as http;
 
+import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart';
 
 class SSCustomMessages implements LookupMessages {
@@ -65,4 +68,22 @@ String? getPostType(int postType) {
       break;
   }
   return postTypeString;
+}
+
+Future<Map<String, int>> getImageFileDimensions(File image) async {
+  Map<String, int> dimensions = {};
+  final decodedImage = await decodeImageFromList(image.readAsBytesSync());
+  dimensions.addAll({"width": decodedImage.width});
+  dimensions.addAll({"height": decodedImage.height});
+  return dimensions;
+}
+
+Future<Map<String, int>> getNetworkImageDimensions(String image) async {
+  Map<String, int> dimensions = {};
+  final response = await http.get(Uri.parse(image));
+  final bytes = response.bodyBytes;
+  final decodedImage = await decodeImageFromList(bytes);
+  dimensions.addAll({"width": decodedImage.width});
+  dimensions.addAll({"height": decodedImage.height});
+  return dimensions;
 }

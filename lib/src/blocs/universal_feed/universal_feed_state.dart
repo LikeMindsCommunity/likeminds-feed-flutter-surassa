@@ -13,7 +13,12 @@ class UniversalFeedInitial extends UniversalFeedState {
 class UniversalFeedLoaded extends UniversalFeedState {
   final GetFeedResponse feed;
   final bool hasReachedMax;
-  const UniversalFeedLoaded({required this.feed, required this.hasReachedMax});
+  final List<TopicUI> topics;
+  const UniversalFeedLoaded({
+    required this.feed,
+    required this.hasReachedMax,
+    required this.topics,
+  });
 
   @override
   List<Object?> get props => [feed, hasReachedMax];

@@ -25,17 +25,13 @@ class PostSomething extends StatelessWidget {
           : () => toast("You do not have permission to create a post"),
       child: Container(
         width: screenSize.width,
-        height: 92,
-        color: Colors.transparent,
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+        height: 60,
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20.0,
+        ),
         child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 10.0,
-            vertical: 4,
-          ),
-          height: 80,
+          padding: const EdgeInsets.all(12.0),
           decoration: BoxDecoration(
-            color: kWhiteColor,
             borderRadius: BorderRadius.circular(50.0),
             border: Border.all(
               width: 1,
@@ -47,13 +43,14 @@ class PostSomething extends StatelessWidget {
               LMProfilePicture(
                 fallbackText: user.name,
                 imageUrl: user.imageUrl,
+                boxShape: BoxShape.circle,
                 onTap: () {
                   if (user.sdkClientInfo != null) {
                     locator<LikeMindsService>()
                         .routeToProfile(user.sdkClientInfo!.userUniqueId);
                   }
                 },
-                size: 42,
+                size: 36,
               ),
               kHorizontalPaddingMedium,
               const LMTextView(text: "Post something...")
