@@ -178,11 +178,14 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
                 padding: const EdgeInsets.all(12),
                 child: Row(
                   children: [
-                    LMProfilePicture(
-                      fallbackText: opt.name!,
-                      imageUrl: opt.imageUrl!,
-                      onTap: () {},
-                      size: 32,
+                    AbsorbPointer(
+                      absorbing: true,
+                      child: LMProfilePicture(
+                        fallbackText: opt.name!,
+                        imageUrl: opt.imageUrl!,
+                        onTap: null,
+                        size: 32,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     LMTextView(
