@@ -1,6 +1,6 @@
 name: likeminds_feed_ss_fl
 description: A new Flutter package project.
-version: 1.1.1
+version: 1.1.2
 publish_to: none
 homepage: "https://likeminds.community/"
 
@@ -24,7 +24,7 @@ dependencies:
   overlay_support:
   lazy_load_scrollview:
   infinite_scroll_pagination:
-  device_info_plus: 
+  device_info_plus:
   permission_handler:
   image_picker:
   file_picker:
@@ -77,7 +77,6 @@ flutter:
     - packages/likeminds_feed_ss_fl/assets/icons/like_filled.svg
     - packages/likeminds_feed_ss_fl/assets/icons/pdf.svg
     - packages/likeminds_feed_ss_fl/assets/icons/chat_lines.svg
-
 
   #
   # For details regarding assets in packages, see
