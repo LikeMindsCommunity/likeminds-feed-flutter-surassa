@@ -42,7 +42,6 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
   * initialy set to 0, after fetching the topics
   * it is set to 62 if the topics are not empty
   */
-  double height = 0;
   final ScrollController _controller = ScrollController();
   // notifies value listenable builder to rebuild the topic feed
   ValueNotifier<bool> rebuildTopicFeed = ValueNotifier(false);
@@ -50,6 +49,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
   Future<GetTopicsResponse>? getTopicsResponse;
   // list of selected topics by the user
   List<TopicUI> selectedTopics = [];
+  bool topicVisible = true;
 
   // bloc to handle universal feed
   late final UniversalFeedBloc _feedBloc; // bloc to fetch the feedroom data
@@ -104,12 +104,16 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
     if (_controller.position.userScrollDirection == ScrollDirection.reverse) {
       if (iconContainerHeight != 0) {
         iconContainerHeight = 0;
+        topicVisible = false;
+        rebuildTopicFeed.value = !rebuildTopicFeed.value;
         postSomethingNotifier.value = !postSomethingNotifier.value;
       }
     }
     if (_controller.position.userScrollDirection == ScrollDirection.forward) {
       if (iconContainerHeight == 0) {
         iconContainerHeight = 60.0;
+        topicVisible = true;
+        rebuildTopicFeed.value = !rebuildTopicFeed.value;
         postSomethingNotifier.value = !postSomethingNotifier.value;
       }
     }
@@ -197,6 +201,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
       context: context,
       elevation: 5,
       isDismissible: true,
+      useRootNavigator: true,
       backgroundColor: kWhiteColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -270,7 +275,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
               valueListenable: postSomethingNotifier,
               builder: (context, _, __) {
                 return AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
+                  duration: const Duration(milliseconds: 160),
                   height: iconContainerHeight,
                   clipBehavior: Clip.hardEdge,
                   decoration: const BoxDecoration(),
@@ -281,154 +286,158 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
               },
             ),
             ValueListenableBuilder(
-                valueListenable: rebuildTopicFeed,
-                builder: (context, _, __) {
-                  return FutureBuilder<GetTopicsResponse>(
+              valueListenable: rebuildTopicFeed,
+              builder: (context, _, __) {
+                return Visibility(
+                  visible: topicVisible,
+                  maintainAnimation: true,
+                  maintainState: true,
+                  child: FutureBuilder<GetTopicsResponse>(
                       future: getTopicsResponse,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
-                          height = 0;
+                          return const SizedBox.shrink();
                         } else if (snapshot.hasData &&
                             snapshot.data != null &&
                             snapshot.data!.success == true) {
                           if (snapshot.data!.topics!.isNotEmpty) {
-                            height = 54;
-                          } else {
-                            height = 0;
-                          }
-                        }
-                        return AnimatedContainer(
-                          duration: const Duration(milliseconds: 400),
-                          height: height,
-                          child: Container(
-                            height: height,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20.0, vertical: 12.0),
-                            child: GestureDetector(
-                              onTap: () => showTopicSelectSheet(),
-                              child: Row(
-                                children: [
-                                  selectedTopics.isEmpty
-                                      ? LMTopicChip(
-                                          topic: (TopicUIBuilder()
-                                                ..id("0")
-                                                ..isEnabled(true)
-                                                ..name("Topic"))
-                                              .build(),
-                                          borderRadius: 20.0,
-                                          borderWidth: 1,
-                                          showBorder: true,
-                                          borderColor: appSecondaryBlack,
-                                          textStyle: const TextStyle(
-                                            color: appBlack,
-                                          ),
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 12.0, vertical: 4.0),
-                                          icon: const LMIcon(
-                                            type: LMIconType.icon,
-                                            icon: CupertinoIcons.chevron_down,
-                                            size: 16,
-                                            color: appBlack,
-                                          ),
-                                        )
-                                      : selectedTopics.length == 1
-                                          ? LMTopicChip(
-                                              topic: (TopicUIBuilder()
-                                                    ..id(
-                                                        selectedTopics.first.id)
-                                                    ..isEnabled(selectedTopics
-                                                        .first.isEnabled)
-                                                    ..name(selectedTopics
-                                                        .first.name))
-                                                  .build(),
-                                              borderRadius: 20.0,
-                                              showBorder: false,
-                                              backgroundColor:
-                                                  theme.colorScheme.secondary,
-                                              textStyle: const TextStyle(
-                                                color: kWhiteColor,
-                                              ),
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 12.0,
-                                                      vertical: 4.0),
-                                              icon: const LMIcon(
-                                                type: LMIconType.icon,
-                                                icon:
-                                                    CupertinoIcons.chevron_down,
-                                                size: 16,
-                                                color: kWhiteColor,
-                                              ),
-                                            )
-                                          : LMTopicChip(
-                                              topic: (TopicUIBuilder()
-                                                    ..id("0")
-                                                    ..isEnabled(true)
-                                                    ..name("Topics"))
-                                                  .build(),
-                                              borderRadius: 20.0,
-                                              showBorder: false,
-                                              backgroundColor:
-                                                  theme.colorScheme.secondary,
-                                              textStyle: const TextStyle(
-                                                color: kWhiteColor,
-                                              ),
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 12.0,
-                                                      vertical: 4.0),
-                                              icon: Row(
-                                                children: [
-                                                  kHorizontalPaddingXSmall,
-                                                  Container(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        horizontal: 4),
-                                                    decoration: ShapeDecoration(
-                                                      color: Colors.white,
-                                                      shape:
-                                                          RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          4)),
-                                                    ),
-                                                    child: LMTextView(
-                                                      text: selectedTopics
-                                                          .length
-                                                          .toString(),
-                                                      textStyle:
-                                                          const TextStyle(
-                                                        color:
-                                                            Color(0xFF4666F6),
-                                                        fontSize: 12,
-                                                        fontFamily: 'Inter',
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        height: 1.30,
-                                                        letterSpacing: -0.48,
+                            return Container(
+                              height: 54,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20.0, vertical: 12.0),
+                              child: GestureDetector(
+                                onTap: () => showTopicSelectSheet(),
+                                child: Row(
+                                  children: [
+                                    selectedTopics.isEmpty
+                                        ? LMTopicChip(
+                                            topic: (TopicUIBuilder()
+                                                  ..id("0")
+                                                  ..isEnabled(true)
+                                                  ..name("Topic"))
+                                                .build(),
+                                            borderRadius: 20.0,
+                                            borderWidth: 1,
+                                            showBorder: true,
+                                            borderColor: appSecondaryBlack,
+                                            textStyle: const TextStyle(
+                                              color: appBlack,
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 12.0,
+                                                vertical: 4.0),
+                                            icon: const LMIcon(
+                                              type: LMIconType.icon,
+                                              icon: CupertinoIcons.chevron_down,
+                                              size: 16,
+                                              color: appBlack,
+                                            ),
+                                          )
+                                        : selectedTopics.length == 1
+                                            ? LMTopicChip(
+                                                topic: (TopicUIBuilder()
+                                                      ..id(selectedTopics
+                                                          .first.id)
+                                                      ..isEnabled(selectedTopics
+                                                          .first.isEnabled)
+                                                      ..name(selectedTopics
+                                                          .first.name))
+                                                    .build(),
+                                                borderRadius: 20.0,
+                                                showBorder: false,
+                                                backgroundColor:
+                                                    theme.colorScheme.secondary,
+                                                textStyle: const TextStyle(
+                                                  color: kWhiteColor,
+                                                ),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 12.0,
+                                                        vertical: 4.0),
+                                                icon: const LMIcon(
+                                                  type: LMIconType.icon,
+                                                  icon: CupertinoIcons
+                                                      .chevron_down,
+                                                  size: 16,
+                                                  color: kWhiteColor,
+                                                ),
+                                              )
+                                            : LMTopicChip(
+                                                topic: (TopicUIBuilder()
+                                                      ..id("0")
+                                                      ..isEnabled(true)
+                                                      ..name("Topics"))
+                                                    .build(),
+                                                borderRadius: 20.0,
+                                                showBorder: false,
+                                                backgroundColor:
+                                                    theme.colorScheme.secondary,
+                                                textStyle: const TextStyle(
+                                                  color: kWhiteColor,
+                                                ),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 12.0,
+                                                        vertical: 4.0),
+                                                icon: Row(
+                                                  children: [
+                                                    kHorizontalPaddingXSmall,
+                                                    Container(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 4),
+                                                      decoration:
+                                                          ShapeDecoration(
+                                                        color: Colors.white,
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            4)),
+                                                      ),
+                                                      child: LMTextView(
+                                                        text: selectedTopics
+                                                            .length
+                                                            .toString(),
+                                                        textStyle:
+                                                            const TextStyle(
+                                                          color:
+                                                              Color(0xFF4666F6),
+                                                          fontSize: 12,
+                                                          fontFamily: 'Inter',
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          height: 1.30,
+                                                          letterSpacing: -0.48,
+                                                        ),
                                                       ),
                                                     ),
-                                                  ),
-                                                  kHorizontalPaddingSmall,
-                                                  const LMIcon(
-                                                    type: LMIconType.icon,
-                                                    icon: CupertinoIcons
-                                                        .chevron_down,
-                                                    size: 16,
-                                                    color: kWhiteColor,
-                                                  ),
-                                                ],
+                                                    kHorizontalPaddingSmall,
+                                                    const LMIcon(
+                                                      type: LMIconType.icon,
+                                                      icon: CupertinoIcons
+                                                          .chevron_down,
+                                                      size: 16,
+                                                      color: kWhiteColor,
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          ),
-                        );
-                      });
-                }),
+                            );
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        }
+                        return const SizedBox();
+                      }),
+                );
+              },
+            ),
             Expanded(
               child: BlocConsumer(
                 bloc: _feedBloc,
