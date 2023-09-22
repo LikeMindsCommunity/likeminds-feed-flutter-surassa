@@ -290,7 +290,8 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                         );
                       }),
                   const SizedBox(height: 2),
-                  postDetails!.topics.isEmpty
+                  postDetails!.topics.isEmpty ||
+                          widget.topics[postDetails!.topics.first] == null
                       ? const SizedBox()
                       : TopicChipWidget(
                           postTopic: TopicUI.fromTopic(

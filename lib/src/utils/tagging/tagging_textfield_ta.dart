@@ -48,7 +48,7 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
   bool tagComplete = false;
   String textValue = "";
   String tagValue = "";
-  static const fixedSize = 6;
+  static const fixedSize = 20;
 
   @override
   void dispose() {
@@ -117,9 +117,7 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6.0),
       child: TypeAheadField<UserTag>(
-        onTagTap: (p) {
-          // print(p);
-        },
+        onTagTap: (p) {},
         suggestionsBoxController: _suggestionsBoxController,
         suggestionsBoxDecoration: SuggestionsBoxDecoration(
           elevation: 4,
@@ -162,7 +160,7 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
           return await _getSuggestions(suggestion);
         },
         keepSuggestionsOnSuggestionSelected: true,
-        itemBuilder: ((context, opt) {
+        itemBuilder: (context, opt) {
           return Container(
             decoration: const BoxDecoration(
               color: Colors.white,
@@ -183,12 +181,7 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
                     LMProfilePicture(
                       fallbackText: opt.name!,
                       imageUrl: opt.imageUrl!,
-                      onTap: () {
-                        if (opt.sdkClientInfo != null) {
-                          locator<LikeMindsService>()
-                              .routeToProfile(opt.sdkClientInfo!.userUniqueId);
-                        }
-                      },
+                      onTap: () {},
                       size: 32,
                     ),
                     const SizedBox(width: 12),
@@ -203,7 +196,7 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
               ),
             ),
           );
-        }),
+        },
         onSuggestionSelected: ((suggestion) {
           print(suggestion);
           widget.onTagSelected.call(suggestion);
