@@ -315,9 +315,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                     FocusScopeNode currentFocus =
                                         FocusScope.of(context);
                                     currentFocus.unfocus();
+                                    await Future.delayed(
+                                        const Duration(milliseconds: 500));
                                   }
-                                  await Future.delayed(
-                                      const Duration(milliseconds: 500));
                                   _controllerPopUp.showMenu();
                                 },
                                 child: AbsorbPointer(
