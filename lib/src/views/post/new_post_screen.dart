@@ -670,6 +670,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                           ],
                         ),
                         kVerticalPaddingXLarge,
+                        const SizedBox(height: 55),
                       ],
                     ),
                   ),
