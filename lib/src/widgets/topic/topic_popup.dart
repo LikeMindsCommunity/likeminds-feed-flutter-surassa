@@ -106,8 +106,8 @@ class _TopicPopUpState extends State<TopicPopUp> {
     Size screenSize = MediaQuery.of(context).size;
     ThemeData theme = Theme.of(context);
     return Container(
-      width: min(screenSize.width, 254),
-      height: 216,
+      width: min(screenSize.width, 265),
+      constraints: const BoxConstraints(maxHeight: 250),
       decoration: BoxDecoration(
           color: kWhiteColor, borderRadius: BorderRadius.circular(4.0)),
       margin: const EdgeInsets.only(top: 32),
@@ -154,7 +154,9 @@ class _TopicPopUpState extends State<TopicPopUp> {
                       Expanded(
                         child: SingleChildScrollView(
                           controller: controller,
+                          physics: const ClampingScrollPhysics(),
                           child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: topicsPagingController.itemList?.map((e) {
                                   bool isTopicSelected =
