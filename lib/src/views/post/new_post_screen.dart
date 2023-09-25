@@ -46,6 +46,7 @@ class NewPostScreen extends StatefulWidget {
 class _NewPostScreenState extends State<NewPostScreen> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  Future<GetTopicsResponse>? getTopicsResponse;
   ValueNotifier<bool> rebuildLinkPreview = ValueNotifier(false);
   List<TopicUI> selectedTopic = [];
   ValueNotifier<bool> rebuildTopicFloatingButton = ValueNotifier(false);
@@ -79,6 +80,12 @@ class _NewPostScreenState extends State<NewPostScreen> {
   void initState() {
     super.initState();
     user = UserLocalPreference.instance.fetchUserData();
+    getTopicsResponse =
+        locator<LikeMindsService>().getTopics((GetTopicsRequestBuilder()
+              ..page(1)
+              ..pageSize(20)
+              ..isEnabled(true))
+            .build());
     newPostBloc = BlocProvider.of<NewPostBloc>(context);
     if (_focusNode.canRequestFocus) {
       _focusNode.requestFocus();
@@ -292,72 +299,94 @@ class _NewPostScreenState extends State<NewPostScreen> {
               children: [
                 Align(
                   alignment: Alignment.bottomLeft,
-                  child: ValueListenableBuilder(
-                    valueListenable: rebuildTopicFloatingButton,
-                    builder: (context, _, __) {
-                      return CustomPopupMenu(
-                        controller: _controllerPopUp,
-                        showArrow: false,
-                        verticalMargin: 10,
-                        horizontalMargin: 16.0,
-                        menuOnChange: (bool value) {
-                          if (value) {
-                            if (_focusNode.hasFocus) {
-                              _focusNode.unfocus(
-                                disposition:
-                                    UnfocusDisposition.previouslyFocusedChild,
+                  child: FutureBuilder<GetTopicsResponse>(
+                    future: getTopicsResponse,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done &&
+                          snapshot.hasData &&
+                          snapshot.data!.success == true) {
+                        if (snapshot.data!.topics!.isNotEmpty) {
+                          return ValueListenableBuilder(
+                            valueListenable: rebuildTopicFloatingButton,
+                            builder: (context, _, __) {
+                              return GestureDetector(
+                                onTap: () async {
+                                  if (_focusNode.hasFocus) {
+                                    FocusScopeNode currentFocus =
+                                        FocusScope.of(context);
+                                    currentFocus.unfocus();
+                                    await Future.delayed(
+                                        const Duration(milliseconds: 500));
+                                  }
+                                  _controllerPopUp.showMenu();
+                                },
+                                child: AbsorbPointer(
+                                  absorbing: true,
+                                  child: CustomPopupMenu(
+                                    controller: _controllerPopUp,
+                                    showArrow: false,
+                                    verticalMargin: 10,
+                                    horizontalMargin: 16.0,
+                                    pressType: PressType.singleClick,
+                                    menuBuilder: () => TopicPopUp(
+                                        selectedTopics: selectedTopic,
+                                        isEnabled: true,
+                                        onTopicSelected:
+                                            (updatedTopics, tappedTopic) {
+                                          if (selectedTopic.isEmpty) {
+                                            selectedTopic.add(tappedTopic);
+                                          } else {
+                                            if (selectedTopic.first.id ==
+                                                tappedTopic.id) {
+                                              selectedTopic.clear();
+                                            } else {
+                                              selectedTopic.clear();
+                                              selectedTopic.add(tappedTopic);
+                                            }
+                                          }
+                                          _controllerPopUp.hideMenu();
+                                          rebuildTopicFloatingButton.value =
+                                              !rebuildTopicFloatingButton.value;
+                                        }),
+                                    child: Container(
+                                      height: 36,
+                                      alignment: Alignment.bottomLeft,
+                                      margin: const EdgeInsets.only(left: 16.0),
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(500),
+                                        color: kWhiteColor,
+                                        border: Border.all(
+                                          color: kPrimaryColor,
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: LMTopicChip(
+                                        topic: selectedTopic.isEmpty
+                                            ? (TopicUIBuilder()
+                                                  ..id("0")
+                                                  ..isEnabled(true)
+                                                  ..name("Topic"))
+                                                .build()
+                                            : selectedTopic.first,
+                                        textStyle: const TextStyle(
+                                            color: kPrimaryColor),
+                                        icon: const LMIcon(
+                                          type: LMIconType.icon,
+                                          icon: CupertinoIcons.chevron_down,
+                                          size: 16,
+                                          color: kPrimaryColor,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               );
-                            }
-                          }
-                        },
-                        pressType: PressType.singleClick,
-                        menuBuilder: () => TopicPopUp(
-                            selectedTopics: selectedTopic,
-                            onTopicSelected: (updatedTopics, tappedTopic) {
-                              if (selectedTopic.isEmpty) {
-                                selectedTopic.add(tappedTopic);
-                              } else {
-                                if (selectedTopic.first.id == tappedTopic.id) {
-                                  selectedTopic.clear();
-                                } else {
-                                  selectedTopic.clear();
-                                  selectedTopic.add(tappedTopic);
-                                }
-                              }
-                              _controllerPopUp.hideMenu();
-                              rebuildTopicFloatingButton.value =
-                                  !rebuildTopicFloatingButton.value;
-                            }),
-                        child: Container(
-                          height: 36,
-                          alignment: Alignment.bottomLeft,
-                          margin: const EdgeInsets.only(left: 16.0),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(500),
-                            color: kWhiteColor,
-                            border: Border.all(
-                              color: kPrimaryColor,
-                              width: 1,
-                            ),
-                          ),
-                          child: LMTopicChip(
-                            topic: selectedTopic.isEmpty
-                                ? (TopicUIBuilder()
-                                      ..id("0")
-                                      ..isEnabled(true)
-                                      ..name("Topic"))
-                                    .build()
-                                : selectedTopic.first,
-                            textStyle: const TextStyle(color: kPrimaryColor),
-                            icon: const LMIcon(
-                              type: LMIconType.icon,
-                              icon: CupertinoIcons.chevron_down,
-                              size: 16,
-                              color: kPrimaryColor,
-                            ),
-                          ),
-                        ),
-                      );
+                            },
+                          );
+                        }
+                      }
+                      return const SizedBox();
                     },
                   ),
                 ),
@@ -404,9 +433,10 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                     decoration: const BoxDecoration(
                                       color: kWhiteColor,
                                     ),
+                                    constraints: BoxConstraints(
+                                        maxHeight: screenSize.height * 0.8),
                                     child: TaggingAheadTextField(
                                       isDown: true,
-                                      maxLines: 5,
                                       minLines: 3,
                                       decoration: const InputDecoration(
                                         border: InputBorder.none,
@@ -640,6 +670,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                           ],
                         ),
                         kVerticalPaddingXLarge,
+                        const SizedBox(height: 55),
                       ],
                     ),
                   ),
@@ -685,6 +716,13 @@ class _NewPostScreenState extends State<NewPostScreen> {
                     String postText = _controller.text;
                     postText = postText.trim();
                     if (postText.isNotEmpty || postMedia.isNotEmpty) {
+                      if (selectedTopic.isEmpty) {
+                        toast(
+                          "Can't create a post without topic",
+                          duration: Toast.LENGTH_LONG,
+                        );
+                        return;
+                      }
                       checkTextLinks();
                       userTags =
                           TaggingHelper.matchTags(_controller.text, userTags);
