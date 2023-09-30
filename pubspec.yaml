@@ -45,7 +45,9 @@ dependencies:
   #   path: lib/packages/multi_image_crop
 
   likeminds_feed_ui_fl:
-    path: ../LikeMinds-Flutter-Feed-UI
+    git:
+      url: https://github.com/les-transformations/LikeMinds-Flutter-Feed-UI.git
+      ref: release
 
   likeminds_feed: 1.4.1
   #  path: ../LikeMinds-Flutter-Feed-SDK
