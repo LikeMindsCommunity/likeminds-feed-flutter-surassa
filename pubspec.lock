@@ -834,11 +834,9 @@ packages:
   likeminds_feed_ui_fl:
     dependency: "direct main"
     description:
-      path: "."
-      ref: release
-      resolved-ref: "5609ce4b5cf1d5215a5ac7730f8c787623f3fd6a"
-      url: "https://github.com/les-transformations/LikeMinds-Flutter-Feed-UI.git"
-    source: git
+      path: "../LikeMinds-Flutter-Feed-UI"
+      relative: true
+    source: path
     version: "1.1.2"
   lints:
     dependency: transitive
