@@ -47,7 +47,7 @@ dependencies:
   likeminds_feed_ui_fl:
     path: ../LikeMinds-Flutter-Feed-UI
 
-  likeminds_feed: 1.4.1
+  likeminds_feed: 1.5.0
   #  path: ../LikeMinds-Flutter-Feed-SDK
 
 dependency_override:

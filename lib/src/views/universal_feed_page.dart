@@ -917,6 +917,10 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                   topics: widget.feedResponse.topics,
                                   user: widget.feedResponse.users[item.userId]!,
                                   onTap: () {
+                                    LMAnalytics.get()
+                                        .track(AnalyticsKeys.commentListOpen, {
+                                      'postId': item.id,
+                                    });
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -988,6 +992,8 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                   onTap: right
                       ? () {
                           if (!postUploading.value) {
+                            LMAnalytics.get()
+                                .track(AnalyticsKeys.postCreationStarted, {});
                             Navigator.push(
                               context,
                               MaterialPageRoute(

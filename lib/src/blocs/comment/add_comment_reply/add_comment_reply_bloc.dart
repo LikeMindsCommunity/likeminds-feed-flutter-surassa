@@ -19,7 +19,7 @@ class AddCommentReplyBloc
     on<AddCommentReply>(
       (event, emit) async {
         await _mapAddCommentReplyToState(
-          addCommentReplyRequest: event.addCommentRequest,
+          addCommentReplyEvent: event,
           emit: emit,
         );
       },
@@ -150,19 +150,21 @@ class AddCommentReplyBloc
   }
 
   FutureOr<void> _mapAddCommentReplyToState(
-      {required AddCommentReplyRequest addCommentReplyRequest,
+      {required AddCommentReply addCommentReplyEvent,
       required Emitter<AddCommentReplyState> emit}) async {
     emit(AddCommentReplyLoading());
     AddCommentReplyResponse response = await locator<LikeMindsService>()
-        .addCommentReply(addCommentReplyRequest);
+        .addCommentReply(addCommentReplyEvent.addCommentRequest);
     if (!response.success) {
       emit(const AddCommentReplyError(message: "An error occurred"));
     } else {
       LMAnalytics.get().track(
         AnalyticsKeys.replyPosted,
         {
-          "post_id": addCommentReplyRequest.postId,
-          "comment_id": addCommentReplyRequest.commentId,
+          "post_id": addCommentReplyEvent.addCommentRequest.postId,
+          "comment_id": addCommentReplyEvent.addCommentRequest.commentId,
+          "comment_reply_id": response.reply?.id,
+          "user_id": addCommentReplyEvent.userId
         },
       );
       emit(AddCommentReplySuccess(addCommentResponse: response));

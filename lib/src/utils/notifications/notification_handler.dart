@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
+import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/navigation_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
@@ -64,6 +65,7 @@ class LMNotificationHandler {
   Future<void> handleNotification(RemoteMessage message, bool show) async {
     debugPrint("--- Notification received in LEVEL 2 ---");
     if (message.data["category"] == "Feed") {
+      LMAnalytics.get().track(AnalyticsKeys.notificationReceived, {});
       message.toMap().forEach((key, value) {
         debugPrint("$key: $value");
         if (key == "data") {
@@ -113,6 +115,9 @@ class LMNotificationHandler {
     // If the notification is post related, route to the post detail screen
     if (host == "post_detail") {
       final String postId = queryParams["post_id"]!;
+      LMAnalytics.get().track(AnalyticsKeys.commentListOpen, {
+        'postId': postId,
+      });
       locator<NavigationService>()
           .navigateTo(MaterialPageRoute(builder: (context) {
         return PostDetailScreen(postId: postId);

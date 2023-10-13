@@ -19,6 +19,7 @@ class PostSomething extends StatelessWidget {
     return GestureDetector(
       onTap: enabled
           ? () {
+              LMAnalytics.get().track(AnalyticsKeys.postCreationStarted, {});
               Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => const NewPostScreen()));
             }

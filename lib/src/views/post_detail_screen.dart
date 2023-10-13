@@ -64,6 +64,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   String? selectedCommentId;
   String? selectedUsername;
   String? selectedReplyId;
+  String? selectedUserId;
 
   @override
   void dispose() {
@@ -82,9 +83,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   @override
   void initState() {
     super.initState();
-    LMAnalytics.get().track(AnalyticsKeys.commentListOpen, {
-      'postId': widget.postId,
-    });
     newPostBloc = BlocProvider.of<NewPostBloc>(context);
     updatePostDetails(context);
     right = checkCommentRights();
@@ -158,10 +156,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     rebuildReplyWidget.value = !rebuildReplyWidget.value;
   }
 
-  selectCommentToReply(String commentId, String username) {
+  selectCommentToReply(String commentId, String username, String userId) {
     selectedCommentId = commentId;
     debugPrint(commentId);
     selectedUsername = username;
+    selectedUserId = userId;
     isReplying = true;
     isEditing = false;
     openOnScreenKeyboard();
@@ -171,6 +170,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   deselectCommentToReply() {
     selectedCommentId = null;
     selectedUsername = null;
+    selectedUserId = null;
     isReplying = false;
     closeOnScreenKeyboard();
     _commentController?.clear();
@@ -592,12 +592,16 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                             );
                                                                           }
                                                                         } else {
-                                                                          _addCommentReplyBloc.add(AddCommentReply(
-                                                                              addCommentRequest: (AddCommentReplyRequestBuilder()
-                                                                                    ..postId(widget.postId)
-                                                                                    ..text(commentText)
-                                                                                    ..commentId(selectedCommentId!))
-                                                                                  .build()));
+                                                                          _addCommentReplyBloc
+                                                                              .add(AddCommentReply(
+                                                                            addCommentRequest: (AddCommentReplyRequestBuilder()
+                                                                                  ..postId(widget.postId)
+                                                                                  ..text(commentText)
+                                                                                  ..commentId(selectedCommentId!))
+                                                                                .build(),
+                                                                            userId:
+                                                                                selectedUserId ?? '',
+                                                                          ));
 
                                                                           _commentController
                                                                               ?.clear();
@@ -883,7 +887,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                 userId);
                                                       },
                                                       onMenuTap: (id) {
-                                                        if (id == 6) {
+                                                        if (id ==
+                                                            commentDeleteId) {
                                                           deselectCommentToEdit();
                                                           deselectCommentToReply();
                                                           // Delete post
@@ -926,7 +931,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                         actionText:
                                                                             'Delete',
                                                                       ));
-                                                        } else if (id == 8) {
+                                                        } else if (id ==
+                                                            commentEditId) {
                                                           debugPrint(
                                                               'Editing functionality');
                                                           _addCommentReplyBloc.add(
@@ -1088,6 +1094,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                       .users![item
                                                                           .userId]!
                                                                       .name,
+                                                                  item.userId,
                                                                 );
                                                               },
                                                               icon:
@@ -1135,8 +1142,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                     );
                                                   }),
                                                   CommentReplyWidget(
-                                                    onReply:
-                                                        selectCommentToReply,
                                                     refresh: () {
                                                       _pagingController
                                                           .refresh();
