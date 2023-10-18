@@ -532,21 +532,21 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                           boxPadding: 6,
                         ),
                       ),
-
-                      // LMTextButton(
-                      //   text: const LMTextView(text: "Share"),
-                      //   margin: 0,
-                      //   onTap: () {
-                      //     SharePost().sharePost(widget.post.id);
-                      //   },
-                      //   icon: LMIcon(
-                      //     type: LMIconType.svg,
-                      //     assetPath: kAssetShareIcon,
-                      //     color: Theme.of(context).colorScheme.onSecondary,
-                      //     size: 20,
-                      //     boxPadding: 6,
-                      //   ),
-                      // ),
+                      const Spacer(),
+                      LMTextButton(
+                        text: const LMTextView(text: "Share"),
+                        margin: 0,
+                        onTap: () {
+                          SharePost().sharePost(widget.post.id);
+                        },
+                        icon: LMIcon(
+                          type: LMIconType.svg,
+                          assetPath: kAssetShareIcon,
+                          color: Theme.of(context).colorScheme.onSecondary,
+                          size: 20,
+                          boxPadding: 6,
+                        ),
+                      ),
                     ],
                     // children: [
 
