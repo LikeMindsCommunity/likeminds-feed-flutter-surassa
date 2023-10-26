@@ -10,6 +10,7 @@ import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_action_id.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_utils.dart';
+import 'package:likeminds_feed_ss_fl/src/utils/utils.dart';
 import 'package:likeminds_feed_ss_fl/src/views/likes/likes_screen.dart';
 import 'package:likeminds_feed_ss_fl/src/views/media_preview.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post/edit_post_screen.dart';
@@ -51,6 +52,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
   bool? isPinned;
   ValueNotifier<bool> rebuildLikeWidget = ValueNotifier(false);
   ValueNotifier<bool> rebuildPostWidget = ValueNotifier(false);
+  User user = UserLocalPreference.instance.fetchUserData();
 
   @override
   void initState() {
@@ -226,6 +228,11 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                             final res = await locator<
                                                     LikeMindsService>()
                                                 .getMemberState();
+
+                                            String? postType = getPostType(
+                                                postDetails!.attachments?.first
+                                                        .attachmentType ??
+                                                    0);
                                             //Implement delete post analytics tracking
                                             LMAnalytics.get().track(
                                               AnalyticsKeys.postDeleted,
@@ -235,6 +242,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                                     : "member",
                                                 "post_id": postDetails!.id,
                                                 "user_id": postDetails!.userId,
+                                                "post_type": postType,
                                               },
                                             );
                                             newPostBloc.add(
@@ -423,7 +431,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                   const Divider(),
                   const SizedBox(height: 6),
                   LMPostFooter(
-                    alignment: LMAlignment.left,
+                    alignment: LMAlignment.centre,
                     children: [
                       ValueListenableBuilder(
                           valueListenable: rebuildLikeWidget,
@@ -503,7 +511,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                               isActive: isLiked!,
                             );
                           }),
-                      kHorizontalPaddingLarge,
+                      const Spacer(),
                       LMTextButton(
                         text: const LMTextView(text: "Comment"),
                         margin: 0,
@@ -537,6 +545,13 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                         text: const LMTextView(text: "Share"),
                         margin: 0,
                         onTap: () {
+                          LMAnalytics.get().track(AnalyticsKeys.postShared, {
+                            "post_id": widget.post.id,
+                            "post_type": getPostType(
+                                widget.post.attachments?.first.attachmentType ??
+                                    0),
+                            "user_id": user.userUniqueId,
+                          });
                           SharePost().sharePost(widget.post.id);
                         },
                         icon: LMIcon(

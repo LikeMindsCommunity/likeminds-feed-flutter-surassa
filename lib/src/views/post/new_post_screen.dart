@@ -164,7 +164,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
         }
       }
       LMAnalytics.get().track(
-          AnalyticsKeys.documentAttachedInPost, {'image_count': imageCount});
+          AnalyticsKeys.imageAttachedToPost, {'image_count': imageCount});
     }
   }
 
@@ -212,7 +212,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
       });
     } else {
       if (postMedia.isEmpty) {
-        isDocumentPost = false;
+        isDocumentPost = true;
+        isMediaPost = true;
         showLinkPreview = true;
       }
       setState(() {

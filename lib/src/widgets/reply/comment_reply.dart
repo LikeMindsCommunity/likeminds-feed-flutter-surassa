@@ -123,13 +123,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                             action: (String reason) async {
                           Navigator.of(childContext).pop();
                           //Implement delete post analytics tracking
-                          LMAnalytics.get().track(
-                            AnalyticsKeys.commentDeleted,
-                            {
-                              "post_id": postId,
-                              "comment_id": element.id,
-                            },
-                          );
+
                           addCommentReplyBloc!.add(DeleteCommentReply(
                               (DeleteCommentRequestBuilder()
                                     ..postId(postId)
