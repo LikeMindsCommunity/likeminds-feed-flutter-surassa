@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed_ss_sample/likeminds_callback.dart';
+import 'package:likeminds_feed_ss_sample/main.dart';
 import 'package:likeminds_feed_ss_sample/network_handling.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:uni_links/uni_links.dart';
 
 final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
     GlobalKey<ScaffoldMessengerState>();
@@ -58,9 +60,9 @@ class _CredScreenState extends State<CredScreen> {
     NetworkConnectivity networkConnectivity = NetworkConnectivity.instance;
     networkConnectivity.initialise();
     // userId = UserLocalPreference.instance.fetchUserId();
-    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    //   initUniLinks(context);
-    // });
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      initUniLinks(context);
+    });
   }
 
   @override
@@ -71,56 +73,54 @@ class _CredScreenState extends State<CredScreen> {
     super.dispose();
   }
 
-  // Future initUniLinks(BuildContext context) async {
-  //   if (!initialURILinkHandled) {
-  //     initialURILinkHandled = true;
-  //     // Get the initial deep link if the app was launched with one
-  //     final initialLink = await getInitialLink();
+  Future initUniLinks(BuildContext context) async {
+    if (!initialURILinkHandled) {
+      initialURILinkHandled = true;
+      // Get the initial deep link if the app was launched with one
+      final initialLink = await getInitialLink();
 
-  //     // Handle the deep link
-  //     if (initialLink != null) {
-  //       // You can extract any parameters from the initialLink object here
-  //       // and use them to navigate to a specific screen in your app
-  //       debugPrint('Received initial deep link: $initialLink');
+      // Handle the deep link
+      if (initialLink != null) {
+        // You can extract any parameters from the initialLink object here
+        // and use them to navigate to a specific screen in your app
+        debugPrint('Received initial deep link: $initialLink');
 
-  //       // TODO: add api key to the DeepLinkRequest
-  //       // TODO: add user id and user name of logged in user
-  //       SharePost().parseDeepLink((DeepLinkRequestBuilder()
-  //             ..apiKey(SharePost.apiKey)
-  //             ..callback(LikeMindsCallback())
-  //             ..feedRoomId(debug ? 83301 : 2238799)
-  //             ..isGuest(false)
-  //             ..link(initialLink)
-  //             ..userName("Test User")
-  //             ..userUniqueId(userId ?? SharePost.userId))
-  //           .build());
-  //     }
+        // TODO: add api key to the DeepLinkRequest
+        // TODO: add user id and user name of logged in user
+        SharePost().parseDeepLink((DeepLinkRequestBuilder()
+              ..apiKey(SharePost.apiKey)
+              ..callback(LikeMindsCallback())
+              ..isGuest(false)
+              ..link(initialLink)
+              ..userName("Test User")
+              ..userUniqueId(userId ?? "Test-User-Id"))
+            .build());
+      }
 
-  //     // Subscribe to link changes
-  //     _streamSubscription = linkStream.listen((String? link) async {
-  //       if (link != null) {
-  //         // Handle the deep link
-  //         // You can extract any parameters from the uri object here
-  //         // and use them to navigate to a specific screen in your app
-  //         debugPrint('Received deep link: $link');
-  //         // TODO: add api key to the DeepLinkRequest
-  //         // TODO: add user id and user name of logged in user
-  //         SharePost().parseDeepLink((DeepLinkRequestBuilder()
-  //               ..apiKey(SharePost.apiKey)
-  //               ..isGuest(false)
-  //               ..callback(LikeMindsCallback())
-  //               ..feedRoomId(debug ? 83301 : 2238799)
-  //               ..link(link)
-  //               ..userName("Test User")
-  //               ..userUniqueId(userId ?? SharePost.userId))
-  //             .build());
-  //       }
-  //     }, onError: (err) {
-  //       // Handle exception by warning the user their action did not succeed
-  //       toast('An error occurred');
-  //     });
-  //   }
-  // }
+      // Subscribe to link changes
+      _streamSubscription = linkStream.listen((String? link) async {
+        if (link != null) {
+          // Handle the deep link
+          // You can extract any parameters from the uri object here
+          // and use them to navigate to a specific screen in your app
+          debugPrint('Received deep link: $link');
+          // TODO: add api key to the DeepLinkRequest
+          // TODO: add user id and user name of logged in user
+          SharePost().parseDeepLink((DeepLinkRequestBuilder()
+                ..apiKey(SharePost.apiKey)
+                ..isGuest(false)
+                ..callback(LikeMindsCallback())
+                ..link(link)
+                ..userName("Test User")
+                ..userUniqueId(userId ?? "Test-User-Id"))
+              .build());
+        }
+      }, onError: (err) {
+        // Handle exception by warning the user their action did not succeed
+        toast('An error occurred');
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
