@@ -35,6 +35,7 @@ class AddCommentBloc extends Bloc<AddCommentEvent, AddCommentState> {
         AnalyticsKeys.commentPosted,
         {
           "post_id": addCommentRequest.postId,
+          "comment_id": response.reply?.id,
         },
       );
       emit(AddCommentSuccess(addCommentResponse: response));

@@ -223,6 +223,10 @@ class _FeedScreenState extends State<FeedScreen> {
                           user: feedResponse.users[item.userId]!,
                           topics: feedResponse.topics,
                           onTap: () {
+                            LMAnalytics.get()
+                                .track(AnalyticsKeys.commentListOpen, {
+                              'postId': item.id,
+                            });
                             Navigator.push(
                               context,
                               MaterialPageRoute(

@@ -120,6 +120,9 @@ class _SSPostWidgetState extends State<SSPostWidget> {
             onTap: () {
               // Navigate to LMPostPage using material route
               if (widget.isFeed) {
+                LMAnalytics.get().track(AnalyticsKeys.commentListOpen, {
+                  'postId': widget.post.id,
+                });
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => PostDetailScreen(
@@ -265,6 +268,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                     "post_type": postType,
                                   });
                                 }
+
                                 newPostBloc.add(TogglePinPost(
                                     postId: postDetails!.id,
                                     isPinned: !isPinned!));
@@ -505,6 +509,10 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                         margin: 0,
                         onTap: () {
                           if (widget.isFeed) {
+                            LMAnalytics.get()
+                                .track(AnalyticsKeys.commentListOpen, {
+                              'postId': widget.post.id,
+                            });
                             Navigator.push(
                               context,
                               MaterialPageRoute(

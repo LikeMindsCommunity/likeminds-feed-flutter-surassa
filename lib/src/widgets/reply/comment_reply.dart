@@ -19,14 +19,14 @@ class CommentReplyWidget extends StatefulWidget {
   final Reply reply;
   final User user;
   final Function() refresh;
-  final Function(String commentId, String username) onReply;
+  //final Function(String commentId, String username, String userId) onReply;
 
   const CommentReplyWidget({
     Key? key,
     required this.reply,
     required this.user,
     required this.postId,
-    required this.onReply,
+    // required this.onReply,
     required this.refresh,
   }) : super(key: key);
 
@@ -109,7 +109,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
               ),
             ),
             onMenuTap: (value) async {
-              if (value == 6) {
+              if (value == commentDeleteId) {
                 addCommentReplyBloc!.add(EditCommentCancel());
                 addCommentReplyBloc!.add(ReplyCommentCancel());
                 showDialog(
@@ -139,7 +139,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                                         : reason))
                                   .build()));
                         }, actionText: 'Delete'));
-              } else if (value == 8) {
+              } else if (value == commentEditId) {
                 addCommentReplyBloc!.add(EditReplyCancel());
                 addCommentReplyBloc!.add(
                   EditingReply(

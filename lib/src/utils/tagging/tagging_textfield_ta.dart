@@ -220,7 +220,7 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
             textValue = _controller.value.text;
             LMAnalytics.get().track(AnalyticsKeys.userTaggedInPost, {
               'tagged_user_id': suggestion.sdkClientInfo?.userUniqueId,
-              'tagged_user_count': tagCount
+              'tagged_user_count': tagCount,
             });
           });
         }),

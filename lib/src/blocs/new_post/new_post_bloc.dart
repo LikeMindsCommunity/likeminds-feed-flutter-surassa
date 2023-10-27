@@ -29,10 +29,6 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
     try {
       List<MediaModel>? postMedia = event.postMedia;
       User user = UserLocalPreference.instance.fetchUserData();
-      int imageCount = 0;
-      int videoCount = 0;
-      int documentCount = 0;
-      int linkCount = 0;
       List<Attachment> attachments = [];
       int index = 0;
 
@@ -66,10 +62,8 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
                     )),
               ),
             );
-            linkCount = 1;
           } else {
             File mediaFile = media.mediaFile!;
-            index += 1;
             final String? response = await locator<LikeMindsService>()
                 .uploadFile(mediaFile, user.userUniqueId);
             if (response != null) {
@@ -96,15 +90,6 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
           }
         }
         // For counting the no of attachments
-        for (final attachment in attachments) {
-          if (attachment.attachmentType == 1) {
-            imageCount++;
-          } else if (attachment.attachmentType == 2) {
-            videoCount++;
-          } else if (attachment.attachmentType == 3) {
-            documentCount++;
-          }
-        }
       } else {
         emit(
           NewPostUploading(
@@ -113,7 +98,7 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
         );
       }
       List<Topic> postTopics =
-          event.selectedTopics.map((e) => e.toTopic()).toList() as List<Topic>;
+          event.selectedTopics.map((e) => e.toTopic()).toList();
       final AddPostRequest request = (AddPostRequestBuilder()
             ..text(event.postText)
             ..attachments(attachments)
@@ -124,30 +109,6 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
           await locator<LikeMindsService>().addPost(request);
 
       if (response.success) {
-        LMAnalytics.get().track(
-          AnalyticsKeys.postCreationCompleted,
-          {
-            "user_tagged": "no",
-            "link_attached": linkCount == 0
-                ? "no"
-                : {"yes": attachments.first.attachmentMeta.ogTags?.url ?? ""},
-            "image_attached": imageCount == 0
-                ? "no"
-                : {
-                    "yes": {"image_count": imageCount},
-                  },
-            "video_attached": videoCount == 0
-                ? "no"
-                : {
-                    "yes": {"video_count": videoCount},
-                  },
-            "document_attached": documentCount == 0
-                ? "no"
-                : {
-                    "yes": {"document_count": documentCount},
-                  },
-          },
-        );
         emit(
           NewPostUploaded(
               postData: PostViewModel.fromPost(post: response.post!),
