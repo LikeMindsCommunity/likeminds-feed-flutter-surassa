@@ -57,10 +57,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>com.likeminds.flutterfeed.ios</string>
+			<string>com.suraasa.likeminds.dev</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>feedsx</string>
+				<string>feedsuraasa</string>
 			</array>
 		</dict>
 	</array>

@@ -65,7 +65,6 @@ class LMNotificationHandler {
   Future<void> handleNotification(RemoteMessage message, bool show) async {
     debugPrint("--- Notification received in LEVEL 2 ---");
     if (message.data["category"] == "Feed") {
-      LMAnalytics.get().track(AnalyticsKeys.notificationReceived, {});
       message.toMap().forEach((key, value) {
         debugPrint("$key: $value");
         if (key == "data") {

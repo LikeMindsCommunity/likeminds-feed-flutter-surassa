@@ -11,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/services/bloc_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/analytics/analytics.dart';
@@ -86,7 +87,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
               ..pageSize(20)
               ..isEnabled(true))
             .build());
-    newPostBloc = BlocProvider.of<NewPostBloc>(context);
+    newPostBloc = locator<BlocService>().newPostBlocProvider;
     if (_focusNode.canRequestFocus) {
       _focusNode.requestFocus();
     }
@@ -309,7 +310,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    newPostBloc = BlocProvider.of<NewPostBloc>(context);
+    newPostBloc = locator<BlocService>().newPostBlocProvider;
     Size screenSize = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () {

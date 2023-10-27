@@ -5,6 +5,7 @@ import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/models/post_view_model.dart';
+import 'package:likeminds_feed_ss_fl/src/services/bloc_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
@@ -84,7 +85,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
-    NewPostBloc newPostBloc = BlocProvider.of<NewPostBloc>(context);
+    NewPostBloc newPostBloc = locator<BlocService>().newPostBlocProvider;
     timeago.setLocaleMessages('en', SSCustomMessages());
     return InheritedPostProvider(
       post: widget.post.toPost(),
@@ -146,25 +147,20 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                   ValueListenableBuilder(
                     valueListenable: rebuildPostWidget,
                     builder: (context, _, __) => isPinned!
-                        ? Column(
+                        ? const Column(
                             children: [
                               Row(
                                 children: [
                                   LMIcon(
                                     type: LMIconType.svg,
                                     assetPath: kAssetPinIcon,
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
+                                    color: primary500,
                                     size: 20,
                                   ),
                                   kHorizontalPaddingMedium,
                                   LMTextView(
                                     text: "Pinned Post",
-                                    textStyle: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                    ),
+                                    textStyle: TextStyle(color: primary500),
                                   )
                                 ],
                               ),
@@ -179,6 +175,10 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                         return LMPostHeader(
                           user: widget.user,
                           isFeed: widget.isFeed,
+                          profilePicture: LMProfilePicture(
+                            fallbackText: widget.user.name,
+                            backgroundColor: kPrimaryColor,
+                          ),
                           onProfileTap: () {
                             if (widget.user.sdkClientInfo != null) {
                               locator<LikeMindsService>().routeToProfile(
@@ -212,55 +212,68 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                           menu: LMPostMenu(
                             menuItems: postDetails!.menuItems,
                             onSelected: (id) {
+                              FocusScope.of(context).unfocus();
                               if (id == postDeleteId) {
                                 // Delete post
                                 showDialog(
-                                    context: context,
-                                    builder: (childContext) =>
-                                        deleteConfirmationDialog(
-                                          childContext,
-                                          title: 'Delete Post',
-                                          userId: postDetails!.userId,
-                                          content:
-                                              'Are you sure you want to delete this post. This action can not be reversed.',
-                                          action: (String reason) async {
-                                            Navigator.of(childContext).pop();
-                                            final res = await locator<
-                                                    LikeMindsService>()
+                                  context: context,
+                                  builder: (childContext) {
+                                    FocusScope.of(context).unfocus();
+                                    return deleteConfirmationDialog(
+                                      childContext,
+                                      title: 'Delete Post',
+                                      userId: postDetails!.userId,
+                                      content:
+                                          'Are you sure you want to delete this post. This action can not be reversed.',
+                                      action: (String reason) async {
+                                        Navigator.of(childContext).pop();
+                                        final res =
+                                            await locator<LikeMindsService>()
                                                 .getMemberState();
 
-                                            String? postType = getPostType(
-                                                postDetails!.attachments?.first
+                                        String? postType =
+                                            postDetails!.attachments == null ||
+                                                    postDetails!
+                                                        .attachments!.isEmpty
+                                                ? 'text'
+                                                : getPostType(postDetails!
+                                                        .attachments
+                                                        ?.first
                                                         .attachmentType ??
                                                     0);
-                                            //Implement delete post analytics tracking
-                                            LMAnalytics.get().track(
-                                              AnalyticsKeys.postDeleted,
-                                              {
-                                                "user_state": res.state == 1
-                                                    ? "CM"
-                                                    : "member",
-                                                "post_id": postDetails!.id,
-                                                "user_id": postDetails!.userId,
-                                                "post_type": postType,
-                                              },
-                                            );
-                                            newPostBloc.add(
-                                              DeletePost(
-                                                postId: postDetails!.id,
-                                                reason: reason ?? 'Self Post',
-                                              ),
-                                            );
-                                            if (!widget.isFeed) {
-                                              Navigator.of(context).pop();
-                                            }
+                                        //Implement delete post analytics tracking
+                                        LMAnalytics.get().track(
+                                          AnalyticsKeys.postDeleted,
+                                          {
+                                            "user_state": res.state == 1
+                                                ? "CM"
+                                                : "member",
+                                            "post_id": postDetails!.id,
+                                            "user_id": postDetails!.userId,
+                                            "post_type": postType,
                                           },
-                                          actionText: 'Delete',
-                                        ));
+                                        );
+                                        newPostBloc.add(
+                                          DeletePost(
+                                            postId: postDetails!.id,
+                                            reason: reason ?? 'Self Post',
+                                          ),
+                                        );
+
+                                        widget.refresh(true);
+                                      },
+                                      actionText: 'Delete',
+                                    );
+                                  },
+                                );
                               } else if (id == postPinId || id == postUnpinId) {
-                                String? postType = getPostType(postDetails!
-                                        .attachments?.first.attachmentType ??
-                                    0);
+                                String? postType =
+                                    postDetails!.attachments == null ||
+                                            postDetails!.attachments!.isEmpty
+                                        ? 'text'
+                                        : getPostType(postDetails!.attachments
+                                                ?.first.attachmentType ??
+                                            0);
                                 if (isPinned!) {
                                   LMAnalytics.get()
                                       .track(AnalyticsKeys.postUnpinned, {
@@ -281,10 +294,13 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                     postId: postDetails!.id,
                                     isPinned: !isPinned!));
                               } else if (id == postEditId) {
-                                String? postType;
-                                postType = getPostType(postDetails!
-                                        .attachments?.first.attachmentType ??
-                                    0);
+                                String? postType =
+                                    postDetails!.attachments == null ||
+                                            postDetails!.attachments!.isEmpty
+                                        ? 'text'
+                                        : getPostType(postDetails!.attachments
+                                                ?.first.attachmentType ??
+                                            0);
                                 LMAnalytics.get()
                                     .track(AnalyticsKeys.postEdited, {
                                   "created_by_id": postDetails!.userId,
@@ -439,11 +455,10 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                             return LMTextButton(
                               text: const LMTextView(text: "Like"),
                               margin: 0,
-                              activeText: LMTextView(
+                              activeText: const LMTextView(
                                 text: "Like",
                                 textStyle: TextStyle(
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
+                                  color: primary500,
                                 ),
                               ),
                               onTap: () async {
@@ -494,11 +509,10 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                   }
                                 }
                               },
-                              icon: LMIcon(
+                              icon: const LMIcon(
                                 type: LMIconType.svg,
                                 assetPath: kAssetLikeIcon,
-                                color:
-                                    Theme.of(context).colorScheme.onSecondary,
+                                color: kSecondaryColor700,
                                 size: 20,
                                 boxPadding: 6,
                               ),
@@ -532,10 +546,10 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                             );
                           }
                         },
-                        icon: LMIcon(
+                        icon: const LMIcon(
                           type: LMIconType.svg,
                           assetPath: kAssetCommentIcon,
-                          color: Theme.of(context).colorScheme.onSecondary,
+                          color: kSecondaryColor700,
                           size: 20,
                           boxPadding: 6,
                         ),
@@ -545,19 +559,23 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                         text: const LMTextView(text: "Share"),
                         margin: 0,
                         onTap: () {
+                          String? postType = postDetails!.attachments == null ||
+                                  postDetails!.attachments!.isEmpty
+                              ? 'text'
+                              : getPostType(postDetails!
+                                      .attachments?.first.attachmentType ??
+                                  0);
                           LMAnalytics.get().track(AnalyticsKeys.postShared, {
                             "post_id": widget.post.id,
-                            "post_type": getPostType(
-                                widget.post.attachments?.first.attachmentType ??
-                                    0),
+                            "post_type": postType,
                             "user_id": user.userUniqueId,
                           });
                           SharePost().sharePost(widget.post.id);
                         },
-                        icon: LMIcon(
+                        icon: const LMIcon(
                           type: LMIconType.svg,
                           assetPath: kAssetShareIcon,
-                          color: Theme.of(context).colorScheme.onSecondary,
+                          color: kSecondaryColor700,
                           size: 20,
                           boxPadding: 6,
                         ),

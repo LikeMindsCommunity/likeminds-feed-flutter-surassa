@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class NavigationService {
-  GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  GlobalKey<NavigatorState> navigatorKey;
+
+  NavigationService({required this.navigatorKey});
 
   bool checkNullState() {
     if (navigatorKey.currentState == null) {

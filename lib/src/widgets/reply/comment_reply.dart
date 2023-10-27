@@ -90,6 +90,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
             user: user,
             profilePicture: LMProfilePicture(
               imageUrl: user.imageUrl,
+              backgroundColor: kPrimaryColor,
               fallbackText: user.name,
               onTap: () {
                 if (user.sdkClientInfo != null) {

@@ -115,23 +115,24 @@ Dialog deleteConfirmationDialog(
                                                     ),
                                                     kVerticalPaddingXLarge,
                                                     Expanded(
-                                                      child: ListView.separated(
+                                                      child: SafeArea(
+                                                        child:
+                                                            ListView.separated(
                                                           separatorBuilder:
                                                               (context,
                                                                       index) =>
                                                                   Container(
-                                                                    margin: const EdgeInsets
-                                                                            .only(
-                                                                        left:
-                                                                            50),
-                                                                    child:
-                                                                        const Divider(
-                                                                      thickness:
-                                                                          0.5,
-                                                                      color:
-                                                                          kGrey3Color,
-                                                                    ),
-                                                                  ),
+                                                            margin:
+                                                                const EdgeInsets
+                                                                    .only(
+                                                                    left: 50),
+                                                            child:
+                                                                const Divider(
+                                                              thickness: 0.5,
+                                                              color:
+                                                                  kGrey3Color,
+                                                            ),
+                                                          ),
                                                           itemBuilder:
                                                               (context, index) {
                                                             return InkWell(
@@ -147,7 +148,9 @@ Dialog deleteConfirmationDialog(
                                                                     .transparent,
                                                                 child: Row(
                                                                   children: [
-                                                                    SizedBox(
+                                                                    Container(
+                                                                      color: Colors
+                                                                          .transparent,
                                                                       width: 35,
                                                                       child: Radio(
                                                                           value: reportTags[index]
@@ -170,8 +173,10 @@ Dialog deleteConfirmationDialog(
                                                               ),
                                                             );
                                                           },
-                                                          itemCount: reportTags
-                                                              .length),
+                                                          itemCount:
+                                                              reportTags.length,
+                                                        ),
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
