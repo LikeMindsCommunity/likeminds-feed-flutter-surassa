@@ -10,6 +10,7 @@ import 'package:likeminds_feed_ss_fl/src/blocs/comment/comment_replies/comment_r
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/toggle_like_comment/toggle_like_comment_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/models/post_view_model.dart';
+import 'package:likeminds_feed_ss_fl/src/services/bloc_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
@@ -83,7 +84,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   @override
   void initState() {
     super.initState();
-    newPostBloc = BlocProvider.of<NewPostBloc>(context);
+    newPostBloc = locator<BlocService>().newPostBlocProvider;
     updatePostDetails(context);
     right = checkCommentRights();
     _commentController = TextEditingController();
@@ -809,16 +810,30 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                   .colorScheme
                                                   .primary),
                                         )
-                                      : SSPostWidget(
-                                          post: postData!,
-                                          topics:
-                                              postDetailResponse!.topics ?? {},
-                                          user: postDetailResponse!.users![
-                                              postDetailResponse!
-                                                  .postReplies!.userId]!,
-                                          onTap: () {},
-                                          isFeed: false,
-                                          refresh: (bool isDeleted) async {},
+                                      : GestureDetector(
+                                          onTap: () {
+                                            closeOnScreenKeyboard();
+                                          },
+                                          behavior: HitTestBehavior.translucent,
+                                          child: Container(
+                                            color: Colors.transparent,
+                                            child: SSPostWidget(
+                                              post: postData!,
+                                              topics:
+                                                  postDetailResponse!.topics ??
+                                                      {},
+                                              user: postDetailResponse!.users![
+                                                  postDetailResponse!
+                                                      .postReplies!.userId]!,
+                                              onTap: () {},
+                                              isFeed: false,
+                                              refresh: (bool isDeleted) async {
+                                                if (isDeleted) {
+                                                  Navigator.pop(context);
+                                                }
+                                              },
+                                            ),
+                                          ),
                                         ),
                                 ),
                                 const SliverPadding(

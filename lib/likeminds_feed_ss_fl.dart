@@ -62,10 +62,12 @@ class LMFeed extends StatefulWidget {
   static void setupFeed({
     required String apiKey,
     LMSDKCallback? lmCallBack,
+    required GlobalKey<NavigatorState> navigatorKey,
   }) {
     setupLMFeed(
       lmCallBack,
       apiKey,
+      navigatorKey,
     );
   }
 
@@ -99,7 +101,7 @@ class _LMFeedState extends State<LMFeed> {
     super.initState();
     networkConnectivity = NetworkConnectivity.instance;
     networkConnectivity.initialise();
-    loadSvgIntoCache();
+
     isProd = prodFlag;
     userId = widget.userId!.isEmpty
         ? isProd
@@ -179,43 +181,40 @@ class _LMFeedState extends State<LMFeed> {
                     locator<LikeMindsService>().getCommunityConfigurations();
 
                     LMNotificationHandler.instance.registerDevice(user!.id);
-                    return BlocProvider(
-                      create: (context) => NewPostBloc(),
-                      child: MaterialApp(
-                        debugShowCheckedModeBanner: !isProd,
-                        navigatorKey: locator<NavigationService>().navigatorKey,
-                        theme: ThemeData.from(
-                          colorScheme: ColorScheme.fromSeed(
-                            seedColor: kPrimaryColor,
-                            primary: kPrimaryColor,
-                            secondary: const Color.fromARGB(255, 70, 102, 246),
-                            onSecondary: kSecondaryColor700,
-                          ),
+                    return MaterialApp(
+                      debugShowCheckedModeBanner: !isProd,
+                      navigatorKey: locator<NavigationService>().navigatorKey,
+                      theme: ThemeData.from(
+                        colorScheme: ColorScheme.fromSeed(
+                          seedColor: kPrimaryColor,
+                          primary: kPrimaryColor,
+                          secondary: const Color.fromARGB(255, 70, 102, 246),
+                          onSecondary: kSecondaryColor700,
                         ),
-                        title: 'LM Feed',
-                        home: FutureBuilder(
-                          future: locator<LikeMindsService>().getMemberState(),
-                          initialData: null,
-                          builder:
-                              (BuildContext context, AsyncSnapshot snapshot) {
-                            if (snapshot.hasData) {
-                              return UniversalFeedScreen(
-                                openChatCallback: widget.openChatCallback,
-                              );
-                            }
-
-                            return Container(
-                              height: MediaQuery.of(context).size.height,
-                              width: MediaQuery.of(context).size.width,
-                              color: kBackgroundColor,
-                              child: const Center(
-                                child: LMLoader(
-                                  isPrimary: true,
-                                ),
-                              ),
+                      ),
+                      title: 'LM Feed',
+                      home: FutureBuilder(
+                        future: locator<LikeMindsService>().getMemberState(),
+                        initialData: null,
+                        builder:
+                            (BuildContext context, AsyncSnapshot snapshot) {
+                          if (snapshot.hasData) {
+                            return UniversalFeedScreen(
+                              openChatCallback: widget.openChatCallback,
                             );
-                          },
-                        ),
+                          }
+
+                          return Container(
+                            height: MediaQuery.of(context).size.height,
+                            width: MediaQuery.of(context).size.width,
+                            color: kBackgroundColor,
+                            child: const Center(
+                              child: LMLoader(
+                                isPrimary: true,
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     );
                   } else {}

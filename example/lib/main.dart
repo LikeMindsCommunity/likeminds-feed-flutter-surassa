@@ -31,8 +31,10 @@ void main() async {
   ]);
   await setupNotifications();
   LMFeed.setupFeed(
-      apiKey: debug ? CredsDev.apiKey : CredsProd.apiKey,
-      lmCallBack: LikeMindsCallback());
+    apiKey: debug ? CredsDev.apiKey : CredsProd.apiKey,
+    lmCallBack: LikeMindsCallback(),
+    navigatorKey: rootNavigatorKey,
+  );
   runApp(const MyApp());
 }
 
