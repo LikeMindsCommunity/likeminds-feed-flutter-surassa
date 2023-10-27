@@ -188,7 +188,7 @@ class _LMFeedState extends State<LMFeed> {
                         colorScheme: ColorScheme.fromSeed(
                           seedColor: kPrimaryColor,
                           primary: kPrimaryColor,
-                          secondary: const Color.fromARGB(255, 70, 102, 246),
+                          secondary: primary500,
                           onSecondary: kSecondaryColor700,
                         ),
                       ),

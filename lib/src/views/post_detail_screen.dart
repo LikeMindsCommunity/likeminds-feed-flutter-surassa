@@ -436,10 +436,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                     }),
                                 Container(
                                   decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary
-                                          .withOpacity(0.04),
+                                      color: kPrimaryColor.withOpacity(0.04),
                                       borderRadius: BorderRadius.circular(24)),
                                   margin: const EdgeInsets.symmetric(
                                       horizontal: 8.0),
@@ -547,7 +544,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                         textStyle:
                                                                             TextStyle(
                                                                           color: right
-                                                                              ? Theme.of(context).colorScheme.primary
+                                                                              ? kPrimaryColor
                                                                               : Colors.transparent,
                                                                           fontSize:
                                                                               12.5,
@@ -654,16 +651,18 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                       height:
                                                                           18,
                                                                       text:
-                                                                          LMTextView(
+                                                                          const LMTextView(
                                                                         text:
                                                                             "Post",
                                                                         textAlign:
                                                                             TextAlign.center,
-                                                                        textStyle: TextStyle(
-                                                                            fontSize:
-                                                                                12.5,
-                                                                            color:
-                                                                                Theme.of(context).colorScheme.primary),
+                                                                        textStyle:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              12.5,
+                                                                          color:
+                                                                              kPrimaryColor,
+                                                                        ),
                                                                       ),
                                                                       onTap:
                                                                           () {
@@ -725,10 +724,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
             backgroundColor: kBackgroundColor,
             appBar: AppBar(
               leading: LMIconButton(
-                icon: LMIcon(
+                icon: const LMIcon(
                   type: LMIconType.icon,
                   icon: Icons.arrow_back_ios,
-                  color: Theme.of(context).primaryColor,
+                  color: kPrimaryColor,
                   size: 28,
                 ),
                 onTap: (active) {
@@ -804,11 +803,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                     padding: EdgeInsets.only(top: 16)),
                                 SliverToBoxAdapter(
                                   child: postData == null
-                                      ? Center(
+                                      ? const Center(
                                           child: CircularProgressIndicator(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary),
+                                            color: kPrimaryColor,
+                                          ),
                                         )
                                       : GestureDetector(
                                           onTap: () {
@@ -992,18 +990,19 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                     .userId]!
                                                                 .imageUrl,
                                                         size: 36,
+                                                        backgroundColor:
+                                                            kPrimaryColor,
                                                       ),
                                                       subtitleText: LMTextView(
                                                         text:
                                                             "@${postDetailResponse!.users![item.userId]!.name.toLowerCase().split(' ').join()} · ${timeago.format(item.createdAt)}",
-                                                        textStyle: TextStyle(
+                                                        textStyle:
+                                                            const TextStyle(
                                                           fontSize: 12,
                                                           fontWeight:
                                                               FontWeight.w400,
                                                           color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .onSecondary,
+                                                              kSecondaryColor700,
                                                         ),
                                                       ),
                                                       actionsPadding:
@@ -1020,12 +1019,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                         1
                                                                     ? "1 Like"
                                                                     : "${item.likesCount} Likes",
-                                                            textStyle: TextStyle(
-                                                                color: Theme.of(
-                                                                        context)
-                                                                    .colorScheme
-                                                                    .onSecondary,
-                                                                fontSize: 12),
+                                                            textStyle:
+                                                                const TextStyle(
+                                                                    color:
+                                                                        kSecondaryColor700,
+                                                                    fontSize:
+                                                                        12),
                                                           ),
                                                           activeText:
                                                               LMTextView(
@@ -1036,12 +1035,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                         1
                                                                     ? "1 Like"
                                                                     : "${item.likesCount} Likes",
-                                                            textStyle: TextStyle(
-                                                                color: Theme.of(
-                                                                        context)
-                                                                    .colorScheme
-                                                                    .primary,
-                                                                fontSize: 12),
+                                                            textStyle:
+                                                                const TextStyle(
+                                                                    color:
+                                                                        kPrimaryColor,
+                                                                    fontSize:
+                                                                        12),
                                                           ),
                                                           onTap: () {
                                                             _toggleLikeCommentBloc
@@ -1143,10 +1142,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                       text:
                                                                           "${item.repliesCount} ${item.repliesCount > 1 ? 'Replies' : 'Reply'}",
                                                                       textStyle:
-                                                                          TextStyle(
-                                                                        color: Theme.of(context)
-                                                                            .colorScheme
-                                                                            .primary,
+                                                                          const TextStyle(
+                                                                        color:
+                                                                            kPrimaryColor,
                                                                       ),
                                                                     ),
                                                                   )

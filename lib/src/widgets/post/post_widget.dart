@@ -147,25 +147,20 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                   ValueListenableBuilder(
                     valueListenable: rebuildPostWidget,
                     builder: (context, _, __) => isPinned!
-                        ? Column(
+                        ? const Column(
                             children: [
                               Row(
                                 children: [
                                   LMIcon(
                                     type: LMIconType.svg,
                                     assetPath: kAssetPinIcon,
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
+                                    color: primary500,
                                     size: 20,
                                   ),
                                   kHorizontalPaddingMedium,
                                   LMTextView(
                                     text: "Pinned Post",
-                                    textStyle: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                    ),
+                                    textStyle: TextStyle(color: primary500),
                                   )
                                 ],
                               ),
@@ -180,6 +175,10 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                         return LMPostHeader(
                           user: widget.user,
                           isFeed: widget.isFeed,
+                          profilePicture: LMProfilePicture(
+                            fallbackText: widget.user.name,
+                            backgroundColor: kPrimaryColor,
+                          ),
                           onProfileTap: () {
                             if (widget.user.sdkClientInfo != null) {
                               locator<LikeMindsService>().routeToProfile(
@@ -456,11 +455,10 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                             return LMTextButton(
                               text: const LMTextView(text: "Like"),
                               margin: 0,
-                              activeText: LMTextView(
+                              activeText: const LMTextView(
                                 text: "Like",
                                 textStyle: TextStyle(
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
+                                  color: primary500,
                                 ),
                               ),
                               onTap: () async {
@@ -511,11 +509,10 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                   }
                                 }
                               },
-                              icon: LMIcon(
+                              icon: const LMIcon(
                                 type: LMIconType.svg,
                                 assetPath: kAssetLikeIcon,
-                                color:
-                                    Theme.of(context).colorScheme.onSecondary,
+                                color: kSecondaryColor700,
                                 size: 20,
                                 boxPadding: 6,
                               ),
@@ -549,10 +546,10 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                             );
                           }
                         },
-                        icon: LMIcon(
+                        icon: const LMIcon(
                           type: LMIconType.svg,
                           assetPath: kAssetCommentIcon,
-                          color: Theme.of(context).colorScheme.onSecondary,
+                          color: kSecondaryColor700,
                           size: 20,
                           boxPadding: 6,
                         ),
@@ -575,10 +572,10 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                           });
                           SharePost().sharePost(widget.post.id);
                         },
-                        icon: LMIcon(
+                        icon: const LMIcon(
                           type: LMIconType.svg,
                           assetPath: kAssetShareIcon,
-                          color: Theme.of(context).colorScheme.onSecondary,
+                          color: kSecondaryColor700,
                           size: 20,
                           boxPadding: 6,
                         ),

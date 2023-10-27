@@ -90,14 +90,16 @@ class _CredScreenState extends State<CredScreen> {
 
         // TODO: add api key to the DeepLinkRequest
         // TODO: add user id and user name of logged in user
-        SharePost().parseDeepLink((DeepLinkRequestBuilder()
-              ..apiKey(SharePost.apiKey)
-              ..callback(LikeMindsCallback())
-              ..isGuest(false)
-              ..link(initialLink)
-              ..userName("Test User")
-              ..userUniqueId(userId ?? "Test-User-Id"))
-            .build());
+        SharePost().parseDeepLink(
+            (DeepLinkRequestBuilder()
+                  ..apiKey(SharePost.apiKey)
+                  ..callback(LikeMindsCallback())
+                  ..isGuest(false)
+                  ..link(initialLink)
+                  ..userName("Test User")
+                  ..userUniqueId(userId ?? "Test-User-Id"))
+                .build(),
+            context);
       }
 
       // Subscribe to link changes
@@ -109,14 +111,16 @@ class _CredScreenState extends State<CredScreen> {
           debugPrint('Received deep link: $link');
           // TODO: add api key to the DeepLinkRequest
           // TODO: add user id and user name of logged in user
-          SharePost().parseDeepLink((DeepLinkRequestBuilder()
-                ..apiKey(SharePost.apiKey)
-                ..isGuest(false)
-                ..callback(LikeMindsCallback())
-                ..link(link)
-                ..userName("Test User")
-                ..userUniqueId(userId ?? "Test-User-Id"))
-              .build());
+          SharePost().parseDeepLink(
+              (DeepLinkRequestBuilder()
+                    ..apiKey(SharePost.apiKey)
+                    ..isGuest(false)
+                    ..callback(LikeMindsCallback())
+                    ..link(link)
+                    ..userName("Test User")
+                    ..userUniqueId(userId ?? "Test-User-Id"))
+                  .build(),
+              context);
         }
       }, onError: (err) {
         // Handle exception by warning the user their action did not succeed
