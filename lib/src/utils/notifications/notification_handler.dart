@@ -90,6 +90,8 @@ class LMNotificationHandler {
     Map<String, String> queryParams = {};
     String host = "";
 
+    LMAnalytics.get().track(AnalyticsKeys.notificationClicked, {});
+
     // Only notifications with data payload are handled
     if (message.data.isNotEmpty) {
       final Map<String, dynamic> notifData = message.data;
@@ -118,10 +120,11 @@ class LMNotificationHandler {
       LMAnalytics.get().track(AnalyticsKeys.commentListOpen, {
         'postId': postId,
       });
-      locator<NavigationService>()
-          .navigateTo(MaterialPageRoute(builder: (context) {
-        return PostDetailScreen(postId: postId);
-      }));
+      locator<NavigationService>().navigateTo(MaterialPageRoute(
+        builder: (context) {
+          return PostDetailScreen(postId: postId);
+        },
+      ));
     }
   }
 
@@ -172,6 +175,7 @@ class LMNotificationHandler {
         position: NotificationPosition.top,
         slideDismissDirection: DismissDirection.horizontal,
       );
+      LMAnalytics.get().track(AnalyticsKeys.notificationReceived, {});
     }
   }
 }

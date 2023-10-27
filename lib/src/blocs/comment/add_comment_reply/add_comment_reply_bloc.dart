@@ -86,7 +86,7 @@ class AddCommentReplyBloc
             );
             LMAnalytics.get().track(AnalyticsKeys.commentDeleted, {
               "post_id": event.deleteCommentRequest.postId,
-              "comment_reply_id": event.deleteCommentRequest.commentId,
+              "comment_id": event.deleteCommentRequest.commentId,
             });
             emit(
               CommentDeleted(

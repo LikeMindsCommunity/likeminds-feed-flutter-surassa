@@ -17,7 +17,7 @@ dependencies:
   envied:
   url_launcher:
   shared_preferences:
-  simple_s3:
+  simple_s3: 0.3.2
   flutter_bloc:
   firebase_core:
   firebase_messaging:
@@ -47,7 +47,7 @@ dependencies:
   likeminds_feed_ui_fl:
     path: ../LikeMinds-Flutter-Feed-UI
 
-  likeminds_feed: 1.5.0
+  likeminds_feed: 1.6.1
   #  path: ../LikeMinds-Flutter-Feed-SDK
 
 dependency_override:
