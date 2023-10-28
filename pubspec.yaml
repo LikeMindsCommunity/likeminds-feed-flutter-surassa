@@ -1,6 +1,6 @@
 name: likeminds_feed_ss_fl
 description: A new Flutter package project.
-version: 1.1.2
+version: 1.2.0
 publish_to: none
 homepage: "https://likeminds.community/"
 
@@ -17,7 +17,7 @@ dependencies:
   envied:
   url_launcher:
   shared_preferences:
-  simple_s3:
+  simple_s3: 0.3.2
   flutter_bloc:
   firebase_core:
   firebase_messaging:
@@ -47,7 +47,7 @@ dependencies:
   likeminds_feed_ui_fl:
     path: ../LikeMinds-Flutter-Feed-UI
 
-  likeminds_feed: 1.4.1
+  likeminds_feed: 1.6.1
   #  path: ../LikeMinds-Flutter-Feed-SDK
 
 dependency_override:

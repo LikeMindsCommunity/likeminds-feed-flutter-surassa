@@ -35,4 +35,9 @@ class LikeMindsCallback implements LMSDKCallback {
   void profileRouteCallback({required String lmUserId}) {
     print("LM User ID caught in callback : $lmUserId");
   }
+
+  @override
+  void routeToCompanyCallback({required String companyId}) {
+    print("Company ID caught in callback : $companyId");
+  }
 }

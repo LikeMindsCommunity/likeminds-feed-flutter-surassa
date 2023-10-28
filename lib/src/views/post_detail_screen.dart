@@ -10,6 +10,7 @@ import 'package:likeminds_feed_ss_fl/src/blocs/comment/comment_replies/comment_r
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/toggle_like_comment/toggle_like_comment_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/models/post_view_model.dart';
+import 'package:likeminds_feed_ss_fl/src/services/bloc_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
@@ -64,6 +65,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   String? selectedCommentId;
   String? selectedUsername;
   String? selectedReplyId;
+  String? selectedUserId;
 
   @override
   void dispose() {
@@ -82,10 +84,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   @override
   void initState() {
     super.initState();
-    LMAnalytics.get().track(AnalyticsKeys.commentListOpen, {
-      'postId': widget.postId,
-    });
-    newPostBloc = BlocProvider.of<NewPostBloc>(context);
+    newPostBloc = locator<BlocService>().newPostBlocProvider;
     updatePostDetails(context);
     right = checkCommentRights();
     _commentController = TextEditingController();
@@ -158,10 +157,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     rebuildReplyWidget.value = !rebuildReplyWidget.value;
   }
 
-  selectCommentToReply(String commentId, String username) {
+  selectCommentToReply(String commentId, String username, String userId) {
     selectedCommentId = commentId;
     debugPrint(commentId);
     selectedUsername = username;
+    selectedUserId = userId;
     isReplying = true;
     isEditing = false;
     openOnScreenKeyboard();
@@ -171,6 +171,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   deselectCommentToReply() {
     selectedCommentId = null;
     selectedUsername = null;
+    selectedUserId = null;
     isReplying = false;
     closeOnScreenKeyboard();
     _commentController?.clear();
@@ -435,10 +436,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                     }),
                                 Container(
                                   decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary
-                                          .withOpacity(0.04),
+                                      color: kPrimaryColor.withOpacity(0.04),
                                       borderRadius: BorderRadius.circular(24)),
                                   margin: const EdgeInsets.symmetric(
                                       horizontal: 8.0),
@@ -546,7 +544,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                         textStyle:
                                                                             TextStyle(
                                                                           color: right
-                                                                              ? Theme.of(context).colorScheme.primary
+                                                                              ? kPrimaryColor
                                                                               : Colors.transparent,
                                                                           fontSize:
                                                                               12.5,
@@ -592,12 +590,16 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                             );
                                                                           }
                                                                         } else {
-                                                                          _addCommentReplyBloc.add(AddCommentReply(
-                                                                              addCommentRequest: (AddCommentReplyRequestBuilder()
-                                                                                    ..postId(widget.postId)
-                                                                                    ..text(commentText)
-                                                                                    ..commentId(selectedCommentId!))
-                                                                                  .build()));
+                                                                          _addCommentReplyBloc
+                                                                              .add(AddCommentReply(
+                                                                            addCommentRequest: (AddCommentReplyRequestBuilder()
+                                                                                  ..postId(widget.postId)
+                                                                                  ..text(commentText)
+                                                                                  ..commentId(selectedCommentId!))
+                                                                                .build(),
+                                                                            userId:
+                                                                                selectedUserId ?? '',
+                                                                          ));
 
                                                                           _commentController
                                                                               ?.clear();
@@ -649,16 +651,18 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                       height:
                                                                           18,
                                                                       text:
-                                                                          LMTextView(
+                                                                          const LMTextView(
                                                                         text:
                                                                             "Post",
                                                                         textAlign:
                                                                             TextAlign.center,
-                                                                        textStyle: TextStyle(
-                                                                            fontSize:
-                                                                                12.5,
-                                                                            color:
-                                                                                Theme.of(context).colorScheme.primary),
+                                                                        textStyle:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              12.5,
+                                                                          color:
+                                                                              kPrimaryColor,
+                                                                        ),
                                                                       ),
                                                                       onTap:
                                                                           () {
@@ -720,10 +724,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
             backgroundColor: kBackgroundColor,
             appBar: AppBar(
               leading: LMIconButton(
-                icon: LMIcon(
+                icon: const LMIcon(
                   type: LMIconType.icon,
                   icon: Icons.arrow_back_ios,
-                  color: Theme.of(context).primaryColor,
+                  color: kPrimaryColor,
                   size: 28,
                 ),
                 onTap: (active) {
@@ -799,22 +803,35 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                     padding: EdgeInsets.only(top: 16)),
                                 SliverToBoxAdapter(
                                   child: postData == null
-                                      ? Center(
+                                      ? const Center(
                                           child: CircularProgressIndicator(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary),
+                                            color: kPrimaryColor,
+                                          ),
                                         )
-                                      : SSPostWidget(
-                                          post: postData!,
-                                          topics:
-                                              postDetailResponse!.topics ?? {},
-                                          user: postDetailResponse!.users![
-                                              postDetailResponse!
-                                                  .postReplies!.userId]!,
-                                          onTap: () {},
-                                          isFeed: false,
-                                          refresh: (bool isDeleted) async {},
+                                      : GestureDetector(
+                                          onTap: () {
+                                            closeOnScreenKeyboard();
+                                          },
+                                          behavior: HitTestBehavior.translucent,
+                                          child: Container(
+                                            color: Colors.transparent,
+                                            child: SSPostWidget(
+                                              post: postData!,
+                                              topics:
+                                                  postDetailResponse!.topics ??
+                                                      {},
+                                              user: postDetailResponse!.users![
+                                                  postDetailResponse!
+                                                      .postReplies!.userId]!,
+                                              onTap: () {},
+                                              isFeed: false,
+                                              refresh: (bool isDeleted) async {
+                                                if (isDeleted) {
+                                                  Navigator.pop(context);
+                                                }
+                                              },
+                                            ),
+                                          ),
                                         ),
                                 ),
                                 const SliverPadding(
@@ -883,7 +900,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                 userId);
                                                       },
                                                       onMenuTap: (id) {
-                                                        if (id == 6) {
+                                                        if (id ==
+                                                            commentDeleteId) {
                                                           deselectCommentToEdit();
                                                           deselectCommentToReply();
                                                           // Delete post
@@ -926,7 +944,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                         actionText:
                                                                             'Delete',
                                                                       ));
-                                                        } else if (id == 8) {
+                                                        } else if (id ==
+                                                            commentEditId) {
                                                           debugPrint(
                                                               'Editing functionality');
                                                           _addCommentReplyBloc.add(
@@ -971,18 +990,19 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                     .userId]!
                                                                 .imageUrl,
                                                         size: 36,
+                                                        backgroundColor:
+                                                            kPrimaryColor,
                                                       ),
                                                       subtitleText: LMTextView(
                                                         text:
                                                             "@${postDetailResponse!.users![item.userId]!.name.toLowerCase().split(' ').join()} · ${timeago.format(item.createdAt)}",
-                                                        textStyle: TextStyle(
+                                                        textStyle:
+                                                            const TextStyle(
                                                           fontSize: 12,
                                                           fontWeight:
                                                               FontWeight.w400,
                                                           color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .onSecondary,
+                                                              kSecondaryColor700,
                                                         ),
                                                       ),
                                                       actionsPadding:
@@ -999,12 +1019,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                         1
                                                                     ? "1 Like"
                                                                     : "${item.likesCount} Likes",
-                                                            textStyle: TextStyle(
-                                                                color: Theme.of(
-                                                                        context)
-                                                                    .colorScheme
-                                                                    .onSecondary,
-                                                                fontSize: 12),
+                                                            textStyle:
+                                                                const TextStyle(
+                                                                    color:
+                                                                        kSecondaryColor700,
+                                                                    fontSize:
+                                                                        12),
                                                           ),
                                                           activeText:
                                                               LMTextView(
@@ -1015,12 +1035,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                         1
                                                                     ? "1 Like"
                                                                     : "${item.likesCount} Likes",
-                                                            textStyle: TextStyle(
-                                                                color: Theme.of(
-                                                                        context)
-                                                                    .colorScheme
-                                                                    .primary,
-                                                                fontSize: 12),
+                                                            textStyle:
+                                                                const TextStyle(
+                                                                    color:
+                                                                        kPrimaryColor,
+                                                                    fontSize:
+                                                                        12),
                                                           ),
                                                           onTap: () {
                                                             _toggleLikeCommentBloc
@@ -1088,6 +1108,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                       .users![item
                                                                           .userId]!
                                                                       .name,
+                                                                  item.userId,
                                                                 );
                                                               },
                                                               icon:
@@ -1121,10 +1142,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                       text:
                                                                           "${item.repliesCount} ${item.repliesCount > 1 ? 'Replies' : 'Reply'}",
                                                                       textStyle:
-                                                                          TextStyle(
-                                                                        color: Theme.of(context)
-                                                                            .colorScheme
-                                                                            .primary,
+                                                                          const TextStyle(
+                                                                        color:
+                                                                            kPrimaryColor,
                                                                       ),
                                                                     ),
                                                                   )
@@ -1135,8 +1155,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                     );
                                                   }),
                                                   CommentReplyWidget(
-                                                    onReply:
-                                                        selectCommentToReply,
                                                     refresh: () {
                                                       _pagingController
                                                           .refresh();

@@ -11,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/services/bloc_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/analytics/analytics.dart';
@@ -86,7 +87,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
               ..pageSize(20)
               ..isEnabled(true))
             .build());
-    newPostBloc = BlocProvider.of<NewPostBloc>(context);
+    newPostBloc = locator<BlocService>().newPostBlocProvider;
     if (_focusNode.canRequestFocus) {
       _focusNode.requestFocus();
     }
@@ -98,6 +99,36 @@ class _NewPostScreenState extends State<NewPostScreen> {
   */
   void removeAttachmenetAtIndex(int index) {
     if (postMedia.isNotEmpty) {
+      MediaModel mediaToBeRemoved = postMedia[index];
+      if (mediaToBeRemoved.mediaType == MediaType.document) {
+        int docCount = 0;
+        for (var element in postMedia) {
+          if (element.mediaType == MediaType.document) {
+            docCount++;
+          }
+        }
+        LMAnalytics.get().track(
+            AnalyticsKeys.documentAttachedInPost, {'document_count': docCount});
+      } else if (mediaToBeRemoved.mediaType == MediaType.video) {
+        int videoCount = 0;
+        for (var element in postMedia) {
+          if (element.mediaType == MediaType.video) {
+            videoCount++;
+          }
+        }
+        LMAnalytics.get().track(
+            AnalyticsKeys.videoAttachedToPost, {'video_count': videoCount});
+      } else if (mediaToBeRemoved.mediaType == MediaType.image) {
+        int imageCount = 0;
+        for (var element in postMedia) {
+          if (element.mediaType == MediaType.image) {
+            imageCount++;
+          }
+        }
+        LMAnalytics.get().track(
+            AnalyticsKeys.imageAttachedToPost, {'image_count': imageCount});
+      }
+
       postMedia.removeAt(index);
       if (postMedia.isEmpty) {
         isDocumentPost = true;
@@ -115,6 +146,26 @@ class _NewPostScreenState extends State<NewPostScreen> {
       postMedia = <MediaModel>[...pickedMediaFiles];
     } else {
       postMedia.addAll(pickedMediaFiles);
+    }
+    if (pickedMediaFiles.isNotEmpty &&
+        pickedMediaFiles.first.mediaType == MediaType.document) {
+      int documentCount = 0;
+      for (var element in postMedia) {
+        if (element.mediaType == MediaType.document) {
+          documentCount++;
+        }
+      }
+      LMAnalytics.get().track(AnalyticsKeys.documentAttachedInPost,
+          {'document_count': documentCount});
+    } else {
+      int imageCount = 0;
+      for (var element in postMedia) {
+        if (element.mediaType == MediaType.image) {
+          imageCount++;
+        }
+      }
+      LMAnalytics.get().track(
+          AnalyticsKeys.imageAttachedToPost, {'image_count': imageCount});
     }
   }
 
@@ -162,7 +213,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
       });
     } else {
       if (postMedia.isEmpty) {
-        isDocumentPost = false;
+        isDocumentPost = true;
+        isMediaPost = true;
         showLinkPreview = true;
       }
       setState(() {
@@ -258,7 +310,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    newPostBloc = BlocProvider.of<NewPostBloc>(context);
+    newPostBloc = locator<BlocService>().newPostBlocProvider;
     Size screenSize = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () {
@@ -523,6 +575,15 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                       right: 5,
                                                       child: GestureDetector(
                                                         onTap: () {
+                                                          LMAnalytics.get()
+                                                              .track(
+                                                            AnalyticsKeys
+                                                                .linkAttachedInPost,
+                                                            {
+                                                              'link':
+                                                                  previewLink,
+                                                            },
+                                                          );
                                                           showLinkPreview =
                                                               false;
                                                           rebuildLinkPreview
@@ -729,6 +790,10 @@ class _NewPostScreenState extends State<NewPostScreen> {
 
                       result = TaggingHelper.encodeString(
                           _controller.text, userTags);
+
+                      sendPostCreationCompletedEvent(
+                          postMedia, userTags, selectedTopic);
+
                       newPostBloc!.add(
                         CreateNewPost(
                           postText: result!,
