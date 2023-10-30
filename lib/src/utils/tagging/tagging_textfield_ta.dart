@@ -15,7 +15,7 @@ class TaggingAheadTextField extends StatefulWidget {
   final TextEditingController controller;
   final InputDecoration? decoration;
   final Function(String)? onChange;
-  final int maxLines;
+  final int? maxLines;
   final int minLines;
 
   const TaggingAheadTextField({
@@ -26,7 +26,7 @@ class TaggingAheadTextField extends StatefulWidget {
     required this.focusNode,
     this.decoration,
     required this.onChange,
-    this.maxLines = 200,
+    this.maxLines,
     this.minLines = 1,
   });
 
@@ -118,6 +118,7 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
       padding: const EdgeInsets.symmetric(horizontal: 6.0),
       child: TypeAheadField<UserTag>(
         onTagTap: (p) {},
+
         suggestionsBoxController: _suggestionsBoxController,
         suggestionsBoxDecoration: SuggestionsBoxDecoration(
           elevation: 4,
