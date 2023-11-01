@@ -5,9 +5,22 @@ import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 
 class LMAnalytics {
   static LMAnalytics? _instance;
+
   static LMAnalytics get() => _instance ??= LMAnalytics._();
 
+  LMSDKCallback? sdkCallback;
+
   LMAnalytics._();
+
+  void initialize() {
+    sdkCallback =
+        DIService.getIt.isRegistered<LMSDKCallback>(instanceName: "LMCallback")
+            ? DIService.getIt.get<LMSDKCallback>(
+                instanceName: "LMCallback",
+              )
+            : null;
+    debugPrint("Analytics initialized");
+  }
 
   void logEvent(String eventKey, Map<String, dynamic> propertiesMap) {
     debugPrint('Event: $eventKey');
@@ -16,7 +29,7 @@ class LMAnalytics {
 
   void track(String eventKey, Map<String, dynamic> propertiesMap) {
     logEvent(eventKey, propertiesMap);
-    // TODO: Add your analytics logic here
+    sdkCallback?.eventFiredCallback(eventKey, propertiesMap);
   }
 }
 
