@@ -30,11 +30,11 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                    android:scheme="feedsuraasa"
-                    android:host="www.feedsuraasa.com" />
+                    android:scheme="suraasalearn"
+                    android:host="www.suraasa.com" />
                 <data
                     android:scheme="https"
-                    android:host="feedsuraasa.com" />
+                    android:host="suraasa.com" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.

@@ -60,7 +60,7 @@
 			<string>com.suraasa.likeminds.dev</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>feedsuraasa</string>
+				<string>suraasalearn</string>
 			</array>
 		</dict>
 	</array>
