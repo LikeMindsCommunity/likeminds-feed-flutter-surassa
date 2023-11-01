@@ -454,7 +454,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                     left: 16.0,
                     right: 16.0,
                     top: 72.0,
-                    bottom: 40.0,
+                    bottom: 130.0,
                   ),
                   child: CustomScrollView(
                     slivers: [
@@ -511,12 +511,14 @@ class _NewPostScreenState extends State<NewPostScreen> {
                       ),
                       if (isUploading)
                         const SliverToBoxAdapter(
-                          child:  Padding(
+                          child: Padding(
                             padding: EdgeInsets.only(
                               top: kPaddingMedium,
                               bottom: kPaddingLarge,
                             ),
-                            child: LMLoader(),
+                            child: Center(
+                              child: LMLoader(),
+                            ),
                           ),
                         ),
                       SliverToBoxAdapter(
@@ -536,7 +538,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                           launchUrl(
                                             Uri.parse(
                                                 linkModel?.ogTags?.url ?? ''),
-                                            mode: LaunchMode.externalApplication,
+                                            mode:
+                                                LaunchMode.externalApplication,
                                           );
                                         },
                                         border: Border.all(
@@ -544,7 +547,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                           color: kSecondary100,
                                         ),
                                         title: LMTextView(
-                                          text: linkModel?.ogTags?.title ?? "--",
+                                          text:
+                                              linkModel?.ogTags?.title ?? "--",
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           textStyle: const TextStyle(
@@ -554,8 +558,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                           ),
                                         ),
                                         subtitle: LMTextView(
-                                          text: linkModel?.ogTags?.description ??
-                                              "--",
+                                          text:
+                                              linkModel?.ogTags?.description ??
+                                                  "--",
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           textStyle: const TextStyle(
@@ -589,11 +594,13 @@ class _NewPostScreenState extends State<NewPostScreen> {
                       ),
                       if (postMedia.isNotEmpty)
                         postMedia.first.mediaType == MediaType.document
-                            ? SliverToBoxAdapter(child: getPostDocument(screenSize.width))
+                            ? SliverToBoxAdapter(
+                                child: getPostDocument(screenSize.width))
                             : SliverToBoxAdapter(
-                              child: Container(
+                                child: Container(
                                   padding: const EdgeInsets.only(
                                     top: kPaddingSmall,
+                                    left: 44.0,
                                   ),
                                   height: 200,
                                   alignment: Alignment.center,
@@ -621,22 +628,24 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                       ? ClipRRect(
                                                           borderRadius:
                                                               const BorderRadius
-                                                                  .all(
-                                                                  Radius.circular(
-                                                                      12)),
+                                                                  .all(Radius
+                                                                      .circular(
+                                                                          12)),
                                                           child: Container(
                                                             height: 200,
                                                             width: 200,
                                                             color: Colors.black,
                                                             child: LMVideo(
                                                               videoFile:
-                                                                  postMedia[index]
+                                                                  postMedia[
+                                                                          index]
                                                                       .mediaFile!,
                                                               // height:
                                                               //     180,
-                                                              boxFit:
-                                                                  BoxFit.contain,
-                                                              showControls: false,
+                                                              boxFit: BoxFit
+                                                                  .contain,
+                                                              showControls:
+                                                                  false,
                                                               // width:
                                                               //     300,
                                                               borderRadius: 18,
@@ -646,9 +655,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                       : ClipRRect(
                                                           borderRadius:
                                                               const BorderRadius
-                                                                  .all(
-                                                                  Radius.circular(
-                                                                      12)),
+                                                                  .all(Radius
+                                                                      .circular(
+                                                                          12)),
                                                           child: Container(
                                                             height: 200,
                                                             width: 200,
@@ -658,11 +667,12 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                               //     180,
                                                               // width:
                                                               //     180,
-                                                              boxFit:
-                                                                  BoxFit.contain,
+                                                              boxFit: BoxFit
+                                                                  .contain,
                                                               borderRadius: 18,
                                                               imageFile:
-                                                                  postMedia[index]
+                                                                  postMedia[
+                                                                          index]
                                                                       .mediaFile!,
                                                             ),
                                                           ),
@@ -681,8 +691,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                             Shadow(
                                                               offset:
                                                                   Offset(1, 1),
-                                                              color:
-                                                                  Colors.black38,
+                                                              color: Colors
+                                                                  .black38,
                                                             )
                                                           ],
                                                           color: kWhiteColor
@@ -699,8 +709,10 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                     },
                                   ),
                                 ),
-                            ),
-                      const SliverToBoxAdapter(child: SizedBox(height: 55)),
+                              ),
+                      const SliverToBoxAdapter(
+                        child: kVerticalPaddingLarge,
+                      ),
                     ],
                   ),
                 ),
