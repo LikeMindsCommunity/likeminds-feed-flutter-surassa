@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 
 /// This class is used to implement the [LMSDKCallback] interface
@@ -9,9 +10,9 @@ class LikeMindsCallback implements LMSDKCallback {
   /// [propertiesMap] is the map of properties associated with the event
   @override
   void eventFiredCallback(String eventKey, Map<String, dynamic> propertiesMap) {
-    print("Main event fired callback in UI: $eventKey");
+    debugPrint("Main event fired callback in UI: $eventKey");
     propertiesMap.forEach((key, value) {
-      print("Key: $key, Value: $value");
+      debugPrint("Key: $key, Value: $value");
     });
   }
 
@@ -33,11 +34,11 @@ class LikeMindsCallback implements LMSDKCallback {
 
   @override
   void profileRouteCallback({required String lmUserId}) {
-    print("LM User ID caught in callback : $lmUserId");
+    debugPrint("LM User ID caught in callback : $lmUserId");
   }
 
   @override
   void routeToCompanyCallback({required String companyId}) {
-    print("Company ID caught in callback : $companyId");
+    debugPrint("Company ID caught in callback : $companyId");
   }
 }

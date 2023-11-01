@@ -14,7 +14,7 @@ class SharePost {
   static String userId = prodFlag ? CredsProd.botId : CredsDev.botId;
   static String apiKey = prodFlag ? CredsProd.apiKey : CredsDev.apiKey;
   // TODO: Add domain to your application
-  String domain = 'feedsuraasa://www.feedsuraasa.com';
+  String domain = 'suraasalearn://www.suraasa.com';
   // fetches the domain given by client at time of initialization of Feed
 
   // below function creates a link from domain and post id
