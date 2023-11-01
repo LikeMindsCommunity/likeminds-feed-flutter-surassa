@@ -85,6 +85,14 @@ abstract class ILikeMindsService {
 
   Future<GetCommunityConfigurationsResponse> getCommunityConfigurations();
 
+  Future<GetUserFeedResponse> getUserFeed(GetUserFeedRequest userFeedRequest);
+
+  Future<GetWidgetResponse> getWidgets(GetWidgetRequest request);
+
+  Future<GetProfileResponse> getProfile(GetProfileRequest request);
+
+  Future<EditProfileResponse> editProfile(EditProfileRequest request);
+
   void routeToProfile(String userId);
 }
 
@@ -310,6 +318,26 @@ class LikeMindsService implements ILikeMindsService {
   @override
   Future<GetTopicsResponse> getTopics(GetTopicsRequest request) {
     return _sdkApplication.getTopics(request);
+  }
+
+  @override
+  Future<GetUserFeedResponse> getUserFeed(GetUserFeedRequest userFeedRequest) {
+    return _sdkApplication.getUserFeed(userFeedRequest);
+  }
+
+  @override
+  Future<GetWidgetResponse> getWidgets(GetWidgetRequest request) {
+    return _sdkApplication.getWidgets(request);
+  }
+
+  @override
+  Future<GetProfileResponse> getProfile(GetProfileRequest request) {
+    return _sdkApplication.getProfile(request);
+  }
+
+  @override
+  Future<EditProfileResponse> editProfile(EditProfileRequest request) {
+    return _sdkApplication.editProfile(request);
   }
 
   @override
