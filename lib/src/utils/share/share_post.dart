@@ -45,17 +45,21 @@ class SharePost {
     }
   }
 
-  Future<DeepLinkResponse> handlePostDeepLink(DeepLinkRequest request, BuildContext context) async {
+  Future<DeepLinkResponse> handlePostDeepLink(
+    DeepLinkRequest request,
+    GlobalKey<NavigatorState> navigatorKey,
+  ) async {
     List secondPathSegment = request.link.split('post_id=');
     if (secondPathSegment.length > 1 && secondPathSegment[1] != null) {
       String postId = secondPathSegment[1];
-      await locator<LikeMindsService>().initiateUser((InitiateUserRequestBuilder()
-            ..apiKey(request.apiKey)
-            ..userId(request.userUniqueId)
-            ..userName(request.userName))
-          .build());
+      await locator<LikeMindsService>()
+          .initiateUser((InitiateUserRequestBuilder()
+                ..apiKey(request.apiKey)
+                ..userId(request.userUniqueId)
+                ..userName(request.userName))
+              .build());
 
-      Navigator.of(context).push(
+      navigatorKey.currentState!.push(
         MaterialPageRoute(
           builder: (context) => PostDetailScreen(postId: postId),
         ),
@@ -73,13 +77,15 @@ class SharePost {
     }
   }
 
-  Future<DeepLinkResponse> parseDeepLink(DeepLinkRequest request, BuildContext context) async {
+  Future<DeepLinkResponse> parseDeepLink(
+      DeepLinkRequest request, GlobalKey<NavigatorState> navigatorKey) async {
     if (Uri.parse(request.link).isAbsolute) {
       final firstPathSegment = getFirstPathSegment(request.link);
       if (firstPathSegment == "post") {
-        return handlePostDeepLink(request, context);
+        return handlePostDeepLink(request, navigatorKey);
       }
-      return DeepLinkResponse(success: false, errorMessage: 'URI not supported');
+      return DeepLinkResponse(
+          success: false, errorMessage: 'URI not supported');
     } else {
       return DeepLinkResponse(
         success: false,
