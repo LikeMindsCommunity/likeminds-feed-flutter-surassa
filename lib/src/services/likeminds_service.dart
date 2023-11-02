@@ -12,46 +12,87 @@ const _prodFlag = !bool.fromEnvironment('DEBUG');
 
 abstract class ILikeMindsService {
   Future<InitiateUserResponse> initiateUser(InitiateUserRequest request);
+
   Future<LogoutResponse> logout(LogoutRequest request);
+
   Future<MemberStateResponse> getMemberState();
+
   Future<GetFeedResponse?> getFeed(GetFeedRequest request);
+
   Future<GetFeedRoomResponse> getFeedRoom(GetFeedRoomRequest request);
+
   Future<GetFeedOfFeedRoomResponse> getFeedOfFeedRoom(
       GetFeedOfFeedRoomRequest request);
+
   Future<GetNotificationFeedResponse> getNotificationFeed(
       GetNotificationFeedRequest request);
+
   Future<GetUnreadNotificationCountResponse> getUnreadNotificationCount();
+
   Future<AddPostResponse> addPost(AddPostRequest request);
+
   Future<GetPostResponse> getPost(GetPostRequest request);
+
   Future<PostDetailResponse> getPostDetails(PostDetailRequest request);
+
   Future<GetPostLikesResponse> getPostLikes(GetPostLikesRequest request);
+
   Future<PinPostResponse> pinPost(PinPostRequest request);
+
   Future<SavePostResponse> savePost(SavePostRequest request);
+
   Future<EditPostResponse> editPost(EditPostRequest request);
+
   Future<GetCommentLikesResponse> getCommentLikes(
       GetCommentLikesRequest request);
+
   Future<DeletePostResponse> deletePost(DeletePostRequest request);
+
   Future<LikePostResponse> likePost(LikePostRequest request);
+
   Future<AddCommentResponse> addComment(AddCommentRequest request);
+
   Future<GetCommentResponse> getComment(GetCommentRequest request);
+
   Future<ToggleLikeCommentResponse> toggleLikeComment(
       ToggleLikeCommentRequest request);
+
   Future<DeleteCommentResponse> deleteComment(DeleteCommentRequest request);
+
   Future<EditCommentResponse> editComment(EditCommentRequest request);
+
   Future<AddCommentReplyResponse> addCommentReply(
       AddCommentReplyRequest request);
+
   Future<EditCommentReplyResponse> editCommentReply(
       EditCommentReplyRequest request);
+
   Future<String?> uploadFile(File file, String userUniqueId);
+
   Future<RegisterDeviceResponse> registerDevice(RegisterDeviceRequest request);
+
   Future<GetTaggingListResponse> getTaggingList(
       {required GetTaggingListRequest request});
+
   Future<DecodeUrlResponse> decodeUrl(DecodeUrlRequest request);
+
   Future<MarkReadNotificationResponse> markReadNotification(
       MarkReadNotificationRequest request);
+
   Future<GetDeleteReasonResponse> getReportTags(GetDeleteReasonRequest request);
+
   Future<GetTopicsResponse> getTopics(GetTopicsRequest request);
+
   Future<GetCommunityConfigurationsResponse> getCommunityConfigurations();
+
+  Future<GetUserFeedResponse> getUserFeed(GetUserFeedRequest userFeedRequest);
+
+  Future<GetWidgetResponse> getWidgets(GetWidgetRequest request);
+
+  Future<GetProfileResponse> getProfile(GetProfileRequest request);
+
+  Future<EditProfileResponse> editProfile(EditProfileRequest request);
+
   void routeToProfile(String userId);
 }
 
@@ -80,6 +121,7 @@ class LikeMindsService implements ILikeMindsService {
           ..apiKey(key)
           ..sdkCallback(sdkCallback))
         .build();
+    LMAnalytics.get().initialize();
   }
 
   @override
@@ -276,6 +318,26 @@ class LikeMindsService implements ILikeMindsService {
   @override
   Future<GetTopicsResponse> getTopics(GetTopicsRequest request) {
     return _sdkApplication.getTopics(request);
+  }
+
+  @override
+  Future<GetUserFeedResponse> getUserFeed(GetUserFeedRequest userFeedRequest) {
+    return _sdkApplication.getUserFeed(userFeedRequest);
+  }
+
+  @override
+  Future<GetWidgetResponse> getWidgets(GetWidgetRequest request) {
+    return _sdkApplication.getWidgets(request);
+  }
+
+  @override
+  Future<GetProfileResponse> getProfile(GetProfileRequest request) {
+    return _sdkApplication.getProfile(request);
+  }
+
+  @override
+  Future<EditProfileResponse> editProfile(EditProfileRequest request) {
+    return _sdkApplication.editProfile(request);
   }
 
   @override

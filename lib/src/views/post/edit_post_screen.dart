@@ -21,6 +21,7 @@ import 'package:url_launcher/url_launcher.dart';
 class EditPostScreen extends StatefulWidget {
   static const String route = '/edit_post_screen';
   final String postId;
+
   const EditPostScreen({
     super.key,
     required this.postId,
@@ -405,6 +406,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                           : Container(
                               padding: const EdgeInsets.only(
                                 top: kPaddingSmall,
+                                left: 44.0,
                               ),
                               height: 180,
                               alignment: Alignment.center,
