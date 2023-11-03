@@ -242,7 +242,10 @@ class _EditPostScreenState extends State<EditPostScreen> {
                   future: postFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
+                      return const Center(
+                          child: LMLoader(
+                        color: kPrimaryColor,
+                      ));
                     } else if (snapshot.connectionState ==
                         ConnectionState.done) {
                       GetPostResponse response = snapshot.data!;
@@ -346,6 +349,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                 padding: const EdgeInsets.only(top: 4.0),
                 child: LMProfilePicture(
                   fallbackText: user!.name,
+                  backgroundColor: kPrimaryColor,
                   imageUrl: user!.imageUrl,
                   onTap: () {
                     if (user!.sdkClientInfo != null) {

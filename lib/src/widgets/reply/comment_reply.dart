@@ -19,6 +19,7 @@ class CommentReplyWidget extends StatefulWidget {
   final Reply reply;
   final User user;
   final Function() refresh;
+
   //final Function(String commentId, String username, String userId) onReply;
 
   const CommentReplyWidget({
@@ -243,7 +244,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                     child: SizedBox(
                       height: 20,
                       width: 20,
-                      child: CircularProgressIndicator(),
+                      child: LMLoader(color: kPrimaryColor, ),
                     ),
                   ),
                 );

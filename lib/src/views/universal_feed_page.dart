@@ -28,6 +28,7 @@ import 'package:overlay_support/overlay_support.dart';
 
 class UniversalFeedScreen extends StatefulWidget {
   final Function(BuildContext context)? openChatCallback;
+
   const UniversalFeedScreen({
     this.openChatCallback,
     super.key,
@@ -44,10 +45,13 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
   * it is set to 62 if the topics are not empty
   */
   final ScrollController _controller = ScrollController();
+
   // notifies value listenable builder to rebuild the topic feed
   ValueNotifier<bool> rebuildTopicFeed = ValueNotifier(false);
+
   // future to get the topics
   Future<GetTopicsResponse>? getTopicsResponse;
+
   // list of selected topics by the user
   List<TopicUI> selectedTopics = [];
   bool topicVisible = true;
@@ -471,7 +475,9 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                   return const Scaffold(
                     backgroundColor: kBackgroundColor,
                     body: Center(
-                      child: CircularProgressIndicator(),
+                      child: LMLoader(
+                        color: kPrimaryColor,
+                      ),
                     ),
                   );
                 }),
@@ -486,6 +492,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
 
 class FeedRoomErrorView extends StatelessWidget {
   final String message;
+
   const FeedRoomErrorView({super.key, required this.message});
 
   @override
@@ -569,6 +576,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
   }
 
   var iconContainerHeight = 90.00;
+
   @override
   void initState() {
     super.initState();

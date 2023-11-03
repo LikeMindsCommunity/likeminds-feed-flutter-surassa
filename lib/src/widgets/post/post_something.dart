@@ -10,6 +10,7 @@ import 'package:overlay_support/overlay_support.dart';
 
 class PostSomething extends StatelessWidget {
   final bool enabled;
+
   const PostSomething({Key? key, required this.enabled}) : super(key: key);
 
   @override
@@ -43,6 +44,7 @@ class PostSomething extends StatelessWidget {
             children: <Widget>[
               LMProfilePicture(
                 fallbackText: user.name,
+                backgroundColor: kPrimaryColor,
                 imageUrl: user.imageUrl,
                 boxShape: BoxShape.circle,
                 onTap: () {

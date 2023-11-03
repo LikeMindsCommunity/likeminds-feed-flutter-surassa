@@ -27,6 +27,7 @@ import 'package:timeago/timeago.dart' as timeago;
 class PostDetailScreen extends StatefulWidget {
   final String postId;
   final bool fromCommentButton;
+
   const PostDetailScreen({
     super.key,
     required this.postId,
@@ -446,6 +447,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                       LMProfilePicture(
                                         fallbackText: currentUser.name,
                                         imageUrl: currentUser.imageUrl,
+                                        backgroundColor: kPrimaryColor,
                                         onTap: () {
                                           if (currentUser.sdkClientInfo !=
                                               null) {
@@ -522,9 +524,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                   height: 15,
                                                                   width: 15,
                                                                   child:
-                                                                      CircularProgressIndicator(
-                                                                    strokeWidth:
-                                                                        2,
+                                                                      LMLoader(
+                                                                    color:
+                                                                        kPrimaryColor,
                                                                   ),
                                                                 );
                                                               }
@@ -634,9 +636,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                   height: 15,
                                                                   width: 15,
                                                                   child:
-                                                                      CircularProgressIndicator(
-                                                                    strokeWidth:
-                                                                        2,
+                                                                      LMLoader(
+                                                                    color:
+                                                                        kPrimaryColor,
                                                                   ),
                                                                 );
                                                               }
@@ -804,7 +806,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                 SliverToBoxAdapter(
                                   child: postData == null
                                       ? const Center(
-                                          child: CircularProgressIndicator(
+                                          child: LMLoader(
                                             color: kPrimaryColor,
                                           ),
                                         )
@@ -965,6 +967,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                           .users![item.userId]!,
                                                       profilePicture:
                                                           LMProfilePicture(
+                                                        backgroundColor:
+                                                            kPrimaryColor,
                                                         fallbackText:
                                                             postDetailResponse!
                                                                 .users![item
@@ -990,8 +994,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                     .userId]!
                                                                 .imageUrl,
                                                         size: 36,
-                                                        backgroundColor:
-                                                            kPrimaryColor,
                                                       ),
                                                       subtitleText: LMTextView(
                                                         text:
@@ -1176,7 +1178,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                         }),
                   );
                 }
-                return const Center(child: CircularProgressIndicator());
+                return const Center(
+                    child: LMLoader(
+                  color: kPrimaryColor,
+                ));
               },
             )),
       ),

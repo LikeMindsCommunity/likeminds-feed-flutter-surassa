@@ -467,6 +467,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                               padding: const EdgeInsets.only(top: 4.0),
                               child: LMProfilePicture(
                                 fallbackText: user.name,
+                                backgroundColor: kPrimaryColor,
                                 imageUrl: user.imageUrl,
                                 onTap: () {
                                   if (user.sdkClientInfo != null) {
@@ -517,7 +518,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
                               bottom: kPaddingLarge,
                             ),
                             child: Center(
-                              child: LMLoader(),
+                              child: LMLoader(
+                                color: kPrimaryColor,
+                              ),
                             ),
                           ),
                         ),

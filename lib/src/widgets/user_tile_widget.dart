@@ -25,6 +25,7 @@ class LMUserTile extends StatelessWidget {
       children: [
         LMProfilePicture(
           size: imageSize ?? 50,
+          backgroundColor: kPrimaryColor,
           fallbackText: user.name,
           onTap: () {
             if (user.sdkClientInfo != null) {

@@ -10,6 +10,7 @@ class TopicBottomSheet extends StatefulWidget {
   final List<TopicUI> selectedTopics;
   final Function(List<TopicUI>, TopicUI) onTopicSelected;
   final bool? isEnabled;
+
   const TopicBottomSheet({
     Key? key,
     required this.selectedTopics,
@@ -154,7 +155,11 @@ class _TopicBottomSheetState extends State<TopicBottomSheet> {
               },
               builder: (context, state) {
                 if (state is TopicLoading) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(
+                    child: LMLoader(
+                      color: kPrimaryColor,
+                    ),
+                  );
                 }
 
                 if (state is TopicLoaded) {

@@ -118,7 +118,6 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
       padding: const EdgeInsets.symmetric(horizontal: 6.0),
       child: TypeAheadField<UserTag>(
         onTagTap: (p) {},
-
         suggestionsBoxController: _suggestionsBoxController,
         suggestionsBoxDecoration: SuggestionsBoxDecoration(
           elevation: 4,
@@ -183,6 +182,7 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
                       absorbing: true,
                       child: LMProfilePicture(
                         fallbackText: opt.name!,
+                        backgroundColor: kPrimaryColor,
                         imageUrl: opt.imageUrl!,
                         onTap: null,
                         size: 32,

@@ -271,7 +271,10 @@ class _FeedScreenState extends State<FeedScreen> {
                 ),
               );
             }
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+                child: LMLoader(
+              color: kPrimaryColor,
+            ));
           }),
         ),
       ),
