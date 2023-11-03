@@ -159,7 +159,10 @@ class _LMFeedState extends State<LMFeed> {
         debugPrint('Connected to internet');
         rebuildOnConnectivityChange.value = !rebuildOnConnectivityChange.value;
       },
-      loadingWidget: const Center(child: CircularProgressIndicator()),
+      loadingWidget: const Center(
+          child: LMLoader(
+        color: kPrimaryColor,
+      )),
       online: ValueListenableBuilder(
           valueListenable: rebuildOnConnectivityChange,
           builder: (context, _, __) {
@@ -181,41 +184,27 @@ class _LMFeedState extends State<LMFeed> {
                     locator<LikeMindsService>().getCommunityConfigurations();
 
                     LMNotificationHandler.instance.registerDevice(user!.id);
-                    return MaterialApp(
-                      debugShowCheckedModeBanner: !isProd,
-                      navigatorKey: locator<NavigationService>().navigatorKey,
-                      theme: ThemeData.from(
-                        colorScheme: ColorScheme.fromSeed(
-                          seedColor: kPrimaryColor,
-                          primary: kPrimaryColor,
-                          secondary: primary500,
-                          onSecondary: kSecondaryColor700,
-                        ),
-                      ),
-                      title: 'LM Feed',
-                      home: FutureBuilder(
-                        future: locator<LikeMindsService>().getMemberState(),
-                        initialData: null,
-                        builder:
-                            (BuildContext context, AsyncSnapshot snapshot) {
-                          if (snapshot.hasData) {
-                            return UniversalFeedScreen(
-                              openChatCallback: widget.openChatCallback,
-                            );
-                          }
-
-                          return Container(
-                            height: MediaQuery.of(context).size.height,
-                            width: MediaQuery.of(context).size.width,
-                            color: kBackgroundColor,
-                            child: const Center(
-                              child: LMLoader(
-                                isPrimary: true,
-                              ),
-                            ),
+                    return FutureBuilder(
+                      future: locator<LikeMindsService>().getMemberState(),
+                      initialData: null,
+                      builder: (BuildContext context, AsyncSnapshot snapshot) {
+                        if (snapshot.hasData) {
+                          return UniversalFeedScreen(
+                            openChatCallback: widget.openChatCallback,
                           );
-                        },
-                      ),
+                        }
+
+                        return Container(
+                          height: MediaQuery.of(context).size.height,
+                          width: MediaQuery.of(context).size.width,
+                          color: kBackgroundColor,
+                          child: const Center(
+                            child: LMLoader(
+                              color: kPrimaryColor,
+                            ),
+                          ),
+                        );
+                      },
                     );
                   } else {}
                 } else if (snapshot.hasError) {
