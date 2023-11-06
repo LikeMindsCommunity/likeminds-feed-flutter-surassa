@@ -14,16 +14,16 @@ class SharePost {
   static String userId = prodFlag ? CredsProd.botId : CredsDev.botId;
   static String apiKey = prodFlag ? CredsProd.apiKey : CredsDev.apiKey;
   // TODO: Add domain to your application
-  String domain = 'suraasalearn://www.suraasa.com';
+  String domain = 'https://www.suraasa.com';
   // fetches the domain given by client at time of initialization of Feed
 
   // below function creates a link from domain and post id
   String createLink(String postId) {
     int length = domain.length;
     if (domain[length - 1] == '/') {
-      return "${domain}post?post_id=$postId";
+      return "${domain}community/post?post_id=$postId";
     } else {
-      return "$domain/post?post_id=$postId";
+      return "$domain/community/post?post_id=$postId";
     }
   }
 
@@ -79,9 +79,9 @@ class SharePost {
 
   Future<DeepLinkResponse> parseDeepLink(
       DeepLinkRequest request, GlobalKey<NavigatorState> navigatorKey) async {
-    if (Uri.parse(request.link).isAbsolute) {
-      final firstPathSegment = getFirstPathSegment(request.link);
-      if (firstPathSegment == "post") {
+    final link = Uri.parse(request.link);
+    if (link.isAbsolute) {
+      if (link.path == '/community/post') {
         return handlePostDeepLink(request, navigatorKey);
       }
       return DeepLinkResponse(
