@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -207,7 +205,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
       elevation: 5,
       isDismissible: true,
       useRootNavigator: true,
-      backgroundColor: kWhiteColor,
+      backgroundColor: LMThemeData.kWhiteColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(28.0),
@@ -228,12 +226,11 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Size screenSize = MediaQuery.of(context).size;
-    ThemeData theme = Theme.of(context);
+    ThemeData theme = LMThemeData.suraasaTheme;
     return Scaffold(
-      backgroundColor: kWhiteColor,
+      backgroundColor: LMThemeData.kWhiteColor,
       appBar: AppBar(
-        backgroundColor: kWhiteColor,
+        backgroundColor: LMThemeData.kWhiteColor,
         centerTitle: false,
         title: GestureDetector(
           onTap: () {
@@ -275,7 +272,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
         },
         child: Column(
           children: [
-            kVerticalPaddingLarge,
+            LMThemeData.kVerticalPaddingLarge,
             ValueListenableBuilder(
               valueListenable: postSomethingNotifier,
               builder: (context, _, __) {
@@ -325,9 +322,9 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                                             borderRadius: 20.0,
                                             borderWidth: 1,
                                             showBorder: true,
-                                            borderColor: appSecondaryBlack,
+                                            borderColor: LMThemeData.appSecondaryBlack,
                                             textStyle: const TextStyle(
-                                              color: appBlack,
+                                              color: LMThemeData.appBlack,
                                             ),
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 12.0,
@@ -336,7 +333,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                                               type: LMIconType.icon,
                                               icon: CupertinoIcons.chevron_down,
                                               size: 16,
-                                              color: appBlack,
+                                              color: LMThemeData.appBlack,
                                             ),
                                           )
                                         : selectedTopics.length == 1
@@ -354,7 +351,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                                                 backgroundColor:
                                                     theme.colorScheme.secondary,
                                                 textStyle: const TextStyle(
-                                                  color: kWhiteColor,
+                                                  color: LMThemeData.kWhiteColor,
                                                 ),
                                                 padding:
                                                     const EdgeInsets.symmetric(
@@ -365,7 +362,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                                                   icon: CupertinoIcons
                                                       .chevron_down,
                                                   size: 16,
-                                                  color: kWhiteColor,
+                                                  color: LMThemeData.kWhiteColor,
                                                 ),
                                               )
                                             : LMTopicChip(
@@ -379,7 +376,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                                                 backgroundColor:
                                                     theme.colorScheme.secondary,
                                                 textStyle: const TextStyle(
-                                                  color: kWhiteColor,
+                                                  color: LMThemeData.kWhiteColor,
                                                 ),
                                                 padding:
                                                     const EdgeInsets.symmetric(
@@ -387,7 +384,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                                                         vertical: 4.0),
                                                 icon: Row(
                                                   children: [
-                                                    kHorizontalPaddingXSmall,
+                                                    LMThemeData.kHorizontalPaddingXSmall,
                                                     Container(
                                                       padding: const EdgeInsets
                                                           .symmetric(
@@ -419,13 +416,13 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                                                         ),
                                                       ),
                                                     ),
-                                                    kHorizontalPaddingSmall,
+                                                    LMThemeData.kHorizontalPaddingSmall,
                                                     const LMIcon(
                                                       type: LMIconType.icon,
                                                       icon: CupertinoIcons
                                                           .chevron_down,
                                                       size: 16,
-                                                      color: kWhiteColor,
+                                                      color: LMThemeData.kWhiteColor,
                                                     ),
                                                   ],
                                                 ),
@@ -473,10 +470,10 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                     return FeedRoomErrorView(message: state.message);
                   }
                   return const Scaffold(
-                    backgroundColor: kBackgroundColor,
+                    backgroundColor: LMThemeData.kBackgroundColor,
                     body: Center(
                       child: LMLoader(
-                        color: kPrimaryColor,
+                        color: LMThemeData.kPrimaryColor,
                       ),
                     ),
                   );
@@ -498,7 +495,7 @@ class FeedRoomErrorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: kBackgroundColor, body: Center(child: Text(message)));
+        backgroundColor: LMThemeData.kBackgroundColor, body: Center(child: Text(message)));
   }
 }
 
@@ -606,8 +603,9 @@ class _FeedRoomViewState extends State<FeedRoomView> {
   @override
   Widget build(BuildContext context) {
     NewPostBloc newPostBloc = locator<BlocService>().newPostBlocProvider;
+    final ThemeData theme = LMThemeData.suraasaTheme;
     return Scaffold(
-      backgroundColor: kBackgroundColor,
+      backgroundColor: LMThemeData.kBackgroundColor,
       body: Column(
         children: [
           BlocConsumer<NewPostBloc, NewPostState>(
@@ -695,7 +693,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
               if (state is EditPostUploading) {
                 return Container(
                   height: 60,
-                  color: kWhiteColor,
+                  color: LMThemeData.kWhiteColor,
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: const Row(
@@ -710,13 +708,13 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                             width: 50,
                             height: 50,
                           ),
-                          kHorizontalPaddingMedium,
+                          LMThemeData.kHorizontalPaddingMedium,
                           Text('Saving')
                         ],
                       ),
                       CircularProgressIndicator(
-                        backgroundColor: kGrey3Color,
-                        valueColor: AlwaysStoppedAnimation(kPrimaryColor),
+                        backgroundColor: LMThemeData.kGrey3Color,
+                        valueColor: AlwaysStoppedAnimation(LMThemeData.kPrimaryColor),
                         strokeWidth: 3,
                       ),
                     ],
@@ -726,7 +724,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
               if (state is NewPostUploading) {
                 return Container(
                   height: 60,
-                  color: kWhiteColor,
+                  color: LMThemeData.kWhiteColor,
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Row(
@@ -738,7 +736,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           getLoaderThumbnail(state.thumbnailMedia),
-                          kHorizontalPaddingMedium,
+                          LMThemeData.kHorizontalPaddingMedium,
                           const Text('Posting')
                         ],
                       ),
@@ -754,9 +752,9 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                           snapshot.data == 0.0
                                       ? null
                                       : snapshot.data?.toDouble()),
-                                  backgroundColor: kGrey3Color,
+                                  backgroundColor: LMThemeData.kGrey3Color,
                                   valueColor: const AlwaysStoppedAnimation(
-                                      kPrimaryColor),
+                                      LMThemeData.kPrimaryColor),
                                   strokeWidth: 3,
                                 ));
                           }),
@@ -797,7 +795,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                           "Looks like there are no posts for this topic yet.",
                                       textStyle: TextStyle(
                                         fontSize: 15,
-                                        color: onSurface500,
+                                        color: LMThemeData.onSurface500,
                                         fontWeight: FontWeight.w600,
                                         height: 0,
                                       ),
@@ -811,7 +809,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                           borderRadius: 48,
                                           height: 40,
                                           border: Border.all(
-                                            color: primary500,
+                                            color: LMThemeData.primary500,
                                             width: 2,
                                           ),
                                           padding: const EdgeInsets.symmetric(
@@ -820,7 +818,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                             text: "Change Filter",
                                             textAlign: TextAlign.center,
                                             textStyle: TextStyle(
-                                              color: primary500,
+                                              color: LMThemeData.primary500,
                                               fontSize: 15,
                                               fontWeight: FontWeight.w500,
                                             ),
@@ -857,7 +855,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                       textStyle: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w300,
-                                          color: kGrey2Color)),
+                                          color: LMThemeData.kGrey2Color)),
                                   const SizedBox(height: 28),
                                   LMTextButton(
                                     borderRadius: 28,
@@ -866,11 +864,11 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 12, horizontal: 20),
                                     backgroundColor:
-                                        Theme.of(context).colorScheme.primary,
+                                        theme.colorScheme.primary,
                                     text: LMTextView(
                                       text: "Create Post",
                                       textStyle: TextStyle(
-                                        color: Theme.of(context)
+                                        color: theme
                                             .colorScheme
                                             .onPrimary,
                                         fontWeight: FontWeight.bold,
@@ -881,7 +879,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                       type: LMIconType.icon,
                                       icon: Icons.add,
                                       size: 18,
-                                      color: Theme.of(context)
+                                      color: theme
                                           .colorScheme
                                           .onPrimary,
                                     ),
@@ -980,13 +978,13 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                       const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
                   borderRadius: 28,
                   backgroundColor: right
-                      ? Theme.of(context).colorScheme.primary
-                      : kGrey3Color,
+                      ? theme.colorScheme.primary
+                      : LMThemeData.kGrey3Color,
                   placement: LMIconPlacement.end,
                   text: LMTextView(
                     text: "Create Post",
                     textStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimary,
+                      color: theme.colorScheme.onPrimary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -996,7 +994,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                     icon: Icons.add,
                     fit: BoxFit.cover,
                     size: 18,
-                    color: Theme.of(context).colorScheme.onPrimary,
+                    color: theme.colorScheme.onPrimary,
                   ),
                   onTap: right
                       ? () {

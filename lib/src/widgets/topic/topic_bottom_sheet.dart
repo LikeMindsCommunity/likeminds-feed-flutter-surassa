@@ -103,7 +103,7 @@ class _TopicBottomSheetState extends State<TopicBottomSheet> {
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
-    ThemeData theme = Theme.of(context);
+    ThemeData theme = LMThemeData.suraasaTheme;
     return Container(
       width: screenSize.width,
       constraints: BoxConstraints(
@@ -118,7 +118,7 @@ class _TopicBottomSheetState extends State<TopicBottomSheet> {
             width: 43.67,
             height: 7.23,
             decoration: ShapeDecoration(
-              color: onSurface,
+              color: LMThemeData.onSurface,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(99),
               ),
@@ -157,7 +157,7 @@ class _TopicBottomSheetState extends State<TopicBottomSheet> {
                 if (state is TopicLoading) {
                   return const Center(
                     child: LMLoader(
-                      color: kPrimaryColor,
+                      color: LMThemeData.kPrimaryColor,
                     ),
                   );
                 }
@@ -220,7 +220,7 @@ class _TopicBottomSheetState extends State<TopicBottomSheet> {
                                                 textStyle: TextStyle(
                                                   color: isTopicSelected
                                                       ? Colors.white
-                                                      : appBlack,
+                                                      : LMThemeData.appBlack,
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.w500,
                                                   height: 1.30,
@@ -228,7 +228,7 @@ class _TopicBottomSheetState extends State<TopicBottomSheet> {
                                               ),
                                               backgroundColor: isTopicSelected
                                                   ? theme.colorScheme.secondary
-                                                  : kWhiteColor,
+                                                  : LMThemeData.kWhiteColor,
                                               onDeleted: null,
                                               clipBehavior: Clip.hardEdge,
                                               materialTapTargetSize:
@@ -239,7 +239,7 @@ class _TopicBottomSheetState extends State<TopicBottomSheet> {
                                                       ? BorderSide.none
                                                       : const BorderSide(
                                                           color:
-                                                              appSecondaryBlack,
+                                                              LMThemeData.appSecondaryBlack,
                                                           width: 1.0,
                                                         ),
                                                   borderRadius:

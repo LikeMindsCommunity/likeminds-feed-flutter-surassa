@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
+import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -16,16 +17,19 @@ class SSPostMedia extends StatefulWidget {
 class _SSPostMediaState extends State<SSPostMedia> {
   late List<Attachment> attachments;
   late Size screenSize;
+   ThemeData? theme; 
 
   @override
   void initState() {
     super.initState();
     attachments = widget.attachments;
+
   }
 
   @override
   Widget build(BuildContext context) {
     screenSize = MediaQuery.of(context).size;
+    theme = LMThemeData.suraasaTheme;
     // attachments = InheritedPostProvider.of(context)?.post.attachments ?? [];
     if (attachments.first.attachmentType == 3) {
       /// If the attachment is a document, we need to call the method 'getDocumentList'
@@ -42,7 +46,7 @@ class _SSPostMediaState extends State<SSPostMedia> {
           margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 2.0),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Theme.of(context).colorScheme.primary,
+            color: theme!.colorScheme.primary,
           ),
         ),
         inactiveIndicator: Container(
@@ -51,7 +55,7 @@ class _SSPostMediaState extends State<SSPostMedia> {
           margin: const EdgeInsets.symmetric(vertical: 7.0, horizontal: 2.0),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Theme.of(context).colorScheme.inversePrimary,
+            color: theme!.colorScheme.inversePrimary,
           ),
         ),
       );
@@ -89,11 +93,11 @@ class _SSPostMediaState extends State<SSPostMedia> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Column(
-              children: documents != null && documents.length > 3 && isCollapsed
+              children:  documents.length > 3 && isCollapsed
                   ? documents.sublist(0, 3)
                   : documents,
             ),
-            documents != null && documents.length > 3 && isCollapsed
+           documents.length > 3 && isCollapsed
                 ? GestureDetector(
                     onTap: () => setState(() {
                           isCollapsed = false;
@@ -101,7 +105,7 @@ class _SSPostMediaState extends State<SSPostMedia> {
                     child: LMTextView(
                       text: '+ ${documents.length - 3} more',
                       textStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary,
+                        color: theme!.colorScheme.secondary,
                       ),
                     ))
                 : const SizedBox()

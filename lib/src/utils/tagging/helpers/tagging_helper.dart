@@ -151,7 +151,7 @@ class TaggingHelper {
             text: text.substring(lastIndex, startIndex),
             style: const TextStyle(
               wordSpacing: 1.5,
-              color: kGrey1Color,
+              color: LMThemeData.kGrey1Color,
             ),
           ),
         );
@@ -163,7 +163,7 @@ class TaggingHelper {
           style: const TextStyle(
             wordSpacing: 1.5,
             fontWeight: FontWeight.bold,
-            color: kGrey1Color,
+            color: LMThemeData.kGrey1Color,
           ),
         ),
       );
@@ -175,7 +175,7 @@ class TaggingHelper {
       // Add a TextSpan for the remaining text
       textSpans.add(TextSpan(
         text: text.substring(lastIndex),
-        style: const TextStyle(wordSpacing: 1.5, color: kGrey1Color),
+        style: const TextStyle(wordSpacing: 1.5, color: LMThemeData.kGrey1Color),
       ));
     }
 

@@ -12,6 +12,7 @@ class LMAnalytics {
 
   LMAnalytics._();
 
+
   void initialize() {
     sdkCallback =
         DIService.getIt.isRegistered<LMSDKCallback>(instanceName: "LMCallback")

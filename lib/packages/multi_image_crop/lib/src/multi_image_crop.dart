@@ -1,11 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:image_crop/image_crop.dart';
 import 'package:multi_image_crop/src/common/util/colors.dart';
-import 'package:multi_image_crop/src/common/util/fade_page_route.dart';
-import 'package:multi_image_crop/src/edit_image.dart';
 import 'package:preload_page_view/preload_page_view.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'common/widgets/icon_button.dart';

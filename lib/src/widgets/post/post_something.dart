@@ -37,14 +37,14 @@ class PostSomething extends StatelessWidget {
             borderRadius: BorderRadius.circular(50.0),
             border: Border.all(
               width: 1,
-              color: onSurface,
+              color: LMThemeData.onSurface,
             ),
           ),
           child: Row(
             children: <Widget>[
               LMProfilePicture(
                 fallbackText: user.name,
-                backgroundColor: kPrimaryColor,
+                backgroundColor: LMThemeData.kPrimaryColor,
                 imageUrl: user.imageUrl,
                 boxShape: BoxShape.circle,
                 onTap: () {
@@ -55,7 +55,7 @@ class PostSomething extends StatelessWidget {
                 },
                 size: 36,
               ),
-              kHorizontalPaddingMedium,
+              LMThemeData.kHorizontalPaddingMedium,
               const LMTextView(text: "Post something...")
             ],
           ),

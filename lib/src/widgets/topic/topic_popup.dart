@@ -105,12 +105,12 @@ class _TopicPopUpState extends State<TopicPopUp> {
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
-    ThemeData theme = Theme.of(context);
+    ThemeData theme = LMThemeData.suraasaTheme;
     return Container(
       width: min(screenSize.width, 265),
       constraints: const BoxConstraints(maxHeight: 250),
       decoration: BoxDecoration(
-          color: kWhiteColor, borderRadius: BorderRadius.circular(4.0)),
+          color: LMThemeData.kWhiteColor, borderRadius: BorderRadius.circular(4.0)),
       margin: const EdgeInsets.only(top: 32),
       padding: const EdgeInsets.all(8.0),
       child: BlocConsumer<TopicBloc, TopicState>(
@@ -144,7 +144,7 @@ class _TopicPopUpState extends State<TopicPopUp> {
           if (state is TopicLoading) {
             return const Center(
               child: LMLoader(
-                color: kPrimaryColor,
+                color: LMThemeData.kPrimaryColor,
               ),
             );
           }
@@ -186,8 +186,8 @@ class _TopicPopUpState extends State<TopicPopUp> {
                                           horizontal: 8.0, vertical: 10.0),
                                       decoration: BoxDecoration(
                                         color: isTopicSelected
-                                            ? kSecondaryColorLight
-                                            : kWhiteColor,
+                                            ? LMThemeData.kSecondaryColorLight
+                                            : LMThemeData.kWhiteColor,
                                       ),
                                       alignment: Alignment.topLeft,
                                       clipBehavior: Clip.hardEdge,
@@ -203,7 +203,7 @@ class _TopicPopUpState extends State<TopicPopUp> {
                                                 color: isTopicSelected
                                                     ? theme
                                                         .colorScheme.secondary
-                                                    : appBlack,
+                                                    : LMThemeData.appBlack,
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w500,
                                                 height: 1.30,
