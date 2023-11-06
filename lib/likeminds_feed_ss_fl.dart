@@ -159,14 +159,7 @@ class _LMFeedState extends State<LMFeed> {
         color: LMThemeData.kPrimaryColor,
       )),
       online: Theme(
-        data: ThemeData.from(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: LMThemeData.kPrimaryColor,
-            primary: LMThemeData.kPrimaryColor,
-            secondary: LMThemeData.primary500,
-            onSecondary: LMThemeData.kSecondaryColor700,
-          ),
-        ),
+        data: LMThemeData.suraasaTheme,
         child: ValueListenableBuilder(
             valueListenable: rebuildOnConnectivityChange,
             builder: (context, _, __) {
