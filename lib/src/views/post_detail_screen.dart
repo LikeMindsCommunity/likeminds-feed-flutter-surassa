@@ -267,7 +267,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   bool checkCommentRights() {
     final MemberStateResponse memberStateResponse =
         UserLocalPreference.instance.fetchMemberRights();
-    if (memberStateResponse.state == 1) {
+    if (!memberStateResponse.success || memberStateResponse.state == 1) {
       return true;
     }
     bool memberRights = UserLocalPreference.instance.fetchMemberRight(10);
@@ -737,8 +737,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                   },
                   containerSize: 48,
                 ),
-                backgroundColor: kWhiteColor,
-                title: const LMTextView(
+                backgroundColor: Colors.white,
+                title:const LMTextView(
                   text: "Comments",
                   textStyle: TextStyle(
                     fontSize: 20,
