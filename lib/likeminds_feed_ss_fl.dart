@@ -31,6 +31,7 @@ class LMFeed extends StatefulWidget {
   final String? userId;
   final String? userName;
   final String apiKey;
+  final String? imageUrl;
   final Function(BuildContext context)? openChatCallback;
   final LMSDKCallback? callback;
 
@@ -43,6 +44,7 @@ class LMFeed extends StatefulWidget {
   static LMFeed instance({
     String? userId,
     String? userName,
+    String? imageUrl,
     LMSDKCallback? callback,
     Function(BuildContext context)? openChatCallback,
     required String apiKey,
@@ -52,6 +54,7 @@ class LMFeed extends StatefulWidget {
       userName: userName,
       callback: callback,
       apiKey: apiKey,
+      imageUrl: imageUrl,
       openChatCallback: openChatCallback,
     );
   }
@@ -76,6 +79,7 @@ class LMFeed extends StatefulWidget {
       {Key? key,
       this.userId,
       this.userName,
+      this.imageUrl,
       required this.callback,
       required this.apiKey,
       this.openChatCallback})
@@ -88,6 +92,7 @@ class LMFeed extends StatefulWidget {
 class _LMFeedState extends State<LMFeed> {
   User? user;
   late final String userId;
+  String? imageUrl;
   late final String userName;
   late final bool isProd;
   late final NetworkConnectivity networkConnectivity;
@@ -105,6 +110,7 @@ class _LMFeedState extends State<LMFeed> {
             ? CredsProd.botId
             : CredsDev.botId
         : widget.userId!;
+    imageUrl = widget.imageUrl;
     userName = widget.userName!.isEmpty ? "Test username" : widget.userName!;
     firebase();
   }
@@ -164,7 +170,8 @@ class _LMFeedState extends State<LMFeed> {
             future: locator<LikeMindsService>().initiateUser(
               (InitiateUserRequestBuilder()
                     ..userId(userId)
-                    ..userName(userName))
+                    ..userName(userName)
+                    ..imageUrl(imageUrl ?? ''))
                   .build(),
             ),
             initialData: null,
