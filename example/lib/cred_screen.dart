@@ -77,7 +77,6 @@ class _CredScreenState extends State<CredScreen> {
   }
 
   Future initUniLinks(BuildContext context) async {
-
     if (!initialURILinkHandled) {
       initialURILinkHandled = true;
       // Get the initial deep link if the app was launched with one
@@ -105,6 +104,7 @@ class _CredScreenState extends State<CredScreen> {
 
       // Subscribe to link changes
       _streamSubscription = linkStream.listen((String? link) async {
+        initialURILinkHandled = true;
         if (link != null) {
           // Handle the deep link
           // You can extract any parameters from the uri object here
