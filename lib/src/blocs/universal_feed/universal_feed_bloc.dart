@@ -7,6 +7,7 @@ import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 
 part 'universal_feed_event.dart';
+
 part 'universal_feed_state.dart';
 
 class UniversalFeedBloc extends Bloc<UniversalFeedEvent, UniversalFeedState> {

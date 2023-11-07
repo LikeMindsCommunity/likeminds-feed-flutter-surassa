@@ -3,9 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
+import 'package:likeminds_feed_bloc_fl/likeminds_feed_bloc_fl.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
-import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
-import 'package:likeminds_feed_ss_fl/src/services/bloc_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
@@ -37,7 +36,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
   ValueNotifier<bool> rebuildAttachments = ValueNotifier(false);
   late String postId;
   Post? postDetails;
-  NewPostBloc? newPostBloc;
+  LMPostBloc? newPostBloc;
   List<Attachment>? attachments;
   User? user;
   bool isDocumentPost = false; // flag for document or media post
@@ -193,9 +192,8 @@ class _EditPostScreenState extends State<EditPostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
     screenSize = MediaQuery.of(context).size;
-    newPostBloc = locator<BlocService>().newPostBlocProvider;
+    newPostBloc = locator<LMFeedBloc>().lmPostBloc;
     return WillPopScope(
       onWillPop: () {
         if (textEditingController!.text != convertedPostText) {

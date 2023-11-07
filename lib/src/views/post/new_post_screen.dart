@@ -9,8 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:likeminds_feed/likeminds_feed.dart';
-import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
-import 'package:likeminds_feed_ss_fl/src/services/bloc_service.dart';
+import 'package:likeminds_feed_bloc_fl/likeminds_feed_bloc_fl.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/analytics/analytics.dart';
@@ -53,7 +52,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
   final CustomPopupMenuController _controllerPopUp =
       CustomPopupMenuController();
 
-  NewPostBloc? newPostBloc;
+  LMPostBloc? lmPostBloc;
   late final User user;
 
   List<MediaModel> postMedia = [];
@@ -86,7 +85,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
               ..pageSize(20)
               ..isEnabled(true))
             .build());
-    newPostBloc = locator<BlocService>().newPostBlocProvider;
+    lmPostBloc = locator<LMFeedBloc>().lmPostBloc;
     if (_focusNode.canRequestFocus) {
       _focusNode.requestFocus();
     }
@@ -309,7 +308,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    newPostBloc = locator<BlocService>().newPostBlocProvider;
+    lmPostBloc = locator<LMFeedBloc>().lmPostBloc;
     Size screenSize = MediaQuery.of(context).size;
     ThemeData theme = LMThemeData.suraasaTheme;
     return WillPopScope(
@@ -535,7 +534,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                     children: [
                                       LMLinkPreview(
                                         linkModel: linkModel,
-                                        backgroundColor: LMThemeData.kSecondary100,
+                                        backgroundColor:
+                                            LMThemeData.kSecondary100,
                                         showLinkUrl: false,
                                         onTap: () {
                                           launchUrl(
@@ -556,7 +556,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                           overflow: TextOverflow.ellipsis,
                                           textStyle: const TextStyle(
                                             fontWeight: FontWeight.w600,
-                                            color: LMThemeData.kHeadingBlackColor,
+                                            color:
+                                                LMThemeData.kHeadingBlackColor,
                                             height: 1.30,
                                           ),
                                         ),
@@ -567,7 +568,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           textStyle: const TextStyle(
-                                            color: LMThemeData.kHeadingBlackColor,
+                                            color:
+                                                LMThemeData.kHeadingBlackColor,
                                             fontWeight: FontWeight.w400,
                                             height: 1.30,
                                           ),
@@ -698,7 +700,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                                   .black38,
                                                             )
                                                           ],
-                                                          color: LMThemeData.kWhiteColor
+                                                          color: LMThemeData
+                                                              .kWhiteColor
                                                               .withOpacity(0.8),
                                                         )),
                                                   )
@@ -776,11 +779,12 @@ class _NewPostScreenState extends State<NewPostScreen> {
                       sendPostCreationCompletedEvent(
                           postMedia, userTags, selectedTopic);
 
-                      newPostBloc!.add(
+                      lmPostBloc!.add(
                         CreateNewPost(
                           postText: result!,
                           postMedia: postMedia,
                           selectedTopics: selectedTopic,
+                          user: user,
                         ),
                       );
                       Navigator.pop(context);
@@ -819,8 +823,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                   icon: LMIcon(
                                     type: LMIconType.svg,
                                     assetPath: kAssetGalleryIcon,
-                                    color:
-                                        theme.colorScheme.primary,
+                                    color: theme.colorScheme.primary,
                                     boxPadding: 0,
                                     size: 44,
                                   ),
@@ -871,8 +874,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                   icon: LMIcon(
                                     type: LMIconType.svg,
                                     assetPath: kAssetDocPDFIcon,
-                                    color:
-                                        theme.colorScheme.primary,
+                                    color: theme.colorScheme.primary,
                                     boxPadding: 0,
                                     size: 44,
                                   ),

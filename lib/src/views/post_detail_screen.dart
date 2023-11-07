@@ -2,15 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
+import 'package:likeminds_feed_bloc_fl/likeminds_feed_bloc_fl.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/add_comment/add_comment_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/add_comment_reply/add_comment_reply_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/all_comments/all_comments_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/comment_replies/comment_replies_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/toggle_like_comment/toggle_like_comment_bloc.dart';
-import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
-import 'package:likeminds_feed_ss_fl/src/models/post_view_model.dart';
-import 'package:likeminds_feed_ss_fl/src/services/bloc_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
@@ -45,7 +43,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   late final AddCommentReplyBloc _addCommentReplyBloc;
   late final CommentRepliesBloc _commentRepliesBloc;
   late final ToggleLikeCommentBloc _toggleLikeCommentBloc;
-  late final NewPostBloc newPostBloc;
+  late final LMPostBloc lmPostBloc;
   final FocusNode focusNode = FocusNode();
   TextEditingController? _commentController;
   ValueNotifier<bool> rebuildButton = ValueNotifier(false);
@@ -55,7 +53,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   PostDetailResponse? postDetailResponse;
   final PagingController<int, Reply> _pagingController =
       PagingController(firstPageKey: 1);
-  PostViewModel? postData;
+  PostUI? postData;
   User currentUser = UserLocalPreference.instance.fetchUserData();
 
   List<UserTag> userTags = [];
@@ -85,7 +83,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   @override
   void initState() {
     super.initState();
-    newPostBloc = locator<BlocService>().newPostBlocProvider;
+    lmPostBloc = locator<LMFeedBloc>().lmPostBloc;
     updatePostDetails(context);
     right = checkCommentRights();
     _commentController = TextEditingController();
@@ -189,7 +187,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           .build(),
     );
     if (postDetails.success) {
-      postData = PostViewModel.fromPost(post: postDetails.post!);
+      postData = PostUI.fromPost(post: postDetails.post!);
       rebuildPostWidget.value = !rebuildPostWidget.value;
     } else {
       toast(
@@ -218,7 +216,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     commentItemList.insert(0, addCommentSuccess.addCommentResponse.reply!);
     increaseCommentCount();
     rebuildPostWidget.value = !rebuildPostWidget.value;
-    newPostBloc.add(
+    lmPostBloc.add(
       UpdatePost(
         post: postData!,
       ),
@@ -257,7 +255,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       commentItemList.removeAt(index);
       decreaseCommentCount();
       rebuildPostWidget.value = !rebuildPostWidget.value;
-      newPostBloc.add(
+      lmPostBloc.add(
         UpdatePost(
           post: postData!,
         ),
@@ -794,8 +792,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                       child: ValueListenableBuilder(
                           valueListenable: rebuildPostWidget,
                           builder: (context, _, __) {
-                            return BlocListener<NewPostBloc, NewPostState>(
-                              bloc: newPostBloc,
+                            return BlocListener<LMPostBloc, LMPostState>(
+                              bloc: lmPostBloc,
                               listener: (context, state) {
                                 if (state is EditPostUploaded) {
                                   postData = state.postData;

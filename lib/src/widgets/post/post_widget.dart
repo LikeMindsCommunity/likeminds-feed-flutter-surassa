@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
+import 'package:likeminds_feed_bloc_fl/likeminds_feed_bloc_fl.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
-import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
-import 'package:likeminds_feed_ss_fl/src/models/post_view_model.dart';
-import 'package:likeminds_feed_ss_fl/src/services/bloc_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
@@ -23,7 +21,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:url_launcher/url_launcher.dart';
 
 class SSPostWidget extends StatefulWidget {
-  final PostViewModel post;
+  final PostUI post;
   final User user;
   final Map<String, Topic> topics;
   final bool isFeed;
@@ -47,7 +45,7 @@ class SSPostWidget extends StatefulWidget {
 class _SSPostWidgetState extends State<SSPostWidget> {
   int postLikes = 0;
   int comments = 0;
-  PostViewModel? postDetails;
+  PostUI? postDetails;
   bool? isLiked;
   bool? isPinned;
   ValueNotifier<bool> rebuildLikeWidget = ValueNotifier(false);
@@ -83,14 +81,14 @@ class _SSPostWidgetState extends State<SSPostWidget> {
 
   @override
   Widget build(BuildContext context) {
-    NewPostBloc newPostBloc = locator<BlocService>().newPostBlocProvider;
+    LMPostBloc lmPostBloc = locator<LMFeedBloc>().lmPostBloc;
     timeago.setLocaleMessages('en', SSCustomMessages());
     return InheritedPostProvider(
       post: widget.post.toPost(),
       child: Container(
         color: LMThemeData.kWhiteColor,
         child: BlocListener(
-          bloc: newPostBloc,
+          bloc: lmPostBloc,
           listener: (context, state) {
             if (state is PostPinnedState && state.postId == widget.post.id) {
               isPinned = state.isPinned;
@@ -109,7 +107,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
               }
               postDetails!.isPinned = isPinned!;
               rebuildPostWidget.value = !rebuildPostWidget.value;
-              newPostBloc.add(UpdatePost(post: postDetails!));
+              lmPostBloc.add(UpdatePost(post: postDetails!));
             } else if (state is PostPinError &&
                 state.postId == widget.post.id) {
               isPinned = state.isPinned;
@@ -251,7 +249,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                             "post_type": postType,
                                           },
                                         );
-                                        newPostBloc.add(
+                                        lmPostBloc.add(
                                           DeletePost(
                                             postId: postDetails!.id,
                                             reason: reason ?? 'Self Post',
@@ -288,7 +286,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                   });
                                 }
 
-                                newPostBloc.add(TogglePinPost(
+                                lmPostBloc.add(TogglePinPost(
                                     postId: postDetails!.id,
                                     isPinned: !isPinned!));
                               } else if (id == postEditId) {
@@ -499,7 +497,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                       !rebuildLikeWidget.value;
                                 } else {
                                   if (!widget.isFeed) {
-                                    newPostBloc.add(
+                                    lmPostBloc.add(
                                       UpdatePost(
                                         post: postDetails!,
                                       ),
