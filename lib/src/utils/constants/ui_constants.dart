@@ -47,3 +47,12 @@ const SizedBox kVerticalPaddingSmall = SizedBox(height: kPaddingSmall);
 const SizedBox kVerticalPaddingXSmall = SizedBox(height: kPaddingXSmall);
 const SizedBox kVerticalPaddingLarge = SizedBox(height: kPaddingLarge);
 const SizedBox kVerticalPaddingMedium = SizedBox(height: kPaddingMedium);
+
+ThemeData suraasaTheme = ThemeData.from(
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: kPrimaryColor,
+    primary: kPrimaryColor,
+    secondary: primary500,
+    onSecondary: kSecondaryColor700,
+  ),
+);

@@ -77,6 +77,7 @@ class _CredScreenState extends State<CredScreen> {
   }
 
   Future initUniLinks(BuildContext context) async {
+
     if (!initialURILinkHandled) {
       initialURILinkHandled = true;
       // Get the initial deep link if the app was launched with one
