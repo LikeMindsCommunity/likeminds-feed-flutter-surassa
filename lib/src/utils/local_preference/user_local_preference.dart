@@ -69,19 +69,17 @@ class UserLocalPreference {
 
   bool fetchMemberRight(int id) {
     MemberStateResponse memberStateResponse = fetchMemberRights();
-    if (memberStateResponse.success == false) {
+    if (memberStateResponse.success == false ||
+        memberStateResponse.memberRights == null) {
       return true;
     }
     final memberRights = memberStateResponse.memberRights;
-    if (memberRights == null) {
+
+    final right = memberRights!.where((element) => element.state == id);
+    if (right.isEmpty) {
       return true;
     } else {
-      final right = memberRights.where((element) => element.state == id);
-      if (right.isEmpty) {
-        return true;
-      } else {
-        return right.first.isSelected;
-      }
+      return right.first.isSelected;
     }
   }
 
@@ -108,8 +106,16 @@ class UserLocalPreference {
   }
 
   Future<CommunityConfigurations> getCommunityConfigurations() async {
+    String? communityConfigurationString =
+        _sharedPreferences!.getString('communityConfigurations');
+
+    if (communityConfigurationString == null) {
+      return CommunityConfigurations(value: {}, type: '', description: '');
+    }
+
     Map<String, dynamic> communityConfigurations =
-        jsonDecode(_sharedPreferences!.getString('communityConfigurations')!);
+        jsonDecode(communityConfigurationString);
+
     final entity =
         CommunityConfigurationsEntity.fromJson(communityConfigurations);
     return CommunityConfigurations.fromEntity(entity);
