@@ -96,6 +96,7 @@ class _LMFeedState extends State<LMFeed> {
   late final String userName;
   late final bool isProd;
   late final NetworkConnectivity networkConnectivity;
+  late final Future<InitiateUserResponse> initiateUser;
   ValueNotifier<bool> rebuildOnConnectivityChange = ValueNotifier<bool>(false);
 
   @override
@@ -112,6 +113,20 @@ class _LMFeedState extends State<LMFeed> {
         : widget.userId!;
     imageUrl = widget.imageUrl;
     userName = widget.userName!.isEmpty ? "Test username" : widget.userName!;
+    if (imageUrl == null || imageUrl!.isEmpty) {
+      initiateUser =  locator<LikeMindsService>().initiateUser(
+          (InitiateUserRequestBuilder()
+            ..userId(userId)
+            ..userName(userName))
+              .build());
+    } else {
+      initiateUser = locator<LikeMindsService>().initiateUser(
+          (InitiateUserRequestBuilder()
+            ..userId(userId)
+            ..userName(userName)
+            ..imageUrl(imageUrl!))
+              .build());
+    }
     firebase();
   }
 
@@ -141,12 +156,14 @@ class _LMFeedState extends State<LMFeed> {
                 color: kPrimaryColor,
               ),
               kVerticalPaddingLarge,
-              Text("No internet\nCheck your connection and try again",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: kPrimaryColor,
-                    fontSize: 14,
-                  )),
+              Text(
+                "No internet\nCheck your connection and try again",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: kPrimaryColor,
+                  fontSize: 14,
+                ),
+              ),
             ],
           ),
         ),
@@ -167,13 +184,7 @@ class _LMFeedState extends State<LMFeed> {
         valueListenable: rebuildOnConnectivityChange,
         builder: (context, _, __) {
           return FutureBuilder<InitiateUserResponse>(
-            future: locator<LikeMindsService>().initiateUser(
-              (InitiateUserRequestBuilder()
-                    ..userId(userId)
-                    ..userName(userName)
-                    ..imageUrl(imageUrl ?? ''))
-                  .build(),
-            ),
+            future: initiateUser,
             initialData: null,
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.hasData) {
