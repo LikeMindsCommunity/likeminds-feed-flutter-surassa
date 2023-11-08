@@ -196,9 +196,12 @@ class _LMFeedState extends State<LMFeed> {
                   locator<LikeMindsService>().getCommunityConfigurations();
 
                   LMNotificationHandler.instance.registerDevice(user!.id);
-                  return Theme(
-                    data: suraasaTheme,
-                    child: FutureBuilder(
+                  return MaterialApp(
+                    theme: suraasaTheme,
+                    debugShowCheckedModeBanner: !isProd,
+                    navigatorKey: locator<NavigationService>().navigatorKey,
+                    title: 'LM Feed',
+                    home: FutureBuilder(
                       future: locator<LikeMindsService>().getMemberState(),
                       initialData: null,
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
