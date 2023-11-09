@@ -755,24 +755,24 @@ packages:
     dependency: transitive
     description:
       name: likeminds_feed
-      sha256: "6cea6fe3a639f41a9498c1b046652ffbe1af4aa98036dbfedc2b01a9dfbf7786"
+      sha256: e47b77e3eadfc475cd62e9bc1ea9c76fb64b5a3dc9cdb548782b06423f7c8e28
       url: "https://pub.dev"
     source: hosted
-    version: "1.6.1"
+    version: "1.6.3"
   likeminds_feed_ss_fl:
     dependency: "direct main"
     description:
       path: ".."
       relative: true
     source: path
-    version: "1.1.2"
+    version: "1.2.1"
   likeminds_feed_ui_fl:
     dependency: transitive
     description:
       path: "../../LikeMinds-Flutter-Feed-UI"
       relative: true
     source: path
-    version: "1.3.2"
+    version: "1.3.5"
   lints:
     dependency: transitive
     description:

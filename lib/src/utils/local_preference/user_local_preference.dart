@@ -1,12 +1,15 @@
 import 'dart:convert';
 
 import 'package:likeminds_feed/likeminds_feed.dart';
+import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
+import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserLocalPreference {
   SharedPreferences? _sharedPreferences;
 
   static UserLocalPreference? _instance;
+
   static UserLocalPreference get instance =>
       _instance ??= UserLocalPreference._();
 
@@ -27,8 +30,9 @@ class UserLocalPreference {
   }
 
   User fetchUserData() {
-    Map<String, dynamic> userData =
-        jsonDecode(_sharedPreferences!.getString(_userKey)!);
+    String? userDataString = _sharedPreferences!.getString(_userKey);
+
+    Map<String, dynamic> userData = jsonDecode(userDataString!);
     return User.fromEntity(UserEntity.fromJson(userData));
   }
 
@@ -49,6 +53,15 @@ class UserLocalPreference {
   }
 
   MemberStateResponse fetchMemberRights() {
+    String? getMemberStateString =
+        _sharedPreferences!.getString('memberRights');
+
+    if (getMemberStateString == null) {
+      locator<LikeMindsService>().getMemberState();
+      return MemberStateResponse(
+          success: false, errorMessage: "An error occurred");
+    }
+
     Map<String, dynamic> memberRights =
         jsonDecode(_sharedPreferences!.getString('memberRights')!);
     return MemberStateResponse.fromJson(memberRights);
@@ -56,16 +69,17 @@ class UserLocalPreference {
 
   bool fetchMemberRight(int id) {
     MemberStateResponse memberStateResponse = fetchMemberRights();
+    if (memberStateResponse.success == false ||
+        memberStateResponse.memberRights == null) {
+      return true;
+    }
     final memberRights = memberStateResponse.memberRights;
-    if (memberRights == null) {
+
+    final right = memberRights!.where((element) => element.state == id);
+    if (right.isEmpty) {
       return true;
     } else {
-      final right = memberRights.where((element) => element.state == id);
-      if (right.isEmpty) {
-        return true;
-      } else {
-        return right.first.isSelected;
-      }
+      return right.first.isSelected;
     }
   }
 
@@ -92,8 +106,16 @@ class UserLocalPreference {
   }
 
   Future<CommunityConfigurations> getCommunityConfigurations() async {
+    String? communityConfigurationString =
+        _sharedPreferences!.getString('communityConfigurations');
+
+    if (communityConfigurationString == null) {
+      return CommunityConfigurations(value: {}, type: '', description: '');
+    }
+
     Map<String, dynamic> communityConfigurations =
-        jsonDecode(_sharedPreferences!.getString('communityConfigurations')!);
+        jsonDecode(communityConfigurationString);
+
     final entity =
         CommunityConfigurationsEntity.fromJson(communityConfigurations);
     return CommunityConfigurations.fromEntity(entity);

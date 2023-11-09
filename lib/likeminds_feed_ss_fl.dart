@@ -20,6 +20,7 @@ export 'src/services/service_locator.dart';
 export 'src/utils/analytics/analytics.dart';
 export 'src/utils/notifications/notification_handler.dart';
 export 'src/utils/share/share_post.dart';
+export 'src/utils/local_preference/user_local_preference.dart';
 
 /// Flutter environment manager v0.0.1
 const prodFlag = !bool.fromEnvironment('DEBUG');
@@ -31,6 +32,7 @@ class LMFeed extends StatefulWidget {
   final String? userId;
   final String? userName;
   final String apiKey;
+  final String? imageUrl;
   final Function(BuildContext context)? openChatCallback;
   final LMSDKCallback? callback;
 
@@ -41,6 +43,7 @@ class LMFeed extends StatefulWidget {
   static LMFeed instance({
     String? userId,
     String? userName,
+    String? imageUrl,
     LMSDKCallback? callback,
     Function(BuildContext context)? openChatCallback,
     required String apiKey,
@@ -50,6 +53,7 @@ class LMFeed extends StatefulWidget {
       userName: userName,
       callback: callback,
       apiKey: apiKey,
+      imageUrl: imageUrl,
       openChatCallback: openChatCallback,
     );
   }
@@ -74,6 +78,7 @@ class LMFeed extends StatefulWidget {
       {Key? key,
       this.userId,
       this.userName,
+      this.imageUrl,
       required this.callback,
       required this.apiKey,
       this.openChatCallback})
@@ -86,9 +91,11 @@ class LMFeed extends StatefulWidget {
 class _LMFeedState extends State<LMFeed> {
   User? user;
   late final String userId;
+  String? imageUrl;
   late final String userName;
   late final bool isProd;
   late final NetworkConnectivity networkConnectivity;
+  late final Future<InitiateUserResponse> initiateUser;
   ValueNotifier<bool> rebuildOnConnectivityChange = ValueNotifier<bool>(false);
 
   @override
@@ -103,7 +110,22 @@ class _LMFeedState extends State<LMFeed> {
             ? CredsProd.botId
             : CredsDev.botId
         : widget.userId!;
+    imageUrl = widget.imageUrl;
     userName = widget.userName!.isEmpty ? "Test username" : widget.userName!;
+    if (imageUrl == null || imageUrl!.isEmpty) {
+      initiateUser =
+          locator<LikeMindsService>().initiateUser((InitiateUserRequestBuilder()
+                ..userId(userId)
+                ..userName(userName))
+              .build());
+    } else {
+      initiateUser =
+          locator<LikeMindsService>().initiateUser((InitiateUserRequestBuilder()
+                ..userId(userId)
+                ..userName(userName)
+                ..imageUrl(imageUrl!))
+              .build());
+    }
     firebase();
   }
 
@@ -133,12 +155,14 @@ class _LMFeedState extends State<LMFeed> {
                 color: kPrimaryColor,
               ),
               kVerticalPaddingLarge,
-              Text("No internet\nCheck your connection and try again",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: kPrimaryColor,
-                    fontSize: 14,
-                  )),
+              Text(
+                "No internet\nCheck your connection and try again",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: kPrimaryColor,
+                  fontSize: 14,
+                ),
+              ),
             ],
           ),
         ),
@@ -156,87 +180,75 @@ class _LMFeedState extends State<LMFeed> {
       },
       loadingWidget: const Center(child: CircularProgressIndicator()),
       online: ValueListenableBuilder(
-          valueListenable: rebuildOnConnectivityChange,
-          builder: (context, _, __) {
-            return FutureBuilder<InitiateUserResponse>(
-              future: locator<LikeMindsService>().initiateUser(
-                (InitiateUserRequestBuilder()
-                      ..userId(userId)
-                      ..userName(userName))
-                    .build(),
-              ),
-              initialData: null,
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (snapshot.hasData) {
-                  InitiateUserResponse response = snapshot.data;
-                  if (response.success) {
-                    user = response.initiateUser?.user;
+        valueListenable: rebuildOnConnectivityChange,
+        builder: (context, _, __) {
+          return FutureBuilder<InitiateUserResponse>(
+            future: initiateUser,
+            initialData: null,
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.hasData) {
+                InitiateUserResponse response = snapshot.data;
+                if (response.success) {
+                  user = response.initiateUser?.user;
 
-                    //Get community configurations
-                    locator<LikeMindsService>().getCommunityConfigurations();
+                  //Get community configurations
+                  locator<LikeMindsService>().getCommunityConfigurations();
 
-                    LMNotificationHandler.instance.registerDevice(user!.id);
-                    return MaterialApp(
-                      debugShowCheckedModeBanner: !isProd,
-                      navigatorKey: locator<NavigationService>().navigatorKey,
-                      theme: ThemeData.from(
-                        colorScheme: ColorScheme.fromSeed(
-                          seedColor: kPrimaryColor,
-                          primary: kPrimaryColor,
-                          secondary: primary500,
-                          onSecondary: kSecondaryColor700,
-                        ),
-                      ),
-                      title: 'LM Feed',
-                      home: FutureBuilder(
-                        future: locator<LikeMindsService>().getMemberState(),
-                        initialData: null,
-                        builder:
-                            (BuildContext context, AsyncSnapshot snapshot) {
-                          if (snapshot.hasData) {
-                            return UniversalFeedScreen(
-                              openChatCallback: widget.openChatCallback,
-                            );
-                          }
-
-                          return Container(
-                            height: MediaQuery.of(context).size.height,
-                            width: MediaQuery.of(context).size.width,
-                            color: kBackgroundColor,
-                            child: const Center(
-                              child: LMLoader(
-                                isPrimary: true,
-                              ),
-                            ),
+                  LMNotificationHandler.instance.registerDevice(user!.id);
+                  return MaterialApp(
+                    theme: suraasaTheme,
+                    debugShowCheckedModeBanner: !isProd,
+                    navigatorKey: locator<NavigationService>().navigatorKey,
+                    title: 'LM Feed',
+                    home: FutureBuilder(
+                      future: locator<LikeMindsService>().getMemberState(),
+                      initialData: null,
+                      builder: (BuildContext context, AsyncSnapshot snapshot) {
+                        if (snapshot.hasData) {
+                          return UniversalFeedScreen(
+                            openChatCallback: widget.openChatCallback,
                           );
-                        },
-                      ),
-                    );
-                  } else {}
-                } else if (snapshot.hasError) {
-                  debugPrint("Error - ${snapshot.error}");
-                  return Container(
-                    height: MediaQuery.of(context).size.height,
-                    width: MediaQuery.of(context).size.width,
-                    color: kBackgroundColor,
-                    child: const Center(
-                      child: Text("An error has occured",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-                          )),
+                        }
+
+                        return Container(
+                          height: MediaQuery.of(context).size.height,
+                          width: MediaQuery.of(context).size.width,
+                          color: kBackgroundColor,
+                          child: const Center(
+                            child: LMLoader(
+                              isPrimary: true,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   );
-                }
+                } else {}
+              } else if (snapshot.hasError) {
+                debugPrint("Error - ${snapshot.error}");
                 return Container(
                   height: MediaQuery.of(context).size.height,
                   width: MediaQuery.of(context).size.width,
                   color: kBackgroundColor,
+                  child: const Center(
+                    child: Text("An error has occured",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                        )),
+                  ),
                 );
-              },
-            );
-          }),
+              }
+              return Container(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                color: kBackgroundColor,
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }
