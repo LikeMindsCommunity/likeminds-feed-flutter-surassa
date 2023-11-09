@@ -63,6 +63,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
 
   bool isDocumentPost = true; // flag for document or media post
   bool isMediaPost = true;
+  bool isVideoAttached = false;
   bool isUploading = false;
 
   String previewLink = '';
@@ -134,6 +135,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
         isDocumentPost = true;
         isMediaPost = true;
         showLinkPreview = true;
+        isVideoAttached = false;
       }
       setState(() {});
     }
@@ -158,14 +160,20 @@ class _NewPostScreenState extends State<NewPostScreen> {
       LMAnalytics.get().track(AnalyticsKeys.documentAttachedInPost,
           {'document_count': documentCount});
     } else {
-      int imageCount = 0;
-      for (var element in postMedia) {
-        if (element.mediaType == MediaType.image) {
-          imageCount++;
+      if (postMedia.first.mediaType == MediaType.video) {
+        LMAnalytics.get()
+            .track(AnalyticsKeys.imageAttachedToPost, {'video_count': 1});
+        isVideoAttached = true;
+      } else {
+        int imageCount = 0;
+        for (var element in postMedia) {
+          if (element.mediaType == MediaType.image) {
+            imageCount++;
+          }
         }
+        LMAnalytics.get().track(
+            AnalyticsKeys.imageAttachedToPost, {'image_count': imageCount});
       }
-      LMAnalytics.get().track(
-          AnalyticsKeys.imageAttachedToPost, {'image_count': imageCount});
     }
   }
 
@@ -195,6 +203,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
     } else {
       if (postMedia.isEmpty) {
         isMediaPost = true;
+        isVideoAttached = false;
         showLinkPreview = true;
       }
       setState(() {
@@ -207,7 +216,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
     if (uploadResponse) {
       isDocumentPost = true;
       showLinkPreview = false;
-      isMediaPost = true;
+      isMediaPost = false;
       setState(() {
         isUploading = false;
       });
@@ -215,6 +224,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
       if (postMedia.isEmpty) {
         isDocumentPost = true;
         isMediaPost = true;
+        isVideoAttached = false;
         showLinkPreview = true;
       }
       setState(() {
@@ -796,98 +806,107 @@ class _NewPostScreenState extends State<NewPostScreen> {
                         ), //BoxShadow
                       ],
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          isMediaPost
-                              ? LMIconButton(
-                                  icon: LMIcon(
-                                    type: LMIconType.svg,
-                                    assetPath: kAssetGalleryIcon,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    boxPadding: 0,
-                                    size: 44,
-                                  ),
-                                  onTap: (active) async {
-                                    LMAnalytics.get().track(
-                                        AnalyticsKeys.clickedOnAttachment,
-                                        {'type': 'image'});
-                                    final result =
-                                        await handlePermissions(context, 1);
-                                    if (result) {
-                                      pickImages();
-                                    }
-                                  },
-                                )
-                              : const SizedBox.shrink(),
-                          isMediaPost
-                              ? const SizedBox(width: 8)
-                              : const SizedBox.shrink(),
-                          isMediaPost
-                              ? LMIconButton(
-                                  icon: LMIcon(
-                                    type: LMIconType.svg,
-                                    assetPath: kAssetVideoIcon,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    boxPadding: 0,
-                                    size: 44,
-                                  ),
-                                  onTap: (active) async {
-                                    onUploading();
-                                    List<MediaModel>? pickedMediaFiles =
-                                        await PostMediaPicker.pickVideos(
-                                            postMedia.length);
-                                    if (pickedMediaFiles != null) {
-                                      setPickedMediaFiles(pickedMediaFiles);
-                                      onUploadedMedia(true);
-                                    } else {
-                                      onUploadedMedia(false);
-                                    }
-                                  },
-                                )
-                              : const SizedBox.shrink(),
-                          isDocumentPost
-                              ? const SizedBox(width: 8)
-                              : const SizedBox.shrink(),
-                          isDocumentPost
-                              ? LMIconButton(
-                                  icon: LMIcon(
-                                    type: LMIconType.svg,
-                                    assetPath: kAssetDocPDFIcon,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    boxPadding: 0,
-                                    size: 44,
-                                  ),
-                                  onTap: (active) async {
-                                    if (postMedia.length >= 3) {
-                                      //  TODO: Add your own toast message for document limit
-                                      return;
-                                    }
-                                    onUploading();
-                                    LMAnalytics.get().track(
-                                        AnalyticsKeys.clickedOnAttachment,
-                                        {'type': 'file'});
-                                    List<MediaModel>? pickedMediaFiles =
-                                        await PostMediaPicker.pickDocuments(
-                                            postMedia.length);
-                                    if (pickedMediaFiles != null) {
-                                      setPickedMediaFiles(pickedMediaFiles);
-                                      onUploadedDocument(true);
-                                    } else {
-                                      onUploadedDocument(false);
-                                    }
-                                  },
-                                )
-                              : const SizedBox.shrink(),
-                          const SizedBox(width: 8),
-                        ],
-                      ),
-                    ),
+                    child: isVideoAttached
+                        ? const SizedBox.shrink()
+                        : Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                isMediaPost
+                                    ? LMIconButton(
+                                        icon: LMIcon(
+                                          type: LMIconType.svg,
+                                          assetPath: kAssetGalleryIcon,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                          boxPadding: 0,
+                                          size: 44,
+                                        ),
+                                        onTap: (active) async {
+                                          LMAnalytics.get().track(
+                                              AnalyticsKeys.clickedOnAttachment,
+                                              {'type': 'image'});
+                                          final result =
+                                              await handlePermissions(
+                                                  context, 1);
+                                          if (result) {
+                                            pickImages();
+                                          }
+                                        },
+                                      )
+                                    : const SizedBox.shrink(),
+                                isMediaPost && postMedia.isEmpty
+                                    ? const SizedBox(width: 8)
+                                    : const SizedBox.shrink(),
+                                isMediaPost && postMedia.isEmpty
+                                    ? LMIconButton(
+                                        icon: LMIcon(
+                                          type: LMIconType.svg,
+                                          assetPath: kAssetVideoIcon,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                          boxPadding: 0,
+                                          size: 44,
+                                        ),
+                                        onTap: (active) async {
+                                          onUploading();
+                                          List<MediaModel>? pickedMediaFiles =
+                                              await PostMediaPicker.pickVideos(
+                                                  postMedia.length);
+                                          if (pickedMediaFiles != null) {
+                                            setPickedMediaFiles(
+                                                pickedMediaFiles);
+                                            onUploadedMedia(true);
+                                          } else {
+                                            onUploadedMedia(false);
+                                          }
+                                        },
+                                      )
+                                    : const SizedBox.shrink(),
+                                isDocumentPost
+                                    ? const SizedBox(width: 8)
+                                    : const SizedBox.shrink(),
+                                isDocumentPost
+                                    ? LMIconButton(
+                                        icon: LMIcon(
+                                          type: LMIconType.svg,
+                                          assetPath: kAssetDocPDFIcon,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                          boxPadding: 0,
+                                          size: 44,
+                                        ),
+                                        onTap: (active) async {
+                                          if (postMedia.length >= 3) {
+                                            //  TODO: Add your own toast message for document limit
+                                            return;
+                                          }
+                                          onUploading();
+                                          LMAnalytics.get().track(
+                                              AnalyticsKeys.clickedOnAttachment,
+                                              {'type': 'file'});
+                                          List<MediaModel>? pickedMediaFiles =
+                                              await PostMediaPicker
+                                                  .pickDocuments(
+                                                      postMedia.length);
+                                          if (pickedMediaFiles != null) {
+                                            setPickedMediaFiles(
+                                                pickedMediaFiles);
+                                            onUploadedDocument(true);
+                                          } else {
+                                            onUploadedDocument(false);
+                                          }
+                                        },
+                                      )
+                                    : const SizedBox.shrink(),
+                                const SizedBox(width: 8),
+                              ],
+                            ),
+                          ),
                   ),
                 ),
               ],
