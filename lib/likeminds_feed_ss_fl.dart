@@ -2,22 +2,19 @@ library likeminds_feed_ss_fl;
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_no_internet_widget/flutter_no_internet_widget.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/src/services/navigation_service.dart';
-import 'package:likeminds_feed_ss_fl/src/utils/icons.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/network_handling.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/utils.dart';
 import 'package:likeminds_feed_ss_fl/src/views/universal_feed_page.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 
-import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/credentials/credentials.dart';
-import 'package:overlay_support/overlay_support.dart';
+import 'package:media_kit/media_kit.dart';
 
 export 'src/services/service_locator.dart';
 export 'src/utils/analytics/analytics.dart';
@@ -36,8 +33,6 @@ class LMFeed extends StatefulWidget {
   final String apiKey;
   final Function(BuildContext context)? openChatCallback;
   final LMSDKCallback? callback;
-
-  static LMFeed? _instance;
 
   /// INIT - Get the LMFeed instance and pass the credentials (if any)
   /// to the instance. This will be used to initialize the app.
@@ -101,7 +96,7 @@ class _LMFeedState extends State<LMFeed> {
     super.initState();
     networkConnectivity = NetworkConnectivity.instance;
     networkConnectivity.initialise();
-
+    MediaKit.ensureInitialized();
     isProd = prodFlag;
     userId = widget.userId!.isEmpty
         ? isProd

@@ -90,7 +90,7 @@ class PostMediaPicker {
       // final XFile? pickedFile =
       List<MediaModel> videoFiles = [];
       final FilePickerResult? pickedFiles = await FilePicker.platform.pickFiles(
-        allowMultiple: true,
+        allowMultiple: false,
         type: FileType.video,
         // allowedExtensions: videoExtentions,
       );
