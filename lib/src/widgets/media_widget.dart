@@ -72,7 +72,7 @@ class _SSPostMediaState extends State<SSPostMedia> {
             documentIcon: const LMIcon(
               type: LMIconType.svg,
               assetPath: kAssetPDFIcon,
-              size: 20,
+              size: 12,
             ),
             size: PostHelper.getFileSizeString(bytes: e.attachmentMeta.size!),
             documentUrl: e.attachmentMeta.url,
