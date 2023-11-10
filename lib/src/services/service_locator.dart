@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
-import 'package:likeminds_feed_bloc_fl/likeminds_feed_bloc_fl.dart' as feedBloc;
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
-import 'package:likeminds_feed_ss_fl/src/services/bloc_service.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/post_bloc/post_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/services/media_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/navigation_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/credentials/credentials.dart';
@@ -23,11 +22,6 @@ void _setupLocator(LMSDKCallback? callback, String apiKey,
     ));
   }
 
-  // TODO: Remove BLoC Service
-  if (!locator.isRegistered<BlocService>()) {
-    locator.registerSingleton(BlocService());
-  }
-
   MediaService _mediaService = MediaService(prodFlag);
 
   LMAnalytics.get().initialize();
@@ -45,15 +39,9 @@ void _setupLocator(LMSDKCallback? callback, String apiKey,
     locator.registerSingleton(_mediaService);
   }
 
-  if (!locator.isRegistered<feedBloc.LMFeedBloc>()) {
-    feedBloc.LMFeedBloc.get().initialize(
-      lmFeedClient: lmFeedClient,
-      mediaService: feedBloc.MediaService(
-        bucketName: prodFlag ? CredsProd.bucketName : CredsDev.bucketName,
-        poolId: prodFlag ? CredsProd.poolId : CredsDev.poolId,
-      ),
-    );
-    locator.registerSingleton(feedBloc.LMFeedBloc.get());
+  if (!locator.isRegistered<LMPostBloc>()) {
+    LMPostBloc lmPostBloc = LMPostBloc();
+    locator.registerSingleton(lmPostBloc);
   }
 }
 

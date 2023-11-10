@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
-import 'package:likeminds_feed_bloc_fl/likeminds_feed_bloc_fl.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/post_bloc/post_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_action_id.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_utils.dart';
-import 'package:likeminds_feed_ss_fl/src/utils/utils.dart';
 import 'package:likeminds_feed_ss_fl/src/views/likes/likes_screen.dart';
 import 'package:likeminds_feed_ss_fl/src/views/media_preview.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post/edit_post_screen.dart';
@@ -81,7 +79,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
 
   @override
   Widget build(BuildContext context) {
-    LMPostBloc lmPostBloc = locator<LMFeedBloc>().lmPostBloc;
+    LMPostBloc lmPostBloc = locator<LMPostBloc>();
     timeago.setLocaleMessages('en', SSCustomMessages());
     return InheritedPostProvider(
       post: widget.post.toPost(),

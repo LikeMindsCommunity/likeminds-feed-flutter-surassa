@@ -6,11 +6,10 @@ import 'package:likeminds_feed/likeminds_feed.dart';
 
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:likeminds_feed_bloc_fl/likeminds_feed_bloc_fl.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/post_bloc/post_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/simple_bloc_observer.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/universal_feed/universal_feed_bloc.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/utils.dart';
@@ -608,7 +607,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
 
   @override
   Widget build(BuildContext context) {
-    LMPostBloc newPostBloc = locator<LMFeedBloc>().lmPostBloc;
+    LMPostBloc newPostBloc = locator<LMPostBloc>();
     final ThemeData theme = LMThemeData.suraasaTheme;
     return Scaffold(
       backgroundColor: LMThemeData.kBackgroundColor,

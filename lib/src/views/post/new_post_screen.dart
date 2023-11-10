@@ -9,8 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:likeminds_feed/likeminds_feed.dart';
-import 'package:likeminds_feed_bloc_fl/likeminds_feed_bloc_fl.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/post_bloc/post_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/analytics/analytics.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
@@ -86,7 +85,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
               ..pageSize(20)
               ..isEnabled(true))
             .build());
-    lmPostBloc = locator<LMFeedBloc>().lmPostBloc;
+    lmPostBloc = locator<LMPostBloc>();
     if (_focusNode.canRequestFocus) {
       _focusNode.requestFocus();
     }
@@ -318,7 +317,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    lmPostBloc = locator<LMFeedBloc>().lmPostBloc;
+    lmPostBloc = locator<LMPostBloc>();
     Size screenSize = MediaQuery.of(context).size;
     ThemeData theme = LMThemeData.suraasaTheme;
     return WillPopScope(
