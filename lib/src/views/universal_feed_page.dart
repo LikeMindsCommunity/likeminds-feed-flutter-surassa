@@ -94,7 +94,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
   bool checkPostCreationRights() {
     final MemberStateResponse memberStateResponse =
         UserLocalPreference.instance.fetchMemberRights();
-    if (memberStateResponse.state == 1) {
+    if (!memberStateResponse.success || memberStateResponse.state == 1) {
       return true;
     }
     final memberRights = UserLocalPreference.instance.fetchMemberRight(9);
@@ -571,7 +571,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
   bool checkPostCreationRights() {
     final MemberStateResponse memberStateResponse =
         UserLocalPreference.instance.fetchMemberRights();
-    if (memberStateResponse.state == 1) {
+    if (!memberStateResponse.success || memberStateResponse.state == 1) {
       return true;
     }
     final memberRights = UserLocalPreference.instance.fetchMemberRight(9);

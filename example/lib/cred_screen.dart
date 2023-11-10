@@ -125,6 +125,7 @@ class _CredScreenState extends State<CredScreen> {
 
       // Subscribe to link changes
       _streamSubscription = linkStream.listen((String? link) async {
+        initialURILinkHandled = true;
         if (link != null) {
           initialURILinkHandled = true;
           // Handle the deep link

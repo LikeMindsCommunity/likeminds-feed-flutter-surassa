@@ -72,8 +72,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     _addCommentBloc.close();
     _addCommentReplyBloc.close();
     _pagingController.dispose();
-    _commentController?.dispose();
-    focusNode.dispose();
     rebuildButton.dispose();
     rebuildPostWidget.dispose();
     rebuildReplyWidget.dispose();
@@ -266,7 +264,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   bool checkCommentRights() {
     final MemberStateResponse memberStateResponse =
         UserLocalPreference.instance.fetchMemberRights();
-    if (memberStateResponse.state == 1) {
+    if (!memberStateResponse.success || memberStateResponse.state == 1) {
       return true;
     }
     bool memberRights = UserLocalPreference.instance.fetchMemberRight(10);
@@ -568,11 +566,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                           String
                                                                               commentText =
                                                                               TaggingHelper.encodeString(_commentController!.text, userTags);
+
                                                                           commentText =
                                                                               commentText.trim();
                                                                           if (commentText
                                                                               .isEmpty) {
                                                                             toast("Please write something to post");
+
                                                                             return;
                                                                           }
 
@@ -687,6 +687,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                           if (commentText
                                                                               .isEmpty) {
                                                                             toast("Please write something to post");
+
                                                                             return;
                                                                           }
 
