@@ -27,7 +27,7 @@ class AddCommentBloc extends Bloc<AddCommentEvent, AddCommentState> {
       required Emitter<AddCommentState> emit}) async {
     emit(AddCommentLoading());
     AddCommentResponse? response =
-        await locator<LikeMindsService>().addComment(addCommentRequest);
+        await locator<LMFeedClient>().addComment(addCommentRequest);
     if (!response.success) {
       emit(const AddCommentError(message: "An error occurred"));
     } else {

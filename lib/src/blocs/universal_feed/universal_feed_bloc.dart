@@ -43,7 +43,7 @@ class UniversalFeedBloc extends Bloc<UniversalFeedEvent, UniversalFeedState> {
     if (event.topics != null && event.topics!.isNotEmpty) {
       selectedTopics = event.topics!.map((e) => e.toTopic()).toList();
     }
-    GetFeedResponse? response = await locator<LikeMindsService>().getFeed(
+    GetFeedResponse? response = await locator<LMFeedClient>().getFeed(
       (GetFeedRequestBuilder()
             ..page(offset)
             ..topics(selectedTopics)

@@ -9,7 +9,7 @@ part 'toggle_like_comment_state.dart';
 
 class ToggleLikeCommentBloc
     extends Bloc<ToggleLikeCommentEvent, ToggleLikeCommentState> {
-  final LikeMindsService lmService = locator<LikeMindsService>();
+  final LMFeedClient lmService = locator<LMFeedClient>();
 
   ToggleLikeCommentBloc() : super(ToggleLikeCommentInitial()) {
     on<ToggleLikeComment>((event, emit) async {

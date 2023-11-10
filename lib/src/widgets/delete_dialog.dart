@@ -66,7 +66,7 @@ Dialog deleteConfirmationDialog(
                                       rebuildReasonBox.value =
                                           !rebuildReasonBox.value;
                                       GetDeleteReasonResponse response =
-                                          await locator<LikeMindsService>()
+                                          await locator<LMFeedClient>()
                                               .getReportTags(
                                                   ((GetDeleteReasonRequestBuilder()
                                                         ..type(0))

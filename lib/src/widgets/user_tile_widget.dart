@@ -29,7 +29,7 @@ class LMUserTile extends StatelessWidget {
           fallbackText: user.name,
           onTap: () {
             if (user.sdkClientInfo != null) {
-              locator<LikeMindsService>()
+              locator<LMFeedClient>()
                   .routeToProfile(user.sdkClientInfo!.userUniqueId);
             }
           },

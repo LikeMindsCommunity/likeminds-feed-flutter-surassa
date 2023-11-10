@@ -15,7 +15,7 @@ class TopicBloc extends Bloc<TopicEvent, TopicState> {
         emit(TopicLoading());
       } else if (event is GetTopic) {
         emit(TopicLoading());
-        GetTopicsResponse response = await locator<LikeMindsService>()
+        GetTopicsResponse response = await locator<LMFeedClient>()
             .getTopics(event.getTopicFeedRequest);
         if (response.success) {
           emit(TopicLoaded(response));

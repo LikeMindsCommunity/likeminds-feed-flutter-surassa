@@ -71,7 +71,7 @@ class LMFeed extends StatefulWidget {
   }
 
   static void logout() {
-    locator<LikeMindsService>().logout(LogoutRequestBuilder().build());
+    locator<LMFeedClient>().logout(LogoutRequestBuilder().build());
   }
 
   const LMFeed._(
@@ -114,13 +114,13 @@ class _LMFeedState extends State<LMFeed> {
     userName = widget.userName!.isEmpty ? "Test username" : widget.userName!;
     if (imageUrl == null || imageUrl!.isEmpty) {
       initiateUser =
-          locator<LikeMindsService>().initiateUser((InitiateUserRequestBuilder()
+          locator<LMFeedClient>().initiateUser((InitiateUserRequestBuilder()
                 ..userId(userId)
                 ..userName(userName))
               .build());
     } else {
       initiateUser =
-          locator<LikeMindsService>().initiateUser((InitiateUserRequestBuilder()
+          locator<LMFeedClient>().initiateUser((InitiateUserRequestBuilder()
                 ..userId(userId)
                 ..userName(userName)
                 ..imageUrl(imageUrl!))
@@ -188,7 +188,7 @@ class _LMFeedState extends State<LMFeed> {
             valueListenable: rebuildOnConnectivityChange,
             builder: (context, _, __) {
               return FutureBuilder<InitiateUserResponse>(
-                future: locator<LikeMindsService>().initiateUser(
+                future: locator<LMFeedClient>().initiateUser(
                   (InitiateUserRequestBuilder()
                         ..userId(userId)
                         ..userName(userName))
@@ -202,11 +202,11 @@ class _LMFeedState extends State<LMFeed> {
                       user = response.initiateUser?.user;
 
                       //Get community configurations
-                      locator<LikeMindsService>().getCommunityConfigurations();
+                      locator<LMFeedClient>().getCommunityConfigurations();
 
                       LMNotificationHandler.instance.registerDevice(user!.id);
                       return FutureBuilder(
-                        future: locator<LikeMindsService>().getMemberState(),
+                        future: locator<LMFeedClient>().getMemberState(),
                         initialData: null,
                         builder:
                             (BuildContext context, AsyncSnapshot snapshot) {

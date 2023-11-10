@@ -37,7 +37,7 @@ class AllCommentsBloc extends Bloc<AllCommentsEvent, AllCommentsState> {
     }
 
     PostDetailResponse response =
-        await locator<LikeMindsService>().getPostDetails(postDetailRequest);
+        await locator<LMFeedClient>().getPostDetails(postDetailRequest);
     if (!response.success) {
       emit(const AllCommentsError(message: "An error occurred"));
     } else {

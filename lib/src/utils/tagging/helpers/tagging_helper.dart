@@ -74,7 +74,7 @@ class TaggingHelper {
   }
 
   static void routeToProfile(String userId) {
-    locator<LikeMindsService>().routeToProfile(userId);
+    locator<LMFeedClient>().routeToProfile(userId);
   }
 
   static String convertRouteToTag(String text, {bool withTilde = true}) {

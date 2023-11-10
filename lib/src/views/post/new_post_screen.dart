@@ -81,7 +81,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
     super.initState();
     user = UserLocalPreference.instance.fetchUserData();
     getTopicsResponse =
-        locator<LikeMindsService>().getTopics((GetTopicsRequestBuilder()
+        locator<LMFeedClient>().getTopics((GetTopicsRequestBuilder()
               ..page(1)
               ..pageSize(20)
               ..isEnabled(true))
@@ -273,7 +273,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
       DecodeUrlRequest request =
           (DecodeUrlRequestBuilder()..url(previewLink)).build();
       DecodeUrlResponse response =
-          await locator<LikeMindsService>().decodeUrl(request);
+          await locator<LMFeedClient>().decodeUrl(request);
       if (response.success == true) {
         OgTags? responseTags = response.ogTags;
         linkModel = MediaModel(
@@ -480,7 +480,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                 imageUrl: user.imageUrl,
                                 onTap: () {
                                   if (user.sdkClientInfo != null) {
-                                    locator<LikeMindsService>().routeToProfile(
+                                    locator<LMFeedClient>().routeToProfile(
                                         user.sdkClientInfo!.userUniqueId);
                                   }
                                 },

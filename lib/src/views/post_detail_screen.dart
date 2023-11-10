@@ -177,7 +177,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   Future updatePostDetails(BuildContext context) async {
     final GetPostResponse postDetails =
-        await locator<LikeMindsService>().getPost(
+        await locator<LMFeedClient>().getPost(
       (GetPostRequestBuilder()
             ..postId(widget.postId)
             ..page(1)
@@ -458,7 +458,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                           onTap: () {
                                             if (currentUser.sdkClientInfo !=
                                                 null) {
-                                              locator<LikeMindsService>()
+                                              locator<LMFeedClient>()
                                                   .routeToProfile(currentUser
                                                       .sdkClientInfo!
                                                       .userUniqueId);
@@ -911,7 +911,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                         key: ValueKey(item.id),
                                                         onTagTap:
                                                             (String userId) {
-                                                          locator<LikeMindsService>()
+                                                          locator<LMFeedClient>()
                                                               .routeToProfile(
                                                                   userId);
                                                         },
@@ -996,7 +996,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                         .userId]!
                                                                     .sdkClientInfo !=
                                                                 null) {
-                                                              locator<LikeMindsService>().routeToProfile(
+                                                              locator<LMFeedClient>().routeToProfile(
                                                                   postDetailResponse!
                                                                       .users![item
                                                                           .userId]!

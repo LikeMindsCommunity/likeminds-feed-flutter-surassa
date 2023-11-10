@@ -177,7 +177,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                           ),
                           onProfileTap: () {
                             if (widget.user.sdkClientInfo != null) {
-                              locator<LikeMindsService>().routeToProfile(
+                              locator<LMFeedClient>().routeToProfile(
                                   widget.user.sdkClientInfo!.userUniqueId);
                             }
                           },
@@ -224,7 +224,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                       action: (String reason) async {
                                         Navigator.of(childContext).pop();
                                         final res =
-                                            await locator<LikeMindsService>()
+                                            await locator<LMFeedClient>()
                                                 .getMemberState();
 
                                         String? postType =
@@ -323,7 +323,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                         ),
                   LMPostContent(
                     onTagTap: (String userId) {
-                      locator<LikeMindsService>().routeToProfile(userId);
+                      locator<LMFeedClient>().routeToProfile(userId);
                     },
                   ),
                   postDetails!.attachments != null &&
@@ -472,7 +472,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                     !rebuildLikeWidget.value;
 
                                 final response =
-                                    await locator<LikeMindsService>().likePost(
+                                    await locator<LMFeedClient>().likePost(
                                         (LikePostRequestBuilder()
                                               ..postId(postDetails!.id))
                                             .build());

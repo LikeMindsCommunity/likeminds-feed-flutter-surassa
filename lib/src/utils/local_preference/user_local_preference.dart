@@ -57,7 +57,7 @@ class UserLocalPreference {
         _sharedPreferences!.getString('memberRights');
 
     if (getMemberStateString == null) {
-      locator<LikeMindsService>().getMemberState();
+      locator<LMFeedClient>().getMemberState();
       return MemberStateResponse(
           success: false, errorMessage: "An error occurred");
     }

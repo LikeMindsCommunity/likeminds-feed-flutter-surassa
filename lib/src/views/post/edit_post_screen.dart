@@ -97,7 +97,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
       DecodeUrlRequest request =
           (DecodeUrlRequestBuilder()..url(previewLink)).build();
       DecodeUrlResponse response =
-          await locator<LikeMindsService>().decodeUrl(request);
+          await locator<LMFeedClient>().decodeUrl(request);
       if (response.success == true) {
         OgTags? responseTags = response.ogTags;
         linkModel = MediaModel(
@@ -125,7 +125,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
     user = UserLocalPreference.instance.fetchUserData();
     postId = widget.postId;
     textEditingController = TextEditingController();
-    postFuture = locator<LikeMindsService>().getPost((GetPostRequestBuilder()
+    postFuture = locator<LMFeedClient>().getPost((GetPostRequestBuilder()
           ..postId(widget.postId)
           ..page(1)
           ..pageSize(10))
@@ -350,7 +350,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                   imageUrl: user!.imageUrl,
                   onTap: () {
                     if (user!.sdkClientInfo != null) {
-                      locator<LikeMindsService>()
+                      locator<LMFeedClient>()
                           .routeToProfile(user!.sdkClientInfo!.userUniqueId);
                     }
                   },

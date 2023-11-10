@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
+import 'package:likeminds_feed_bloc_fl/likeminds_feed_bloc_fl.dart';
 import 'package:likeminds_feed_ss_fl/src/models/post_view_model.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
@@ -63,7 +64,7 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
             );
           } else {
             File mediaFile = media.mediaFile!;
-            final String? response = await locator<LikeMindsService>()
+            final String? response = await locator<MediaService>()
                 .uploadFile(mediaFile, user.userUniqueId);
             if (response != null) {
               attachments.add(
@@ -105,7 +106,7 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
           .build();
 
       final AddPostResponse response =
-          await locator<LikeMindsService>().addPost(request);
+          await locator<LMFeedClient>().addPost(request);
 
       if (response.success) {
         emit(
@@ -130,7 +131,7 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
       String postText = event.postText;
 
       var response =
-          await locator<LikeMindsService>().editPost((EditPostRequestBuilder()
+          await locator<LMFeedClient>().editPost((EditPostRequestBuilder()
                 ..attachments(attachments ?? [])
                 ..postId(event.postId)
                 ..postText(postText))
@@ -161,7 +162,7 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
   }
 
   mapDeletePostHandler(DeletePost event, Emitter<NewPostState> emit) async {
-    final response = await locator<LikeMindsService>().deletePost(
+    final response = await locator<LMFeedClient>().deletePost(
       (DeletePostRequestBuilder()
             ..postId(event.postId)
             ..deleteReason(event.reason))
@@ -196,7 +197,7 @@ class NewPostBloc extends Bloc<NewPostEvents, NewPostState> {
         (PinPostRequestBuilder()..postId(event.postId)).build();
 
     PinPostResponse response =
-        await locator<LikeMindsService>().pinPost(request);
+        await locator<LMFeedClient>().pinPost(request);
 
     if (response.success) {
       toast(event.isPinned ? "Post pinned" : "Post unpinned",

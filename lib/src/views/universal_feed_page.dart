@@ -77,7 +77,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
   void initState() {
     super.initState();
     _addPaginationListener();
-    getTopicsResponse = locator<LikeMindsService>().getTopics(
+    getTopicsResponse = locator<LMFeedClient>().getTopics(
       (GetTopicsRequestBuilder()
             ..page(1)
             ..pageSize(20))
@@ -136,7 +136,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
   // and updates the respective future
   void updateUnreadNotificationCount() async {
     getUnreadNotificationCount =
-        locator<LikeMindsService>().getUnreadNotificationCount();
+        locator<LMFeedClient>().getUnreadNotificationCount();
     await getUnreadNotificationCount;
     _rebuildAppBar.value = !_rebuildAppBar.value;
   }

@@ -18,7 +18,7 @@ class LikesBloc extends Bloc<LikesEvent, LikesState> {
         }
         try {
           GetPostLikesResponse? response =
-              await locator<LikeMindsService>().getPostLikes(
+              await locator<LMFeedClient>().getPostLikes(
             (GetPostLikesRequestBuilder()
                   ..postId(event.postId)
                   ..page(event.offset)
@@ -49,7 +49,7 @@ class LikesBloc extends Bloc<LikesEvent, LikesState> {
         }
         try {
           GetCommentLikesResponse response =
-              await locator<LikeMindsService>().getCommentLikes(
+              await locator<LMFeedClient>().getCommentLikes(
             (GetCommentLikesRequestBuilder()
                   ..postId(event.postId)
                   ..commentId(event.commentId)

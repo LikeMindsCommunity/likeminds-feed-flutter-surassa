@@ -240,7 +240,7 @@ class _FeedScreenState extends State<FeedScreen> {
                           refresh: (bool isDeleted) async {
                             if (!isDeleted) {
                               final GetPostResponse updatedPostDetails =
-                                  await locator<LikeMindsService>().getPost(
+                                  await locator<LMFeedClient>().getPost(
                                 (GetPostRequestBuilder()
                                       ..postId(item.id)
                                       ..page(1)

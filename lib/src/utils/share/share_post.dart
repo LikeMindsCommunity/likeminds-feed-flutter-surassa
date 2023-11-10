@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/credentials/credentials.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post_detail_screen.dart';
 import 'package:share_plus/share_plus.dart';
@@ -50,7 +49,7 @@ class SharePost {
     List secondPathSegment = request.link.split('post_id=');
     if (secondPathSegment.length > 1 && secondPathSegment[1] != null) {
       String postId = secondPathSegment[1];
-      await locator<LikeMindsService>()
+      await locator<LMFeedClient>()
           .initiateUser((InitiateUserRequestBuilder()
                 ..apiKey(request.apiKey)
                 ..userId(request.userUniqueId)

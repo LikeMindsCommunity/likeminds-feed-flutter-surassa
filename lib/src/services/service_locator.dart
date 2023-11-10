@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
-import 'package:likeminds_feed_bloc_fl/likeminds_feed_bloc_fl.dart';
+import 'package:likeminds_feed_bloc_fl/likeminds_feed_bloc_fl.dart' as feedBloc;
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_fl/src/services/bloc_service.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
+import 'package:likeminds_feed_ss_fl/src/services/media_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/navigation_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/credentials/credentials.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/icons.dart';
@@ -15,11 +15,6 @@ void _setupLocator(LMSDKCallback? callback, String apiKey,
     GlobalKey<NavigatorState> navigatorKey) {
   locator.allowReassignment = true;
   loadSvgIntoCache();
-
-  // TODO: Remove LikeMindsService
-  if (!locator.isRegistered<LikeMindsService>()) {
-    locator.registerSingleton(LikeMindsService(callback, apiKey));
-  }
 
   // TODO: Remove NavigationService
   if (!locator.isRegistered<NavigationService>()) {
@@ -33,6 +28,10 @@ void _setupLocator(LMSDKCallback? callback, String apiKey,
     locator.registerSingleton(BlocService());
   }
 
+  MediaService _mediaService = MediaService(prodFlag);
+
+  LMAnalytics.get().initialize();
+
   LMFeedClient lmFeedClient = (LMFeedClientBuilder()
         ..apiKey(apiKey)
         ..sdkCallback(callback))
@@ -42,15 +41,19 @@ void _setupLocator(LMSDKCallback? callback, String apiKey,
     locator.registerSingleton(lmFeedClient);
   }
 
-  if (!locator.isRegistered<LMFeedBloc>()) {
-    LMFeedBloc.get().initialize(
+  if(!locator.isRegistered<MediaService>()){
+    locator.registerSingleton(_mediaService);
+  }
+
+  if (!locator.isRegistered<feedBloc.LMFeedBloc>()) {
+    feedBloc.LMFeedBloc.get().initialize(
       lmFeedClient: lmFeedClient,
-      mediaService: MediaService(
+      mediaService: feedBloc.MediaService(
         bucketName: prodFlag ? CredsProd.bucketName : CredsDev.bucketName,
         poolId: prodFlag ? CredsProd.poolId : CredsDev.poolId,
       ),
     );
-    locator.registerSingleton(LMFeedBloc.get());
+    locator.registerSingleton(feedBloc.LMFeedBloc.get());
   }
 }
 

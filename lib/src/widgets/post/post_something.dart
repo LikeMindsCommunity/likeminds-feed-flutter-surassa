@@ -49,7 +49,7 @@ class PostSomething extends StatelessWidget {
                 boxShape: BoxShape.circle,
                 onTap: () {
                   if (user.sdkClientInfo != null) {
-                    locator<LikeMindsService>()
+                    locator<LMFeedClient>()
                         .routeToProfile(user.sdkClientInfo!.userUniqueId);
                   }
                 },

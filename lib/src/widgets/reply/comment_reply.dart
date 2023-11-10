@@ -86,7 +86,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
         return LMReplyTile(
             comment: element,
             onTagTap: (String userId) {
-              locator<LikeMindsService>().routeToProfile(userId);
+              locator<LMFeedClient>().routeToProfile(userId);
             },
             user: user,
             profilePicture: LMProfilePicture(
@@ -95,7 +95,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
               fallbackText: user.name,
               onTap: () {
                 if (user.sdkClientInfo != null) {
-                  locator<LikeMindsService>()
+                  locator<LMFeedClient>()
                       .routeToProfile(user.sdkClientInfo!.userUniqueId);
                 }
               },

@@ -40,7 +40,7 @@ class AddCommentReplyBloc
     });
     on<EditReply>((event, emit) async {
       emit(EditReplyLoading());
-      EditCommentReplyResponse? response = await locator<LikeMindsService>()
+      EditCommentReplyResponse? response = await locator<LMFeedClient>()
           .editCommentReply(event.editCommentReplyRequest);
       if (!response.success) {
         emit(const EditReplyError(message: "An error occurred"));
@@ -63,7 +63,7 @@ class AddCommentReplyBloc
     });
     on<EditComment>((event, emit) async {
       emit(EditCommentLoading());
-      EditCommentResponse? response = await locator<LikeMindsService>()
+      EditCommentResponse? response = await locator<LMFeedClient>()
           .editComment(event.editCommentRequest);
       if (!response.success) {
         emit(const EditCommentError(message: "An error occurred"));
@@ -75,7 +75,7 @@ class AddCommentReplyBloc
       (event, emit) async {
         try {
           emit(CommentDeletionLoading());
-          final response = await locator<LikeMindsService>().deleteComment(
+          final response = await locator<LMFeedClient>().deleteComment(
             event.deleteCommentRequest,
           );
 
@@ -113,7 +113,7 @@ class AddCommentReplyBloc
       (event, emit) async {
         try {
           emit(ReplyDeletionLoading());
-          final response = await locator<LikeMindsService>().deleteComment(
+          final response = await locator<LMFeedClient>().deleteComment(
             event.deleteCommentReplyRequest,
           );
 
@@ -153,7 +153,7 @@ class AddCommentReplyBloc
       {required AddCommentReply addCommentReplyEvent,
       required Emitter<AddCommentReplyState> emit}) async {
     emit(AddCommentReplyLoading());
-    AddCommentReplyResponse response = await locator<LikeMindsService>()
+    AddCommentReplyResponse response = await locator<LMFeedClient>()
         .addCommentReply(addCommentReplyEvent.addCommentRequest);
     if (!response.success) {
       emit(const AddCommentReplyError(message: "An error occurred"));

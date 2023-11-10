@@ -51,7 +51,7 @@ class LMNotificationHandler {
           ..deviceId(deviceId))
         .build();
     this.memberId = memberId;
-    final response = await locator<LikeMindsService>().registerDevice(request);
+    final response = await locator<LMFeedClient>().registerDevice(request);
     if (response.success) {
       debugPrint("Device registered for notifications successfully");
     } else {
