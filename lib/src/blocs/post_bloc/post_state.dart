@@ -7,7 +7,7 @@ abstract class LMPostState extends Equatable {
   List<Object> get props => [];
 }
 
-class NewPostInitiate extends LMPostState {}
+class LMPostInitiate extends LMPostState {}
 
 class NewPostUploading extends LMPostState {
   final Stream<double> progress;

@@ -19,7 +19,7 @@ part 'handler/toggle_pin_post_event_handler.dart';
 
 
 class LMPostBloc extends Bloc<LMPostEvents, LMPostState> {
-  LMPostBloc() : super(NewPostInitiate()) {
+  LMPostBloc() : super(LMPostInitiate()) {
     on<CreateNewPost>(newPostEventHandler);
     on<EditPost>(editPostEventHandler);
     on<DeletePost>(deletePostEventHandler);
