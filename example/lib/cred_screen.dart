@@ -99,7 +99,7 @@ class _CredScreenState extends State<CredScreen> {
                   ..userName("Test User")
                   ..userUniqueId(userId ?? "Test-User-Id"))
                 .build(),
-            context);
+            rootNavigatorKey);
       }
 
       // Subscribe to link changes
@@ -121,7 +121,7 @@ class _CredScreenState extends State<CredScreen> {
                     ..userName("Test User")
                     ..userUniqueId(userId ?? "Test-User-Id"))
                   .build(),
-              context);
+              rootNavigatorKey);
         }
       }, onError: (err) {
         // Handle exception by warning the user their action did not succeed
