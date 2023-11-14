@@ -2,7 +2,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/analytics_bloc/analytics_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/bloc.dart';
+
 import 'package:likeminds_feed_ss_fl/src/services/navigation_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
@@ -90,6 +92,8 @@ class LMNotificationHandler {
     String host = "";
 
     LMAnalytics.get().track(AnalyticsKeys.notificationClicked, {});
+    locator<LMFeedBloc>().lmAnalyticsBloc.add(const FireAnalyticEvent(
+        eventName: AnalyticsKeys.notificationClicked, eventProperties: {}));
 
     // Only notifications with data payload are handled
     if (message.data.isNotEmpty) {
@@ -119,6 +123,18 @@ class LMNotificationHandler {
       LMAnalytics.get().track(AnalyticsKeys.commentListOpen, {
         'postId': postId,
       });
+      locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+            eventName: AnalyticsKeys.commentListOpen,
+            eventProperties: {
+              'postId': postId,
+            },
+          ));
+
+      locator<LMFeedBloc>()
+          .lmRoutingBloc
+          .add(HandlePostNotificationEvent(postId: postId));
+
+      // Comment below code if navigation is being handle by LMRoutingBloc
       locator<NavigationService>().navigateTo(MaterialPageRoute(
         builder: (context) {
           return PostDetailScreen(postId: postId);
@@ -175,6 +191,10 @@ class LMNotificationHandler {
         slideDismissDirection: DismissDirection.horizontal,
       );
       LMAnalytics.get().track(AnalyticsKeys.notificationReceived, {});
+      locator<LMFeedBloc>().lmAnalyticsBloc.add(const FireAnalyticEvent(
+            eventName: AnalyticsKeys.notificationReceived,
+            eventProperties: {},
+          ));
     }
   }
 }

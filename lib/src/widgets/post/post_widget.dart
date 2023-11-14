@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
-import 'package:likeminds_feed_ss_fl/src/blocs/post_bloc/post_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_action_id.dart';
@@ -79,7 +78,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
 
   @override
   Widget build(BuildContext context) {
-    LMPostBloc lmPostBloc = locator<LMPostBloc>();
+    LMPostBloc lmPostBloc = locator<LMFeedBloc>().lmPostBloc;
     timeago.setLocaleMessages('en', SSCustomMessages());
     return InheritedPostProvider(
       post: widget.post.toPost(),
@@ -120,6 +119,11 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                 LMAnalytics.get().track(AnalyticsKeys.commentListOpen, {
                   'postId': widget.post.id,
                 });
+                locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+                        eventName: AnalyticsKeys.commentListOpen,
+                        eventProperties: {
+                          'postId': widget.post.id,
+                        }));
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => PostDetailScreen(
@@ -154,7 +158,8 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                   LMThemeData.kHorizontalPaddingMedium,
                                   LMTextView(
                                     text: "Pinned Post",
-                                    textStyle: TextStyle(color: LMThemeData.primary500),
+                                    textStyle: TextStyle(
+                                        color: LMThemeData.primary500),
                                   )
                                 ],
                               ),
@@ -247,6 +252,20 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                             "post_type": postType,
                                           },
                                         );
+                                        locator<LMFeedBloc>()
+                                            .lmAnalyticsBloc
+                                            .add(FireAnalyticEvent(
+                                              eventName:
+                                                  AnalyticsKeys.postDeleted,
+                                              eventProperties: {
+                                                "user_state": res.state == 1
+                                                    ? "CM"
+                                                    : "member",
+                                                "post_id": postDetails!.id,
+                                                "user_id": postDetails!.userId,
+                                                "post_type": postType,
+                                              },
+                                            ));
                                         lmPostBloc.add(
                                           DeletePost(
                                             postId: postDetails!.id,
@@ -469,11 +488,10 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                 rebuildLikeWidget.value =
                                     !rebuildLikeWidget.value;
 
-                                final response =
-                                    await locator<LMFeedClient>().likePost(
-                                        (LikePostRequestBuilder()
-                                              ..postId(postDetails!.id))
-                                            .build());
+                                final response = await locator<LMFeedClient>()
+                                    .likePost((LikePostRequestBuilder()
+                                          ..postId(postDetails!.id))
+                                        .build());
                                 if (!response.success) {
                                   toast(
                                     response.errorMessage ??
@@ -564,6 +582,16 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                             "post_type": postType,
                             "user_id": user.userUniqueId,
                           });
+                          locator<LMFeedBloc>()
+                              .lmAnalyticsBloc
+                              .add(FireAnalyticEvent(
+                                eventName: AnalyticsKeys.postShared,
+                                eventProperties: {
+                                  "post_id": widget.post.id,
+                                  "post_type": postType,
+                                  "user_id": user.userUniqueId,
+                                },
+                              ));
                           SharePost().sharePost(widget.post.id);
                         },
                         icon: const LMIcon(

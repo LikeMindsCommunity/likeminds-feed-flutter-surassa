@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:likeminds_feed/likeminds_feed.dart';
-import 'package:likeminds_feed_ss_fl/src/blocs/post_bloc/post_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/analytics/analytics.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
@@ -85,7 +85,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
               ..pageSize(20)
               ..isEnabled(true))
             .build());
-    lmPostBloc = locator<LMPostBloc>();
+    lmPostBloc = locator<LMFeedBloc>().lmPostBloc;
     if (_focusNode.canRequestFocus) {
       _focusNode.requestFocus();
     }
@@ -107,6 +107,10 @@ class _NewPostScreenState extends State<NewPostScreen> {
         }
         LMAnalytics.get().track(
             AnalyticsKeys.documentAttachedInPost, {'document_count': docCount});
+        locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+              eventName: AnalyticsKeys.documentAttachedInPost,
+              eventProperties: {'document_count': docCount},
+            ));
       } else if (mediaToBeRemoved.mediaType == MediaType.video) {
         int videoCount = 0;
         for (var element in postMedia) {
@@ -116,6 +120,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
         }
         LMAnalytics.get().track(
             AnalyticsKeys.videoAttachedToPost, {'video_count': videoCount});
+        locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+            eventName: AnalyticsKeys.videoAttachedToPost,
+            eventProperties: {'video_count': videoCount}));
       } else if (mediaToBeRemoved.mediaType == MediaType.image) {
         int imageCount = 0;
         for (var element in postMedia) {
@@ -125,6 +132,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
         }
         LMAnalytics.get().track(
             AnalyticsKeys.imageAttachedToPost, {'image_count': imageCount});
+        locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+            eventName: AnalyticsKeys.imageAttachedToPost,
+            eventProperties: {'image_count': imageCount}));
       }
 
       postMedia.removeAt(index);
@@ -156,10 +166,17 @@ class _NewPostScreenState extends State<NewPostScreen> {
       }
       LMAnalytics.get().track(AnalyticsKeys.documentAttachedInPost,
           {'document_count': documentCount});
+      locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+            eventName: AnalyticsKeys.documentAttachedInPost,
+            eventProperties: {'document_count': documentCount},
+          ));
     } else {
       if (postMedia.first.mediaType == MediaType.video) {
         LMAnalytics.get()
-            .track(AnalyticsKeys.imageAttachedToPost, {'video_count': 1});
+            .track(AnalyticsKeys.videoAttachedToPost, {'video_count': 1});
+        locator<LMFeedBloc>().lmAnalyticsBloc.add(const FireAnalyticEvent(
+            eventName: AnalyticsKeys.videoAttachedToPost,
+            eventProperties: {'video_count': 1}));
         isVideoAttached = true;
       } else {
         int imageCount = 0;
@@ -170,6 +187,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
         }
         LMAnalytics.get().track(
             AnalyticsKeys.imageAttachedToPost, {'image_count': imageCount});
+        locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+            eventName: AnalyticsKeys.imageAttachedToPost,
+            eventProperties: {'image_count': imageCount}));
       }
     }
   }
@@ -291,6 +311,12 @@ class _NewPostScreenState extends State<NewPostScreen> {
             'link': previewLink,
           },
         );
+        locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+              eventName: AnalyticsKeys.linkAttachedInPost,
+              eventProperties: {
+                'link': previewLink,
+              },
+            ));
         if (postMedia.isEmpty) {
           rebuildLinkPreview.value = !rebuildLinkPreview.value;
         }
@@ -317,7 +343,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    lmPostBloc = locator<LMPostBloc>();
+    lmPostBloc = locator<LMFeedBloc>().lmPostBloc;
     Size screenSize = MediaQuery.of(context).size;
     ThemeData theme = LMThemeData.suraasaTheme;
     return WillPopScope(
@@ -385,7 +411,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                   child: CustomPopupMenu(
                                     controller: _controllerPopUp,
                                     showArrow: false,
-                                    verticalMargin: 10,
                                     horizontalMargin: 16.0,
                                     pressType: PressType.singleClick,
                                     menuBuilder: () => TopicPopUp(
@@ -418,7 +443,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                         color: LMThemeData.kWhiteColor,
                                         border: Border.all(
                                           color: LMThemeData.kPrimaryColor,
-                                          width: 1,
                                         ),
                                       ),
                                       child: LMTopicChip(
@@ -468,7 +492,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
                     slivers: [
                       SliverToBoxAdapter(
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
@@ -545,7 +568,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                         linkModel: linkModel,
                                         backgroundColor:
                                             LMThemeData.kSecondary100,
-                                        showLinkUrl: false,
                                         onTap: () {
                                           launchUrl(
                                             Uri.parse(
@@ -555,7 +577,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                           );
                                         },
                                         border: Border.all(
-                                          width: 1,
                                           color: LMThemeData.kSecondary100,
                                         ),
                                         title: LMTextView(
@@ -595,6 +616,15 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                 'link': previewLink,
                                               },
                                             );
+                                            locator<LMFeedBloc>()
+                                                .lmAnalyticsBloc
+                                                .add(FireAnalyticEvent(
+                                                  eventName: AnalyticsKeys
+                                                      .linkAttachedInPost,
+                                                  eventProperties: {
+                                                    'link': previewLink,
+                                                  },
+                                                ));
                                             showLinkPreview = false;
                                             rebuildLinkPreview.value =
                                                 !rebuildLinkPreview.value;
@@ -835,6 +865,15 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                           LMAnalytics.get().track(
                                               AnalyticsKeys.clickedOnAttachment,
                                               {'type': 'image'});
+                                          locator<LMFeedBloc>()
+                                              .lmAnalyticsBloc
+                                              .add(const FireAnalyticEvent(
+                                                eventName: AnalyticsKeys
+                                                    .clickedOnAttachment,
+                                                eventProperties: {
+                                                  'type': 'image'
+                                                },
+                                              ));
                                           final result =
                                               await handlePermissions(
                                                   context, 1);
@@ -860,6 +899,15 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                         ),
                                         onTap: (active) async {
                                           onUploading();
+                                          locator<LMFeedBloc>()
+                                              .lmAnalyticsBloc
+                                              .add(const FireAnalyticEvent(
+                                                eventName: AnalyticsKeys
+                                                    .clickedOnAttachment,
+                                                eventProperties: {
+                                                  'type': 'video'
+                                                },
+                                              ));
                                           List<MediaModel>? pickedMediaFiles =
                                               await PostMediaPicker.pickVideos(
                                                   postMedia.length);
@@ -896,6 +944,15 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                           LMAnalytics.get().track(
                                               AnalyticsKeys.clickedOnAttachment,
                                               {'type': 'file'});
+                                          locator<LMFeedBloc>()
+                                              .lmAnalyticsBloc
+                                              .add(const FireAnalyticEvent(
+                                                eventName: AnalyticsKeys
+                                                    .clickedOnAttachment,
+                                                eventProperties: {
+                                                  'type': 'file'
+                                                },
+                                              ));
                                           List<MediaModel>? pickedMediaFiles =
                                               await PostMediaPicker
                                                   .pickDocuments(
@@ -914,7 +971,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
                               ],
                             ),
                           ),
-
                   ),
                 ),
               ],

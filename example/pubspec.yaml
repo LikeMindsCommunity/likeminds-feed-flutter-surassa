@@ -43,6 +43,8 @@ dependencies:
   share_plus: 
   shared_preferences: 
   overlay_support:
+  bloc:
+  flutter_bloc: 
 
 
   # The following adds the Cupertino Icons font to your application.

@@ -98,8 +98,8 @@ class PostPinError extends LMPostState {
 
   @override
   List<Object> get props => [
-    message,
-    isPinned,
-    postId,
-  ];
+        message,
+        isPinned,
+        postId,
+      ];
 }

@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/analytics_bloc/analytics_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/add_comment/add_comment_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/add_comment_reply/add_comment_reply_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/all_comments/all_comments_bloc.dart';
@@ -79,7 +81,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   @override
   void initState() {
     super.initState();
-    lmPostBloc = locator<LMPostBloc>();
+    lmPostBloc = locator<LMFeedBloc>().lmPostBloc;
     updatePostDetails(context);
     right = checkCommentRights();
     _commentController = TextEditingController();
@@ -174,8 +176,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   }
 
   Future updatePostDetails(BuildContext context) async {
-    final GetPostResponse postDetails =
-        await locator<LMFeedClient>().getPost(
+    final GetPostResponse postDetails = await locator<LMFeedClient>().getPost(
       (GetPostRequestBuilder()
             ..postId(widget.postId)
             ..page(1)
@@ -943,6 +944,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                                 "comment_id": item.id,
                                                                               },
                                                                             );
+                                                                            locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+                                                                                  eventName: AnalyticsKeys.commentDeleted,
+                                                                                  eventProperties: {
+                                                                                    "post_id": widget.postId,
+                                                                                    "comment_id": item.id,
+                                                                                  },
+                                                                                ));
                                                                             if (postDetailResponse !=
                                                                                 null) {
                                                                               postDetailResponse!.users?.putIfAbsent(currentUser.userUniqueId, () => currentUser);

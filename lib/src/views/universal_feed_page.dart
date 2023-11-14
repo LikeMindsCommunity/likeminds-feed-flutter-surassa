@@ -7,12 +7,13 @@ import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/analytics_bloc/analytics_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/post_bloc/post_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/simple_bloc_observer.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/universal_feed/universal_feed_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
-import 'package:likeminds_feed_ss_fl/src/utils/utils.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post/new_post_screen.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post_detail_screen.dart';
 import 'package:likeminds_feed_ss_fl/src/widgets/post/post_something.dart';
@@ -607,7 +608,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
 
   @override
   Widget build(BuildContext context) {
-    LMPostBloc newPostBloc = locator<LMPostBloc>();
+    LMPostBloc newPostBloc = locator<LMFeedBloc>().lmPostBloc;
     final ThemeData theme = LMThemeData.suraasaTheme;
     return Scaffold(
       backgroundColor: LMThemeData.kBackgroundColor,
@@ -892,6 +893,13 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                                   AnalyticsKeys
                                                       .postCreationStarted,
                                                   {});
+                                              locator<LMFeedBloc>()
+                                                  .lmAnalyticsBloc
+                                                  .add(const FireAnalyticEvent(
+                                                      eventName: AnalyticsKeys
+                                                          .postCreationStarted,
+                                                      eventProperties: {}));
+
                                               Navigator.push(
                                                 context,
                                                 MaterialPageRoute(

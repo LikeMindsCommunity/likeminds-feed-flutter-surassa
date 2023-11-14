@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/post_bloc/post_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
@@ -191,7 +192,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
   @override
   Widget build(BuildContext context) {
     screenSize = MediaQuery.of(context).size;
-    newPostBloc = locator<LMPostBloc>();
+    newPostBloc = locator<LMFeedBloc>().lmPostBloc;
     return WillPopScope(
       onWillPop: () {
         if (textEditingController!.text != convertedPostText) {

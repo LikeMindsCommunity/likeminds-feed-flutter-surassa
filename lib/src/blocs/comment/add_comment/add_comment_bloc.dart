@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/analytics_bloc/analytics_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/analytics/analytics.dart';
 
@@ -38,6 +39,13 @@ class AddCommentBloc extends Bloc<AddCommentEvent, AddCommentState> {
           "comment_id": response.reply?.id,
         },
       );
+      locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+            eventName: AnalyticsKeys.commentPosted,
+            eventProperties: {
+              "post_id": addCommentRequest.postId,
+              "comment_id": response.reply?.id,
+            },
+          ));
       emit(AddCommentSuccess(addCommentResponse: response));
     }
   }

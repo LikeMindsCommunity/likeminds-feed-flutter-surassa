@@ -9,7 +9,7 @@ abstract class LMRoutingState extends Equatable {
 
 class LMRoutingStateInit extends LMRoutingState {}
 
-class OpenSharedPost  extends LMRoutingState {
+class OpenSharedPost extends LMRoutingState {
   final String postId;
 
   const OpenSharedPost({required this.postId});

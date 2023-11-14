@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/analytics_bloc/analytics_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/bloc.dart';
+
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/local_preference/user_local_preference.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post/new_post_screen.dart';
@@ -21,6 +23,10 @@ class PostSomething extends StatelessWidget {
       onTap: enabled
           ? () {
               LMAnalytics.get().track(AnalyticsKeys.postCreationStarted, {});
+              locator<LMFeedBloc>().lmAnalyticsBloc.add(const FireAnalyticEvent(
+                    eventName: AnalyticsKeys.postCreationStarted,
+                    eventProperties: {},
+                  ));
               Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => const NewPostScreen()));
             }

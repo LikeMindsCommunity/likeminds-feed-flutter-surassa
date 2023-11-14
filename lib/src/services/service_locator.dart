@@ -2,27 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
-import 'package:likeminds_feed_ss_fl/src/blocs/post_bloc/post_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/services/media_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/navigation_service.dart';
-import 'package:likeminds_feed_ss_fl/src/utils/credentials/credentials.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/icons.dart';
 
 final GetIt locator = GetIt.I;
 
-void _setupLocator(LMSDKCallback? callback, String apiKey,
-    GlobalKey<NavigatorState> navigatorKey) {
+Future<void> _setupLocator(LMSDKCallback? callback, String apiKey,
+    GlobalKey<NavigatorState> navigatorKey) async {
   locator.allowReassignment = true;
   loadSvgIntoCache();
 
-  // TODO: Remove NavigationService
   if (!locator.isRegistered<NavigationService>()) {
     locator.registerSingleton(NavigationService(
       navigatorKey: navigatorKey,
     ));
   }
 
-  MediaService _mediaService = MediaService(prodFlag);
+  UserLocalPreference.instance.initialize();
+
+  MediaService mediaService = MediaService(prodFlag);
 
   LMAnalytics.get().initialize();
 
@@ -35,17 +35,18 @@ void _setupLocator(LMSDKCallback? callback, String apiKey,
     locator.registerSingleton(lmFeedClient);
   }
 
-  if(!locator.isRegistered<MediaService>()){
-    locator.registerSingleton(_mediaService);
+  if (!locator.isRegistered<MediaService>()) {
+    locator.registerSingleton(mediaService);
   }
 
-  if (!locator.isRegistered<LMPostBloc>()) {
-    LMPostBloc lmPostBloc = LMPostBloc();
-    locator.registerSingleton(lmPostBloc);
+  if (!locator.isRegistered<LMFeedBloc>()) {
+    LMFeedBloc lmFeedBloc = LMFeedBloc.get();
+    lmFeedBloc.initialize();
+    locator.registerSingleton(lmFeedBloc);
   }
 }
 
-void setupLMFeed(LMSDKCallback? callback, String apiKey,
-    GlobalKey<NavigatorState> navigatorKey) {
-  _setupLocator(callback, apiKey, navigatorKey);
+Future<void> setupLMFeed(LMSDKCallback? callback, String apiKey,
+    GlobalKey<NavigatorState> navigatorKey) async {
+ await _setupLocator(callback, apiKey, navigatorKey);
 }

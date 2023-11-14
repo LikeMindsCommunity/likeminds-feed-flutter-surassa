@@ -4,13 +4,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_no_internet_widget/flutter_no_internet_widget.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
-import 'package:likeminds_feed_ss_fl/src/services/navigation_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/network_handling.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/utils.dart';
 import 'package:likeminds_feed_ss_fl/src/views/universal_feed_page.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/credentials/credentials.dart';
@@ -21,6 +19,7 @@ export 'src/utils/analytics/analytics.dart';
 export 'src/utils/notifications/notification_handler.dart';
 export 'src/utils/share/share_post.dart';
 export 'src/utils/local_preference/user_local_preference.dart';
+export 'src/blocs/bloc.dart';
 
 /// Flutter environment manager v0.0.1
 const prodFlag = !bool.fromEnvironment('DEBUG');
@@ -161,7 +160,6 @@ class _LMFeedState extends State<LMFeed> {
                     color: LMThemeData.kPrimaryColor,
                     fontSize: 14,
                   )),
-
             ],
           ),
         ),
@@ -194,7 +192,6 @@ class _LMFeedState extends State<LMFeed> {
                         ..userName(userName))
                       .build(),
                 ),
-                initialData: null,
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (snapshot.hasData) {
                     InitiateUserResponse response = snapshot.data;
@@ -207,7 +204,6 @@ class _LMFeedState extends State<LMFeed> {
                       LMNotificationHandler.instance.registerDevice(user!.id);
                       return FutureBuilder(
                         future: locator<LMFeedClient>().getMemberState(),
-                        initialData: null,
                         builder:
                             (BuildContext context, AsyncSnapshot snapshot) {
                           if (snapshot.hasData) {
@@ -253,7 +249,6 @@ class _LMFeedState extends State<LMFeed> {
                 },
               );
             }),
-
       ),
     );
   }

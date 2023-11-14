@@ -49,13 +49,17 @@ class SharePost {
     List secondPathSegment = request.link.split('post_id=');
     if (secondPathSegment.length > 1 && secondPathSegment[1] != null) {
       String postId = secondPathSegment[1];
-      await locator<LMFeedClient>()
-          .initiateUser((InitiateUserRequestBuilder()
-                ..apiKey(request.apiKey)
-                ..userId(request.userUniqueId)
-                ..userName(request.userName))
-              .build());
+      await locator<LMFeedClient>().initiateUser((InitiateUserRequestBuilder()
+            ..apiKey(request.apiKey)
+            ..userId(request.userUniqueId)
+            ..userName(request.userName))
+          .build());
 
+      locator<LMFeedBloc>()
+          .lmRoutingBloc
+          .add(HandleSharedPostEvent(postId: postId));
+
+      // Comment the below code if navigation is being handled by LMRoutingBloc
       navigatorKey.currentState!.push(
         MaterialPageRoute(
           builder: (context) => PostDetailScreen(postId: postId),

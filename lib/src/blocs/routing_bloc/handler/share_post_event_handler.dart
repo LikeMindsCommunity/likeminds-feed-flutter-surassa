@@ -1,5 +1,4 @@
 part of '../routing_bloc.dart';
 
-void sharePostEventHandler(HandleSharedPostEvent event, Emitter<LMRoutingState> emit){
-
-}
+void sharePostEventHandler(
+    HandleSharedPostEvent event, Emitter<LMRoutingState> emit) {}

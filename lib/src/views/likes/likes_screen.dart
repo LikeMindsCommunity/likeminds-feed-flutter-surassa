@@ -3,6 +3,9 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 
 import 'package:flutter/material.dart';
+import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/analytics_bloc/analytics_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/post/likes/likes_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/simple_bloc_observer.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/analytics/analytics.dart';
@@ -136,6 +139,13 @@ class _LikesScreenState extends State<LikesScreen> {
         "total_likes": totalLikes,
       },
     );
+    locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+          eventName: AnalyticsKeys.likeListOpen,
+          eventProperties: {
+            "post_id": widget.postId,
+            "total_likes": totalLikes,
+          },
+        ));
   }
 
   @override
@@ -366,7 +376,8 @@ class DeletedLikesTile extends StatelessWidget {
       children: [
         Container(
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(27), color: LMThemeData.kGreyBGColor),
+              borderRadius: BorderRadius.circular(27),
+              color: LMThemeData.kGreyBGColor),
           height: 54,
           width: 54,
         ),
@@ -375,8 +386,9 @@ class DeletedLikesTile extends StatelessWidget {
         LMTextView(
           text: 'Deleted User',
           textStyle: TextStyle(
-              fontSize: LMThemeData.kFontMedium,
-              color: LMThemeData.suraasaTheme.colorScheme.onSecondary,),
+            fontSize: LMThemeData.kFontMedium,
+            color: LMThemeData.suraasaTheme.colorScheme.onSecondary,
+          ),
         )
       ],
     );
