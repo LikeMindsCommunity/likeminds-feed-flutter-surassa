@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 class FilterType {
   static const NO_FILTER = [1.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 1.0, 0.0, 0.0, 0.0,

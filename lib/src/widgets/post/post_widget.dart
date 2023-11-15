@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
@@ -84,13 +83,12 @@ class _SSPostWidgetState extends State<SSPostWidget> {
 
   @override
   Widget build(BuildContext context) {
-    Size screenSize = MediaQuery.of(context).size;
     NewPostBloc newPostBloc = locator<BlocService>().newPostBlocProvider;
     timeago.setLocaleMessages('en', SSCustomMessages());
     return InheritedPostProvider(
       post: widget.post.toPost(),
       child: Container(
-        color: kWhiteColor,
+        color: LMThemeData.kWhiteColor,
         child: BlocListener(
           bloc: newPostBloc,
           listener: (context, state) {
@@ -154,17 +152,17 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                   LMIcon(
                                     type: LMIconType.svg,
                                     assetPath: kAssetPinIcon,
-                                    color: primary500,
+                                    color: LMThemeData.primary500,
                                     size: 20,
                                   ),
-                                  kHorizontalPaddingMedium,
+                                  LMThemeData.kHorizontalPaddingMedium,
                                   LMTextView(
                                     text: "Pinned Post",
-                                    textStyle: TextStyle(color: primary500),
+                                    textStyle: TextStyle(color: LMThemeData.primary500),
                                   )
                                 ],
                               ),
-                              kVerticalPaddingMedium,
+                              LMThemeData.kVerticalPaddingMedium,
                             ],
                           )
                         : const SizedBox(),
@@ -177,7 +175,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                           isFeed: widget.isFeed,
                           profilePicture: LMProfilePicture(
                             fallbackText: widget.user.name,
-                            backgroundColor: kPrimaryColor,
+                            backgroundColor: LMThemeData.kPrimaryColor,
                           ),
                           onProfileTap: () {
                             if (widget.user.sdkClientInfo != null) {
@@ -198,7 +196,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                             textStyle: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w400,
-                              color: kGreyColor,
+                              color: LMThemeData.kGreyColor,
                             ),
                           ),
                           createdAt: LMTextView(
@@ -206,7 +204,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                             textStyle: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w400,
-                              color: kGreyColor,
+                              color: LMThemeData.kGreyColor,
                             ),
                           ),
                           menu: LMPostMenu(
@@ -339,7 +337,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                       ? postDetails!.attachments!.first.attachmentType == 4
                           ? LMLinkPreview(
                               attachment: postDetails!.attachments![0],
-                              backgroundColor: kSecondary100,
+                              backgroundColor: LMThemeData.kSecondary100,
                               showLinkUrl: false,
                               onTap: () {
                                 if (postDetails!.attachments!.first
@@ -354,7 +352,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                               },
                               border: Border.all(
                                 width: 1,
-                                color: kSecondary100,
+                                color: LMThemeData.kSecondary100,
                               ),
                               title: LMTextView(
                                 text: postDetails!.attachments!.first
@@ -364,7 +362,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                 overflow: TextOverflow.ellipsis,
                                 textStyle: const TextStyle(
                                   fontWeight: FontWeight.w600,
-                                  color: kHeadingBlackColor,
+                                  color: LMThemeData.kHeadingBlackColor,
                                   height: 1.30,
                                 ),
                               ),
@@ -375,7 +373,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 textStyle: const TextStyle(
-                                  color: kHeadingBlackColor,
+                                  color: LMThemeData.kHeadingBlackColor,
                                   fontWeight: FontWeight.w400,
                                   height: 1.30,
                                 ),
@@ -401,7 +399,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                   attachments: postDetails!.attachments!,
                                   borderRadius: 16.0,
                                   showLinkUrl: false,
-                                  backgroundColor: kSecondary100,
+                                  backgroundColor: LMThemeData.kSecondary100,
                                   documentIcon: const LMIcon(
                                     type: LMIconType.svg,
                                     assetPath: kAssetDocPDFIcon,
@@ -458,7 +456,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                               activeText: const LMTextView(
                                 text: "Like",
                                 textStyle: TextStyle(
-                                  color: primary500,
+                                  color: LMThemeData.primary500,
                                 ),
                               ),
                               onTap: () async {
@@ -512,7 +510,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                               icon: const LMIcon(
                                 type: LMIconType.svg,
                                 assetPath: kAssetLikeIcon,
-                                color: kSecondaryColor700,
+                                color: LMThemeData.kSecondaryColor700,
                                 size: 20,
                                 boxPadding: 6,
                               ),
@@ -549,7 +547,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                         icon: const LMIcon(
                           type: LMIconType.svg,
                           assetPath: kAssetCommentIcon,
-                          color: kSecondaryColor700,
+                          color: LMThemeData.kSecondaryColor700,
                           size: 20,
                           boxPadding: 6,
                         ),
@@ -575,7 +573,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                         icon: const LMIcon(
                           type: LMIconType.svg,
                           assetPath: kAssetShareIcon,
-                          color: kSecondaryColor700,
+                          color: LMThemeData.kSecondaryColor700,
                           size: 20,
                           boxPadding: 6,
                         ),

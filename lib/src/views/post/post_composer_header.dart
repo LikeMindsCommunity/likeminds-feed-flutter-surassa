@@ -13,15 +13,16 @@ class PostComposerHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = LMThemeData.suraasaTheme;
     return SizedBox(
       height: 56,
       child: Container(
         decoration: const BoxDecoration(
-          color: kWhiteColor,
+          color: LMThemeData.kWhiteColor,
           border: Border(
             bottom: BorderSide(
               width: 0.1,
-              color: kGrey1Color,
+              color: LMThemeData.kGrey1Color,
             ),
           ),
         ),
@@ -36,7 +37,7 @@ class PostComposerHeader extends StatelessWidget {
               text: LMTextView(
                 text: "Cancel",
                 textStyle:
-                    TextStyle(color: Theme.of(context).colorScheme.primary),
+                    TextStyle(color: theme.colorScheme.primary),
               ),
               onTap: onPressedBack == null
                   ? () {
@@ -51,14 +52,14 @@ class PostComposerHeader extends StatelessWidget {
               text: LMTextView(
                 text: "Post",
                 textStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: theme.colorScheme.onPrimary,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
               ),
               width: 48,
               borderRadius: 6,
-              backgroundColor: Theme.of(context).primaryColor,
+              backgroundColor: theme.primaryColor,
               onTap: () => onTap(),
             ),
           ],

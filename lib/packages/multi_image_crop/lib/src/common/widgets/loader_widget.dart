@@ -6,6 +6,9 @@ Future<dynamic> showLoaderDialog(
   String? defaultActionText,
   String? cancelActionText,
 }) {
+  
+
+
   return showDialog(
     context: context,
     barrierDismissible: false,

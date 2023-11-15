@@ -44,12 +44,12 @@ Dialog deleteConfirmationDialog(
               fontWeight: FontWeight.bold,
             ),
           ),
-          kVerticalPaddingLarge,
+          LMThemeData.kVerticalPaddingLarge,
           Text(content),
           user.userUniqueId == userId
               ? const SizedBox.shrink()
               : isCm
-                  ? kVerticalPaddingLarge
+                  ? LMThemeData.kVerticalPaddingLarge
                   : const SizedBox.shrink(),
           user.userUniqueId == userId
               ? const SizedBox.shrink()
@@ -80,7 +80,7 @@ Dialog deleteConfirmationDialog(
                                             elevation: 5,
                                             enableDrag: true,
                                             clipBehavior: Clip.hardEdge,
-                                            backgroundColor: kWhiteColor,
+                                            backgroundColor: LMThemeData.kWhiteColor,
                                             useSafeArea: true,
                                             shape: const RoundedRectangleBorder(
                                               borderRadius: BorderRadius.only(
@@ -109,11 +109,11 @@ Dialog deleteConfirmationDialog(
                                                         style: TextStyle(
                                                           fontWeight:
                                                               FontWeight.bold,
-                                                          fontSize: kFontMedium,
+                                                          fontSize: LMThemeData.kFontMedium,
                                                         ),
                                                       ),
                                                     ),
-                                                    kVerticalPaddingXLarge,
+                                                    LMThemeData.kVerticalPaddingXLarge,
                                                     Expanded(
                                                       child: SafeArea(
                                                         child:
@@ -130,7 +130,7 @@ Dialog deleteConfirmationDialog(
                                                                 const Divider(
                                                               thickness: 0.5,
                                                               color:
-                                                                  kGrey3Color,
+                                                                  LMThemeData.kGrey3Color,
                                                             ),
                                                           ),
                                                           itemBuilder:
@@ -162,7 +162,7 @@ Dialog deleteConfirmationDialog(
                                                                           onChanged:
                                                                               (value) {}),
                                                                     ),
-                                                                    kHorizontalPaddingLarge,
+                                                                    LMThemeData.kHorizontalPaddingLarge,
                                                                     Text(
                                                                       reportTags[
                                                                               index]
@@ -195,7 +195,7 @@ Dialog deleteConfirmationDialog(
                               child: Container(
                                   padding: const EdgeInsets.all(14.0),
                                   decoration: BoxDecoration(
-                                      color: kWhiteColor,
+                                      color: LMThemeData.kWhiteColor,
                                       borderRadius: BorderRadius.circular(8.0),
                                       boxShadow: const [
                                         BoxShadow(
@@ -216,7 +216,7 @@ Dialog deleteConfirmationDialog(
                                       ),
                                       Icon(
                                         Icons.arrow_drop_down,
-                                        color: Theme.of(context)
+                                        color: LMThemeData.suraasaTheme
                                             .colorScheme
                                             .onSecondary,
                                       )
@@ -226,7 +226,7 @@ Dialog deleteConfirmationDialog(
                           });
                     })
                   : const SizedBox.shrink(),
-          kVerticalPaddingSmall,
+          LMThemeData.kVerticalPaddingSmall,
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
@@ -242,7 +242,7 @@ Dialog deleteConfirmationDialog(
                 child: const Text(
                   'Cancel',
                   style: TextStyle(
-                    color: kGrey3Color,
+                    color: LMThemeData.kGrey3Color,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -266,7 +266,7 @@ Dialog deleteConfirmationDialog(
                 child: Text(
                   actionText,
                   style: const TextStyle(
-                    color: kLinkColor,
+                    color: LMThemeData.kLinkColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

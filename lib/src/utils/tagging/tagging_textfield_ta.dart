@@ -4,7 +4,6 @@ import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_fl/packages/flutter_typeahead-4.3.7/lib/flutter_typeahead.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
-import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 
@@ -118,7 +117,6 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
       padding: const EdgeInsets.symmetric(horizontal: 6.0),
       child: TypeAheadField<UserTag>(
         onTagTap: (p) {},
-
         suggestionsBoxController: _suggestionsBoxController,
         suggestionsBoxDecoration: SuggestionsBoxDecoration(
           elevation: 4,
@@ -167,7 +165,7 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
               color: Colors.white,
               border: Border(
                 bottom: BorderSide(
-                  color: kGrey3Color,
+                  color: LMThemeData.kGrey3Color,
                   width: 0.5,
                 ),
               ),
@@ -183,6 +181,7 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
                       absorbing: true,
                       child: LMProfilePicture(
                         fallbackText: opt.name!,
+                        backgroundColor: LMThemeData.kPrimaryColor,
                         imageUrl: opt.imageUrl!,
                         onTap: null,
                         size: 32,
@@ -202,7 +201,7 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
           );
         },
         onSuggestionSelected: ((suggestion) {
-          print(suggestion);
+          debugPrint(suggestion.toString());
           widget.onTagSelected.call(suggestion);
           setState(() {
             tagComplete = true;

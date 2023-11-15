@@ -19,6 +19,7 @@ class CommentReplyWidget extends StatefulWidget {
   final Reply reply;
   final User user;
   final Function() refresh;
+
   //final Function(String commentId, String username, String userId) onReply;
 
   const CommentReplyWidget({
@@ -90,7 +91,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
             user: user,
             profilePicture: LMProfilePicture(
               imageUrl: user.imageUrl,
-              backgroundColor: kPrimaryColor,
+              backgroundColor: LMThemeData.kPrimaryColor,
               fallbackText: user.name,
               onTap: () {
                 if (user.sdkClientInfo != null) {
@@ -106,7 +107,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
               textStyle: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
-                color: kGreyColor,
+                color: LMThemeData.kGreyColor,
               ),
             ),
             onMenuTap: (value) async {
@@ -162,7 +163,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                           ? "1 Like"
                           : "${element.likesCount} Likes",
                   textStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: LMThemeData.suraasaTheme.colorScheme.primary,
                     fontSize: 12,
                   ),
                 ),
@@ -243,7 +244,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                     child: SizedBox(
                       height: 20,
                       width: 20,
-                      child: CircularProgressIndicator(),
+                      child: LMLoader(color: LMThemeData.kPrimaryColor, ),
                     ),
                   ),
                 );
@@ -303,7 +304,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                                   text: 'View more replies',
                                   textStyle: TextStyle(
                                     color:
-                                        Theme.of(context).colorScheme.primary,
+                                      LMThemeData.suraasaTheme.colorScheme.primary,
                                     fontSize: 14,
                                   ),
                                 ),
@@ -315,7 +316,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                                       ' ${replies.length} of ${reply!.repliesCount}',
                                   textStyle: const TextStyle(
                                     fontSize: 11,
-                                    color: kGrey3Color,
+                                    color: LMThemeData.kGrey3Color,
                                   ),
                                 ),
                               ),
@@ -358,7 +359,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                               child: const Text(
                                 'View more replies',
                                 style: TextStyle(
-                                  color: kBlueGreyColor,
+                                  color: LMThemeData.kBlueGreyColor,
                                   fontSize: 14,
                                 ),
                               ),
@@ -367,7 +368,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                               ' ${replies.length} of ${reply!.repliesCount}',
                               style: const TextStyle(
                                 fontSize: 11,
-                                color: kGrey3Color,
+                                color: LMThemeData.kGrey3Color,
                               ),
                             )
                           ],
@@ -407,7 +408,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                                 child: const Text(
                                   'View more replies',
                                   style: TextStyle(
-                                    color: kBlueGreyColor,
+                                    color: LMThemeData.kBlueGreyColor,
                                     fontSize: 14,
                                   ),
                                 ),
@@ -416,7 +417,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                                 ' ${replies.length} of ${reply!.repliesCount}',
                                 style: const TextStyle(
                                   fontSize: 11,
-                                  color: kGrey3Color,
+                                  color: LMThemeData.kGrey3Color,
                                 ),
                               )
                             ],
@@ -460,7 +461,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                                 child: const Text(
                                   'View more replies',
                                   style: TextStyle(
-                                    color: kBlueGreyColor,
+                                    color: LMThemeData.kBlueGreyColor,
                                     fontSize: 14,
                                   ),
                                 ),
@@ -469,7 +470,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                                 ' ${replies.length} of ${reply!.repliesCount}',
                                 style: const TextStyle(
                                   fontSize: 11,
-                                  color: kGrey3Color,
+                                  color: LMThemeData.kGrey3Color,
                                 ),
                               )
                             ],

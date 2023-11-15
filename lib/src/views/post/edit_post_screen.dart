@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
@@ -233,16 +232,19 @@ class _EditPostScreenState extends State<EditPostScreen> {
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.dark,
         child: Scaffold(
-          backgroundColor: kWhiteColor,
+          backgroundColor: LMThemeData.kWhiteColor,
           body: SafeArea(
             child: Scaffold(
               resizeToAvoidBottomInset: false,
-              backgroundColor: kWhiteColor,
+              backgroundColor: LMThemeData.kWhiteColor,
               body: FutureBuilder(
                   future: postFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
+                      return const Center(
+                          child: LMLoader(
+                        color: LMThemeData.kPrimaryColor,
+                      ));
                     } else if (snapshot.connectionState ==
                         ConnectionState.done) {
                       GetPostResponse response = snapshot.data!;
@@ -305,7 +307,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
             textStyle: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
-              color: kGrey1Color,
+              color: LMThemeData.kGrey1Color,
             ),
           ),
           onTap: () async {
@@ -332,7 +334,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
             }
           },
         ),
-        kVerticalPaddingMedium,
+        LMThemeData.kVerticalPaddingMedium,
         Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: 16.0,
@@ -346,6 +348,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                 padding: const EdgeInsets.only(top: 4.0),
                 child: LMProfilePicture(
                   fallbackText: user!.name,
+                  backgroundColor: LMThemeData.kPrimaryColor,
                   imageUrl: user!.imageUrl,
                   onTap: () {
                     if (user!.sdkClientInfo != null) {
@@ -356,13 +359,13 @@ class _EditPostScreenState extends State<EditPostScreen> {
                   size: 36,
                 ),
               ),
-              kHorizontalPaddingMedium,
+              LMThemeData.kHorizontalPaddingMedium,
               Expanded(
                 child: Column(
                   children: [
                     Container(
                       decoration: const BoxDecoration(
-                        color: kWhiteColor,
+                        color: LMThemeData.kWhiteColor,
                       ),
                       child: TaggingAheadTextField(
                         isDown: true,
@@ -374,7 +377,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                         onChange: _onTextChanged,
                       ),
                     ),
-                    kVerticalPaddingXLarge,
+                    LMThemeData.kVerticalPaddingXLarge,
                     ValueListenableBuilder(
                         valueListenable: rebuildAttachments,
                         builder: (context, value, child) =>
@@ -405,7 +408,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                           ? getPostDocument(screenSize!.width)
                           : Container(
                               padding: const EdgeInsets.only(
-                                top: kPaddingSmall,
+                                top: LMThemeData.kPaddingSmall,
                                 left: 44.0,
                               ),
                               height: 180,
@@ -463,7 +466,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                                 },
                               ),
                             ),
-                    kVerticalPaddingMedium,
+                    LMThemeData.kVerticalPaddingMedium,
                   ],
                 ),
               ),

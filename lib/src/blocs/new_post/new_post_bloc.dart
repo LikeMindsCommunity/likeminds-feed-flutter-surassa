@@ -8,7 +8,6 @@ import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/src/models/post_view_model.dart';
 import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
-import 'package:likeminds_feed_ss_fl/src/utils/analytics/analytics.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/local_preference/user_local_preference.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:overlay_support/overlay_support.dart';

@@ -25,6 +25,7 @@ class LMUserTile extends StatelessWidget {
       children: [
         LMProfilePicture(
           size: imageSize ?? 50,
+          backgroundColor: LMThemeData.kPrimaryColor,
           fallbackText: user.name,
           onTap: () {
             if (user.sdkClientInfo != null) {
@@ -34,7 +35,7 @@ class LMUserTile extends StatelessWidget {
           },
           imageUrl: user.imageUrl,
         ),
-        kHorizontalPaddingLarge,
+        LMThemeData.kHorizontalPaddingLarge,
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,12 +44,12 @@ class LMUserTile extends StatelessWidget {
                   LMTextView(
                     text: user.name,
                     textStyle: const TextStyle(
-                      fontSize: kFontMedium,
-                      color: kGrey1Color,
+                      fontSize: LMThemeData.kFontMedium,
+                      color: LMThemeData.kGrey1Color,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-              kVerticalPaddingMedium,
+              LMThemeData.kVerticalPaddingMedium,
               subText ?? const SizedBox(),
             ],
           ),

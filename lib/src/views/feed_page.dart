@@ -115,10 +115,11 @@ class _FeedScreenState extends State<FeedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = LMThemeData.suraasaTheme;
     return Scaffold(
-      backgroundColor: kWhiteColor.withOpacity(0.95),
+      backgroundColor: LMThemeData.kWhiteColor.withOpacity(0.95),
       appBar: AppBar(
-        backgroundColor: kWhiteColor,
+        backgroundColor: LMThemeData.kWhiteColor,
         centerTitle: false,
         title: const LMTextView(
           text: "Feed",
@@ -175,25 +176,25 @@ class _FeedScreenState extends State<FeedScreen> {
                             style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w300,
-                                color: kGrey2Color)),
+                                color: LMThemeData.kGrey2Color)),
                         const SizedBox(height: 28),
                         LMTextButton(
                           height: 48,
                           width: 142,
                           borderRadius: 28,
                           backgroundColor:
-                              Theme.of(context).colorScheme.primary,
+                             theme.colorScheme.primary,
                           text: LMTextView(
                             text: "Create Post",
                             textStyle: TextStyle(
-                              color: Theme.of(context).colorScheme.onPrimary,
+                              color: theme.colorScheme.onPrimary,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           icon: LMIcon(
                             type: LMIconType.icon,
                             icon: Icons.add,
-                            color: Theme.of(context).colorScheme.onPrimary,
+                            color: theme.colorScheme.onPrimary,
                           ),
                           onTap: () {
                             if (!postUploading.value) {
@@ -271,7 +272,10 @@ class _FeedScreenState extends State<FeedScreen> {
                 ),
               );
             }
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+                child: LMLoader(
+              color: LMThemeData.kPrimaryColor,
+            ));
           }),
         ),
       ),
@@ -286,7 +290,7 @@ class _FeedScreenState extends State<FeedScreen> {
             width: 25,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: kPrimaryColor,
+              color: LMThemeData.kPrimaryColor,
               boxShadow: [
                 BoxShadow(
                   offset: const Offset(0, 4),
@@ -313,11 +317,11 @@ class _FeedScreenState extends State<FeedScreen> {
             height: 48,
             width: 142,
             borderRadius: 28,
-            backgroundColor: Theme.of(context).colorScheme.primary,
+            backgroundColor: theme.colorScheme.primary,
             text: LMTextView(
               text: "Create Post",
               textStyle: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimary,
+                color: theme.colorScheme.onPrimary,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -325,7 +329,7 @@ class _FeedScreenState extends State<FeedScreen> {
               type: LMIconType.icon,
               icon: Icons.add,
               size: 12,
-              color: Theme.of(context).colorScheme.onPrimary,
+              color: theme.colorScheme.onPrimary,
             ),
             onTap: () {
               Navigator.push(
