@@ -12,6 +12,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
 bool initialURILinkHandled = false;
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 const debug = bool.fromEnvironment('DEBUG');
 
 /// First level notification handler

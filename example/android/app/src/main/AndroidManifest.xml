@@ -30,10 +30,10 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                    android:scheme="suraasalearn"
+                    android:scheme="https"
                     android:host="www.suraasa.com" />
                 <data
-                    android:scheme="https"
+                    android:scheme="http"
                     android:host="suraasa.com" />
             </intent-filter>
         </activity>

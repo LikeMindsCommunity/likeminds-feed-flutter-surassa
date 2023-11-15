@@ -14,8 +14,6 @@ import 'package:uni_links/uni_links.dart';
 final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
     GlobalKey<ScaffoldMessengerState>();
 
-final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -30,7 +28,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Integration App for UI + SDK package',
         debugShowCheckedModeBanner: false,
-        //navigatorKey: rootNavigatorKey,
+        navigatorKey: rootNavigatorKey,
         scaffoldMessengerKey: rootScaffoldMessengerKey,
         theme: ThemeData(
           useMaterial3: true,
