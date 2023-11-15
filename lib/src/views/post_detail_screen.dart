@@ -210,6 +210,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     if (commentItemList.length >= 10) {
       commentItemList.removeAt(9);
     }
+    postDetailResponse!.users?.addAll({
+      currentUser.userUniqueId: currentUser,
+      currentUser.id.toString(): currentUser,
+    });
     commentItemList.insert(0, addCommentSuccess.addCommentResponse.reply!);
     increaseCommentCount();
     rebuildPostWidget.value = !rebuildPostWidget.value;
@@ -236,6 +240,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       int index = commentItemList!.indexWhere((element) =>
           element.id ==
           addCommentReplySuccess.addCommentResponse.reply!.parentComment!.id);
+      postDetailResponse!.users?.addAll({
+        currentUser.userUniqueId: currentUser,
+        currentUser.id.toString(): currentUser,
+      });
       if (index != -1) {
         commentItemList[index].repliesCount =
             commentItemList[index].repliesCount + 1;

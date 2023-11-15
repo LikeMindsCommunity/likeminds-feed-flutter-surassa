@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_sample/cred_screen.dart';
 import 'package:likeminds_feed_ss_sample/credentials/credentials.dart';
@@ -30,7 +31,7 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
   await setupNotifications();
-  LMFeed.setupFeed(
+  await LMFeed.setupFeed(
     apiKey: debug ? CredsDev.apiKey : CredsProd.apiKey,
     lmCallBack: LikeMindsCallback(),
     navigatorKey: rootNavigatorKey,

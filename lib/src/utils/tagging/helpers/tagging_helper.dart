@@ -175,7 +175,8 @@ class TaggingHelper {
       // Add a TextSpan for the remaining text
       textSpans.add(TextSpan(
         text: text.substring(lastIndex),
-        style: const TextStyle(wordSpacing: 1.5, color: LMThemeData.kGrey1Color),
+        style:
+            const TextStyle(wordSpacing: 1.5, color: LMThemeData.kGrey1Color),
       ));
     }
 

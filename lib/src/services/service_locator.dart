@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
-import 'package:likeminds_feed_ss_fl/src/blocs/bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/services/media_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/navigation_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/icons.dart';
@@ -12,7 +11,7 @@ final GetIt locator = GetIt.I;
 Future<void> _setupLocator(LMSDKCallback? callback, String apiKey,
     GlobalKey<NavigatorState> navigatorKey) async {
   locator.allowReassignment = true;
-  loadSvgIntoCache();
+  await loadSvgIntoCache();
 
   if (!locator.isRegistered<NavigationService>()) {
     locator.registerSingleton(NavigationService(
@@ -20,7 +19,7 @@ Future<void> _setupLocator(LMSDKCallback? callback, String apiKey,
     ));
   }
 
-  UserLocalPreference.instance.initialize();
+  await UserLocalPreference.instance.initialize();
 
   MediaService mediaService = MediaService(prodFlag);
 
@@ -48,5 +47,5 @@ Future<void> _setupLocator(LMSDKCallback? callback, String apiKey,
 
 Future<void> setupLMFeed(LMSDKCallback? callback, String apiKey,
     GlobalKey<NavigatorState> navigatorKey) async {
- await _setupLocator(callback, apiKey, navigatorKey);
+  await _setupLocator(callback, apiKey, navigatorKey);
 }

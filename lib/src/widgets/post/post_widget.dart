@@ -226,9 +226,8 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                           'Are you sure you want to delete this post. This action can not be reversed.',
                                       action: (String reason) async {
                                         Navigator.of(childContext).pop();
-                                        final res =
-                                            await locator<LMFeedClient>()
-                                                .getMemberState();
+                                        final res = await locator<LMFeedBloc>()
+                                            .getMemberState();
 
                                         String? postType =
                                             postDetails!.attachments == null ||
@@ -269,7 +268,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                         lmPostBloc.add(
                                           DeletePost(
                                             postId: postDetails!.id,
-                                            reason: reason ?? 'Self Post',
+                                            reason: reason,
                                           ),
                                         );
 
@@ -294,6 +293,16 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                     "post_id": postDetails!.id,
                                     "post_type": postType,
                                   });
+                                  locator<LMFeedBloc>()
+                                      .lmAnalyticsBloc
+                                      .add(FireAnalyticEvent(
+                                          eventName: AnalyticsKeys.postUnpinned,
+                                          eventProperties: {
+                                            "created_by_id":
+                                                postDetails!.userId,
+                                            "post_id": postDetails!.id,
+                                            "post_type": postType,
+                                          }));
                                 } else {
                                   LMAnalytics.get()
                                       .track(AnalyticsKeys.postPinned, {
@@ -301,6 +310,16 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                     "post_id": postDetails!.id,
                                     "post_type": postType,
                                   });
+                                  locator<LMFeedBloc>()
+                                      .lmAnalyticsBloc
+                                      .add(FireAnalyticEvent(
+                                          eventName: AnalyticsKeys.postPinned,
+                                          eventProperties: {
+                                            "created_by_id":
+                                                postDetails!.userId,
+                                            "post_id": postDetails!.id,
+                                            "post_type": postType,
+                                          }));
                                 }
 
                                 lmPostBloc.add(TogglePinPost(
@@ -320,6 +339,14 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                   "post_id": postDetails!.id,
                                   "post_type": postType,
                                 });
+                                locator<LMFeedBloc>().lmAnalyticsBloc.add(
+                                        FireAnalyticEvent(
+                                            eventName: AnalyticsKeys.postEdited,
+                                            eventProperties: {
+                                          "created_by_id": postDetails!.userId,
+                                          "post_id": postDetails!.id,
+                                          "post_type": postType,
+                                        }));
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => EditPostScreen(
                                           postId: postDetails!.id,
@@ -547,6 +574,13 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                 .track(AnalyticsKeys.commentListOpen, {
                               'postId': widget.post.id,
                             });
+                            locator<LMFeedBloc>()
+                                .lmAnalyticsBloc
+                                .add(FireAnalyticEvent(
+                                    eventName: AnalyticsKeys.commentListOpen,
+                                    eventProperties: {
+                                      'postId': widget.post.id,
+                                    }));
                             Navigator.push(
                               context,
                               MaterialPageRoute(

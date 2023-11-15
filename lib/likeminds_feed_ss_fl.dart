@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_no_internet_widget/flutter_no_internet_widget.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/network_handling.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/utils.dart';
 import 'package:likeminds_feed_ss_fl/src/views/universal_feed_page.dart';
@@ -57,12 +58,12 @@ class LMFeed extends StatefulWidget {
     );
   }
 
-  static void setupFeed({
+  static Future<void> setupFeed({
     required String apiKey,
     LMSDKCallback? lmCallBack,
     required GlobalKey<NavigatorState> navigatorKey,
-  }) {
-    setupLMFeed(
+  }) async {
+    await setupLMFeed(
       lmCallBack,
       apiKey,
       navigatorKey,
@@ -111,21 +112,25 @@ class _LMFeedState extends State<LMFeed> {
         : widget.userId!;
     imageUrl = widget.imageUrl;
     userName = widget.userName!.isEmpty ? "Test username" : widget.userName!;
+    callInitiateUser();
+    firebase();
+  }
+
+  void callInitiateUser() {
     if (imageUrl == null || imageUrl!.isEmpty) {
       initiateUser =
-          locator<LMFeedClient>().initiateUser((InitiateUserRequestBuilder()
+          locator<LMFeedBloc>().initiateUser((InitiateUserRequestBuilder()
                 ..userId(userId)
                 ..userName(userName))
               .build());
     } else {
       initiateUser =
-          locator<LMFeedClient>().initiateUser((InitiateUserRequestBuilder()
+          locator<LMFeedBloc>().initiateUser((InitiateUserRequestBuilder()
                 ..userId(userId)
                 ..userName(userName)
                 ..imageUrl(imageUrl!))
               .build());
     }
-    firebase();
   }
 
   void firebase() {
@@ -173,6 +178,7 @@ class _LMFeedState extends State<LMFeed> {
       // ignore: avoid_print
       whenOnline: () {
         debugPrint('Connected to internet');
+        callInitiateUser();
         rebuildOnConnectivityChange.value = !rebuildOnConnectivityChange.value;
       },
 
@@ -183,72 +189,67 @@ class _LMFeedState extends State<LMFeed> {
       online: Theme(
         data: LMThemeData.suraasaTheme,
         child: ValueListenableBuilder(
-            valueListenable: rebuildOnConnectivityChange,
-            builder: (context, _, __) {
-              return FutureBuilder<InitiateUserResponse>(
-                future: locator<LMFeedClient>().initiateUser(
-                  (InitiateUserRequestBuilder()
-                        ..userId(userId)
-                        ..userName(userName))
-                      .build(),
-                ),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  if (snapshot.hasData) {
-                    InitiateUserResponse response = snapshot.data;
-                    if (response.success) {
-                      user = response.initiateUser?.user;
+          valueListenable: rebuildOnConnectivityChange,
+          builder: (context, _, __) {
+            return FutureBuilder<InitiateUserResponse>(
+              future: initiateUser,
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.hasData) {
+                  InitiateUserResponse response = snapshot.data;
+                  if (response.success) {
+                    user = response.initiateUser?.user;
 
-                      //Get community configurations
-                      locator<LMFeedClient>().getCommunityConfigurations();
+                    //Get community configurations
+                    locator<LMFeedClient>().getCommunityConfigurations();
 
-                      LMNotificationHandler.instance.registerDevice(user!.id);
-                      return FutureBuilder(
-                        future: locator<LMFeedClient>().getMemberState(),
-                        builder:
-                            (BuildContext context, AsyncSnapshot snapshot) {
-                          if (snapshot.hasData) {
-                            return UniversalFeedScreen(
-                              openChatCallback: widget.openChatCallback,
-                            );
-                          }
-
-                          return Container(
-                            height: MediaQuery.of(context).size.height,
-                            width: MediaQuery.of(context).size.width,
-                            color: LMThemeData.kBackgroundColor,
-                            child: const Center(
-                              child: LMLoader(
-                                color: LMThemeData.kPrimaryColor,
-                              ),
-                            ),
+                    LMNotificationHandler.instance.registerDevice(user!.id);
+                    return FutureBuilder(
+                      future: locator<LMFeedBloc>().getMemberState(),
+                      builder: (BuildContext context, AsyncSnapshot snapshot) {
+                        if (snapshot.hasData) {
+                          return UniversalFeedScreen(
+                            openChatCallback: widget.openChatCallback,
                           );
-                        },
-                      );
-                    } else {}
-                  } else if (snapshot.hasError) {
-                    debugPrint("Error - ${snapshot.error}");
-                    return Container(
-                      height: MediaQuery.of(context).size.height,
-                      width: MediaQuery.of(context).size.width,
-                      color: LMThemeData.kBackgroundColor,
-                      child: const Center(
-                        child: Text("An error has occured",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                            )),
-                      ),
+                        }
+
+                        return Container(
+                          height: MediaQuery.of(context).size.height,
+                          width: MediaQuery.of(context).size.width,
+                          color: LMThemeData.kBackgroundColor,
+                          child: const Center(
+                            child: LMLoader(
+                              color: LMThemeData.kPrimaryColor,
+                            ),
+                          ),
+                        );
+                      },
                     );
-                  }
+                  } else {}
+                } else if (snapshot.hasError) {
+                  debugPrint("Error - ${snapshot.error}");
                   return Container(
                     height: MediaQuery.of(context).size.height,
                     width: MediaQuery.of(context).size.width,
                     color: LMThemeData.kBackgroundColor,
+                    child: const Center(
+                      child: Text("An error has occured",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                          )),
+                    ),
                   );
-                },
-              );
-            }),
+                }
+                return Container(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  color: LMThemeData.kBackgroundColor,
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }

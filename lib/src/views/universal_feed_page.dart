@@ -585,6 +585,9 @@ class _FeedRoomViewState extends State<FeedRoomView> {
     super.initState();
     LMAnalytics.get()
         .track(AnalyticsKeys.feedOpened, {'feed_type': "universal_feed"});
+    locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+        eventName: AnalyticsKeys.feedOpened,
+        eventProperties: const {'feed_type': "universal_feed"}));
     _controller = widget.scrollController..addListener(_scrollListener);
     right = checkPostCreationRights();
   }
@@ -895,10 +898,10 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                                   {});
                                               locator<LMFeedBloc>()
                                                   .lmAnalyticsBloc
-                                                  .add(const FireAnalyticEvent(
+                                                  .add(FireAnalyticEvent(
                                                       eventName: AnalyticsKeys
                                                           .postCreationStarted,
-                                                      eventProperties: {}));
+                                                      eventProperties: const {}));
 
                                               Navigator.push(
                                                 context,
@@ -938,6 +941,14 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                         .track(AnalyticsKeys.commentListOpen, {
                                       'postId': item.id,
                                     });
+                                    locator<LMFeedBloc>()
+                                        .lmAnalyticsBloc
+                                        .add(FireAnalyticEvent(
+                                            eventName:
+                                                AnalyticsKeys.commentListOpen,
+                                            eventProperties: {
+                                              'postId': item.id,
+                                            }));
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -1010,6 +1021,11 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                           if (!postUploading.value) {
                             LMAnalytics.get()
                                 .track(AnalyticsKeys.postCreationStarted, {});
+                            locator<LMFeedBloc>().lmAnalyticsBloc.add(
+                                FireAnalyticEvent(
+                                    eventName:
+                                        AnalyticsKeys.postCreationStarted,
+                                    eventProperties: const {}));
                             Navigator.push(
                               context,
                               MaterialPageRoute(

@@ -174,7 +174,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
       if (postMedia.first.mediaType == MediaType.video) {
         LMAnalytics.get()
             .track(AnalyticsKeys.videoAttachedToPost, {'video_count': 1});
-        locator<LMFeedBloc>().lmAnalyticsBloc.add(const FireAnalyticEvent(
+        locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
             eventName: AnalyticsKeys.videoAttachedToPost,
             eventProperties: {'video_count': 1}));
         isVideoAttached = true;
@@ -848,7 +848,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
                         : Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 isMediaPost
                                     ? LMIconButton(
@@ -867,10 +866,10 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                               {'type': 'image'});
                                           locator<LMFeedBloc>()
                                               .lmAnalyticsBloc
-                                              .add(const FireAnalyticEvent(
+                                              .add(FireAnalyticEvent(
                                                 eventName: AnalyticsKeys
                                                     .clickedOnAttachment,
-                                                eventProperties: {
+                                                eventProperties: const {
                                                   'type': 'image'
                                                 },
                                               ));
@@ -901,10 +900,10 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                           onUploading();
                                           locator<LMFeedBloc>()
                                               .lmAnalyticsBloc
-                                              .add(const FireAnalyticEvent(
+                                              .add(FireAnalyticEvent(
                                                 eventName: AnalyticsKeys
                                                     .clickedOnAttachment,
-                                                eventProperties: {
+                                                eventProperties: const {
                                                   'type': 'video'
                                                 },
                                               ));
@@ -946,10 +945,10 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                               {'type': 'file'});
                                           locator<LMFeedBloc>()
                                               .lmAnalyticsBloc
-                                              .add(const FireAnalyticEvent(
+                                              .add(FireAnalyticEvent(
                                                 eventName: AnalyticsKeys
                                                     .clickedOnAttachment,
-                                                eventProperties: {
+                                                eventProperties: const {
                                                   'type': 'file'
                                                 },
                                               ));

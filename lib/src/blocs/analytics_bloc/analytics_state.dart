@@ -12,12 +12,13 @@ class AnalyticsInitiated extends LMAnalyticsState {}
 class AnalyticsEventFired extends LMAnalyticsState {
   final String eventName;
   final Map<String, dynamic> eventProperties;
+  final int currentEpoch = DateTime.now().microsecondsSinceEpoch;
 
-  const AnalyticsEventFired({
+  AnalyticsEventFired({
     required this.eventName,
     required this.eventProperties,
   });
 
   @override
-  List<Object> get props => [eventName, eventProperties];
+  List<Object> get props => [eventName, eventProperties, currentEpoch];
 }

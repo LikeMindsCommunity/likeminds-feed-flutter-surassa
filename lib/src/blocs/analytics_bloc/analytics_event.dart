@@ -12,12 +12,13 @@ class InitAnalyticEvent extends LMAnalyticsEvent {}
 class FireAnalyticEvent extends LMAnalyticsEvent {
   final String eventName;
   final Map<String, dynamic> eventProperties;
+  final int currentEpoch = DateTime.now().microsecondsSinceEpoch;
 
-  const FireAnalyticEvent({
+  FireAnalyticEvent({
     required this.eventName,
     required this.eventProperties,
   });
 
   @override
-  List<Object> get props => [eventName, eventProperties];
+  List<Object> get props => [eventName, eventProperties, currentEpoch];
 }

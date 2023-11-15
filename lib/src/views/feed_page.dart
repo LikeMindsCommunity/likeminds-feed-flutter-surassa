@@ -26,8 +26,7 @@ class _FeedScreenState extends State<FeedScreen> {
   ValueNotifier<bool> rebuildPostWidget = ValueNotifier(false);
   final ValueNotifier postUploading = ValueNotifier(false);
 
-  final PagingController<int, PostUI> _pagingController =
-      PagingController(
+  final PagingController<int, PostUI> _pagingController = PagingController(
     firstPageKey: 1,
   );
 
@@ -181,8 +180,7 @@ class _FeedScreenState extends State<FeedScreen> {
                           height: 48,
                           width: 142,
                           borderRadius: 28,
-                          backgroundColor:
-                             theme.colorScheme.primary,
+                          backgroundColor: theme.colorScheme.primary,
                           text: LMTextView(
                             text: "Create Post",
                             textStyle: TextStyle(
@@ -227,6 +225,13 @@ class _FeedScreenState extends State<FeedScreen> {
                                 .track(AnalyticsKeys.commentListOpen, {
                               'postId': item.id,
                             });
+                            locator<LMFeedBloc>()
+                                .lmAnalyticsBloc
+                                .add(FireAnalyticEvent(
+                                    eventName: AnalyticsKeys.commentListOpen,
+                                    eventProperties: {
+                                      'postId': item.id,
+                                    }));
                             Navigator.push(
                               context,
                               MaterialPageRoute(

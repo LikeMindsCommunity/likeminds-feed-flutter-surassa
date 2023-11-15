@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 
 void analyticsBlocListener(BuildContext context, LMAnalyticsState state) {
+  debugPrint('inside handler');
   if (state is AnalyticsEventFired) {
     debugPrint("///////////////////////////////////////////////////////");
     debugPrint("///////////////////////////////////////////////////////");

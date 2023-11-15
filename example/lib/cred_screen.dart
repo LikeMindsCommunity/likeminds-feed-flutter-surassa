@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:flutter/material.dart';
+import 'package:likeminds_feed_ss_sample/bloc_observer/analytics_bloc_listener.dart';
+import 'package:likeminds_feed_ss_sample/bloc_observer/profile_bloc_listener.dart';
+import 'package:likeminds_feed_ss_sample/bloc_observer/routing_bloc_listener.dart';
 import 'package:likeminds_feed_ss_sample/likeminds_callback.dart';
 import 'package:likeminds_feed_ss_sample/main.dart';
 import 'package:likeminds_feed_ss_sample/network_handling.dart';
@@ -58,7 +61,12 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        home: const CredScreen(),
+        home: LMBlocListener(
+          analyticsListener: analyticsBlocListener,
+          profileListener: profileBlocListener,
+          routingListener: routingBlocListener,
+          child: const CredScreen(),
+        ),
       ),
     );
   }
@@ -119,8 +127,8 @@ class _CredScreenState extends State<CredScreen> {
                   ..link(initialLink)
                   ..userName("Test User")
                   ..userUniqueId(userId ?? "Test-User-Id"))
-                .build(), rootNavigatorKey
-            );
+                .build(),
+            rootNavigatorKey);
       }
 
       // Subscribe to link changes
