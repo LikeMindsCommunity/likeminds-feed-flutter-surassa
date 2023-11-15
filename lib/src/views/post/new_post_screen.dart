@@ -273,6 +273,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
           size: 45,
           boxPadding: 0,
         ),
+        backgroundColor: LMThemeData.kSecondary100,
         documentFile: postMedia[index].mediaFile,
         onRemove: () => removeAttachmenetAtIndex(index),
       ),
