@@ -95,7 +95,7 @@ class _LMFeedState extends State<LMFeed> {
   late final String userName;
   late final bool isProd;
   late final NetworkConnectivity networkConnectivity;
-  late final Future<InitiateUserResponse> initiateUser;
+  Future<InitiateUserResponse>? initiateUser;
   ValueNotifier<bool> rebuildOnConnectivityChange = ValueNotifier<bool>(false);
 
   @override

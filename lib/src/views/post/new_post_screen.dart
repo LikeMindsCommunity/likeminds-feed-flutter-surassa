@@ -761,13 +761,21 @@ class _NewPostScreenState extends State<NewPostScreen> {
                             'Are you sure you want to discard the current post?'),
                         actions: <Widget>[
                           TextButton(
-                            child: const Text('No'),
+                            child: Text(
+                              'No',
+                              style:
+                                  TextStyle(color: theme.colorScheme.primary),
+                            ),
                             onPressed: () {
                               Navigator.of(dialogContext).pop();
                             },
                           ),
                           TextButton(
-                            child: const Text('Yes'),
+                            child: Text(
+                              'Yes',
+                              style:
+                                  TextStyle(color: theme.colorScheme.primary),
+                            ),
                             onPressed: () {
                               Navigator.of(dialogContext).pop();
                               Navigator.of(context).pop();
@@ -854,9 +862,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                         icon: LMIcon(
                                           type: LMIconType.svg,
                                           assetPath: kAssetGalleryIcon,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
+                                          color: LMThemeData
+                                              .suraasaTheme.colorScheme.primary,
                                           boxPadding: 0,
                                           size: 44,
                                         ),
@@ -890,9 +897,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                         icon: LMIcon(
                                           type: LMIconType.svg,
                                           assetPath: kAssetVideoIcon,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
+                                          color: LMThemeData
+                                              .suraasaTheme.colorScheme.primary,
                                           boxPadding: 0,
                                           size: 44,
                                         ),
@@ -928,9 +934,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                         icon: LMIcon(
                                           type: LMIconType.svg,
                                           assetPath: kAssetDocPDFIcon,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
+                                          color: LMThemeData
+                                              .suraasaTheme.colorScheme.primary,
                                           boxPadding: 0,
                                           size: 44,
                                         ),
