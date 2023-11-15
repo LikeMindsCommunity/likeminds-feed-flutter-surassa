@@ -6,7 +6,7 @@ import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/add_comment_reply/add_comment_reply_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/comment_replies/comment_replies_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/toggle_like_comment/toggle_like_comment_bloc.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
+
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_action_id.dart';
@@ -86,7 +86,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
         return LMReplyTile(
             comment: element,
             onTagTap: (String userId) {
-              locator<LikeMindsService>().routeToProfile(userId);
+              locator<LMFeedClient>().routeToProfile(userId);
             },
             user: user,
             profilePicture: LMProfilePicture(
@@ -95,7 +95,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
               fallbackText: user.name,
               onTap: () {
                 if (user.sdkClientInfo != null) {
-                  locator<LikeMindsService>()
+                  locator<LMFeedClient>()
                       .routeToProfile(user.sdkClientInfo!.userUniqueId);
                 }
               },

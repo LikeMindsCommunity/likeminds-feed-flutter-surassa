@@ -1,6 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed/src/di/di_service.dart';
+import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/analytics_bloc/analytics_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/bloc.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 
 class LMAnalytics {
@@ -11,7 +14,6 @@ class LMAnalytics {
   LMSDKCallback? sdkCallback;
 
   LMAnalytics._();
-
 
   void initialize() {
     sdkCallback =
@@ -150,4 +152,7 @@ void sendPostCreationCompletedEvent(List<MediaModel> postMedia,
   }
 
   LMAnalytics.get().track(AnalyticsKeys.postCreationCompleted, propertiesMap);
+  locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+      eventName: AnalyticsKeys.postCreationCompleted,
+      eventProperties: propertiesMap));
 }

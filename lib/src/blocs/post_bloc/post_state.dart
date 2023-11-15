@@ -1,27 +1,27 @@
-part of 'new_post_bloc.dart';
+part of 'post_bloc.dart';
 
-abstract class NewPostState extends Equatable {
-  const NewPostState();
+abstract class LMPostState extends Equatable {
+  const LMPostState();
 
   @override
   List<Object> get props => [];
 }
 
-class NewPostInitiate extends NewPostState {}
+class LMPostInitiate extends LMPostState {}
 
-class NewPostUploading extends NewPostState {
+class NewPostUploading extends LMPostState {
   final Stream<double> progress;
   final MediaModel? thumbnailMedia;
 
   const NewPostUploading({required this.progress, this.thumbnailMedia});
 }
 
-class EditPostUploading extends NewPostState {}
+class EditPostUploading extends LMPostState {}
 
-class NewPostUploaded extends NewPostState {
-  final PostViewModel postData;
+class NewPostUploaded extends LMPostState {
+  final PostUI postData;
   final Map<String, User> userData;
-  final Map<String, Topic> topics;
+  final Map<String, TopicUI> topics;
 
   const NewPostUploaded({
     required this.postData,
@@ -30,10 +30,10 @@ class NewPostUploaded extends NewPostState {
   });
 }
 
-class EditPostUploaded extends NewPostState {
-  final PostViewModel postData;
+class EditPostUploaded extends LMPostState {
+  final PostUI postData;
   final Map<String, User> userData;
-  final Map<String, Topic> topics;
+  final Map<String, TopicUI> topics;
 
   const EditPostUploaded({
     required this.postData,
@@ -42,13 +42,13 @@ class EditPostUploaded extends NewPostState {
   });
 }
 
-class NewPostError extends NewPostState {
+class NewPostError extends LMPostState {
   final String message;
 
   const NewPostError({required this.message});
 }
 
-class PostDeletionError extends NewPostState {
+class PostDeletionError extends LMPostState {
   final String message;
 
   const PostDeletionError({required this.message});
@@ -57,7 +57,7 @@ class PostDeletionError extends NewPostState {
   List<Object> get props => [message];
 }
 
-class PostDeleted extends NewPostState {
+class PostDeleted extends LMPostState {
   final String postId;
 
   const PostDeleted({required this.postId});
@@ -66,8 +66,8 @@ class PostDeleted extends NewPostState {
   List<Object> get props => [postId];
 }
 
-class PostUpdateState extends NewPostState {
-  final PostViewModel post;
+class PostUpdateState extends LMPostState {
+  final PostUI post;
 
   const PostUpdateState({required this.post});
 
@@ -75,7 +75,7 @@ class PostUpdateState extends NewPostState {
   List<Object> get props => [post];
 }
 
-class PostPinnedState extends NewPostState {
+class PostPinnedState extends LMPostState {
   final String postId;
   final bool isPinned;
 
@@ -85,7 +85,7 @@ class PostPinnedState extends NewPostState {
   List<Object> get props => [postId, isPinned];
 }
 
-class PostPinError extends NewPostState {
+class PostPinError extends LMPostState {
   final String message;
   final bool isPinned;
   final String postId;

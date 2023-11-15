@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
+import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
 
 part 'comment_replies_event.dart';
@@ -11,7 +11,7 @@ part 'comment_replies_state.dart';
 
 class CommentRepliesBloc
     extends Bloc<CommentRepliesEvent, CommentRepliesState> {
-  LikeMindsService lmService = locator<LikeMindsService>();
+  LMFeedClient lmService = locator<LMFeedClient>();
   CommentRepliesBloc() : super(CommentRepliesInitial()) {
     on<CommentRepliesEvent>((event, emit) async {
       if (event is GetCommentReplies) {

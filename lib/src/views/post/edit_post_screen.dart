@@ -4,12 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
-import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
-import 'package:likeminds_feed_ss_fl/src/services/bloc_service.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/post_bloc/post_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
-import 'package:likeminds_feed_ss_fl/src/utils/local_preference/user_local_preference.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_utils.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/tagging/tagging_textfield_ta.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post/post_composer_header.dart';
@@ -37,7 +35,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
   ValueNotifier<bool> rebuildAttachments = ValueNotifier(false);
   late String postId;
   Post? postDetails;
-  NewPostBloc? newPostBloc;
+  LMPostBloc? newPostBloc;
   List<Attachment>? attachments;
   User? user;
   bool isDocumentPost = false; // flag for document or media post
@@ -98,7 +96,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
       DecodeUrlRequest request =
           (DecodeUrlRequestBuilder()..url(previewLink)).build();
       DecodeUrlResponse response =
-          await locator<LikeMindsService>().decodeUrl(request);
+          await locator<LMFeedClient>().decodeUrl(request);
       if (response.success == true) {
         OgTags? responseTags = response.ogTags;
         linkModel = MediaModel(
@@ -126,7 +124,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
     user = UserLocalPreference.instance.fetchUserData();
     postId = widget.postId;
     textEditingController = TextEditingController();
-    postFuture = locator<LikeMindsService>().getPost((GetPostRequestBuilder()
+    postFuture = locator<LMFeedClient>().getPost((GetPostRequestBuilder()
           ..postId(widget.postId)
           ..page(1)
           ..pageSize(10))
@@ -193,9 +191,8 @@ class _EditPostScreenState extends State<EditPostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
     screenSize = MediaQuery.of(context).size;
-    newPostBloc = locator<BlocService>().newPostBlocProvider;
+    newPostBloc = locator<LMFeedBloc>().lmPostBloc;
     return WillPopScope(
       onWillPop: () {
         if (textEditingController!.text != convertedPostText) {
@@ -352,7 +349,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                   imageUrl: user!.imageUrl,
                   onTap: () {
                     if (user!.sdkClientInfo != null) {
-                      locator<LikeMindsService>()
+                      locator<LMFeedClient>()
                           .routeToProfile(user!.sdkClientInfo!.userUniqueId);
                     }
                   },

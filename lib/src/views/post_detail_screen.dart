@@ -3,18 +3,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/analytics_bloc/analytics_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/add_comment/add_comment_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/add_comment_reply/add_comment_reply_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/all_comments/all_comments_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/comment_replies/comment_replies_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/toggle_like_comment/toggle_like_comment_bloc.dart';
-import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
-import 'package:likeminds_feed_ss_fl/src/models/post_view_model.dart';
-import 'package:likeminds_feed_ss_fl/src/services/bloc_service.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/post_bloc/post_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
-import 'package:likeminds_feed_ss_fl/src/utils/local_preference/user_local_preference.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_action_id.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/tagging/tagging_textfield_ta.dart';
 import 'package:likeminds_feed_ss_fl/src/widgets/delete_dialog.dart';
@@ -45,7 +43,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   late final AddCommentReplyBloc _addCommentReplyBloc;
   late final CommentRepliesBloc _commentRepliesBloc;
   late final ToggleLikeCommentBloc _toggleLikeCommentBloc;
-  late final NewPostBloc newPostBloc;
+  late final LMPostBloc lmPostBloc;
   final FocusNode focusNode = FocusNode();
   TextEditingController? _commentController;
   ValueNotifier<bool> rebuildButton = ValueNotifier(false);
@@ -55,7 +53,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   PostDetailResponse? postDetailResponse;
   final PagingController<int, Reply> _pagingController =
       PagingController(firstPageKey: 1);
-  PostViewModel? postData;
+  PostUI? postData;
   User currentUser = UserLocalPreference.instance.fetchUserData();
 
   List<UserTag> userTags = [];
@@ -74,8 +72,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     _addCommentBloc.close();
     _addCommentReplyBloc.close();
     _pagingController.dispose();
-    _commentController?.dispose();
-    focusNode.dispose();
     rebuildButton.dispose();
     rebuildPostWidget.dispose();
     rebuildReplyWidget.dispose();
@@ -85,7 +81,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   @override
   void initState() {
     super.initState();
-    newPostBloc = locator<BlocService>().newPostBlocProvider;
+    lmPostBloc = locator<LMFeedBloc>().lmPostBloc;
     updatePostDetails(context);
     right = checkCommentRights();
     _commentController = TextEditingController();
@@ -180,8 +176,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   }
 
   Future updatePostDetails(BuildContext context) async {
-    final GetPostResponse postDetails =
-        await locator<LikeMindsService>().getPost(
+    final GetPostResponse postDetails = await locator<LMFeedClient>().getPost(
       (GetPostRequestBuilder()
             ..postId(widget.postId)
             ..page(1)
@@ -189,7 +184,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           .build(),
     );
     if (postDetails.success) {
-      postData = PostViewModel.fromPost(post: postDetails.post!);
+      postData = PostUI.fromPost(post: postDetails.post!);
       rebuildPostWidget.value = !rebuildPostWidget.value;
     } else {
       toast(
@@ -215,10 +210,14 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     if (commentItemList.length >= 10) {
       commentItemList.removeAt(9);
     }
+    postDetailResponse!.users?.addAll({
+      currentUser.userUniqueId: currentUser,
+      currentUser.id.toString(): currentUser,
+    });
     commentItemList.insert(0, addCommentSuccess.addCommentResponse.reply!);
     increaseCommentCount();
     rebuildPostWidget.value = !rebuildPostWidget.value;
-    newPostBloc.add(
+    lmPostBloc.add(
       UpdatePost(
         post: postData!,
       ),
@@ -241,6 +240,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       int index = commentItemList!.indexWhere((element) =>
           element.id ==
           addCommentReplySuccess.addCommentResponse.reply!.parentComment!.id);
+      postDetailResponse!.users?.addAll({
+        currentUser.userUniqueId: currentUser,
+        currentUser.id.toString(): currentUser,
+      });
       if (index != -1) {
         commentItemList[index].repliesCount =
             commentItemList[index].repliesCount + 1;
@@ -257,7 +260,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       commentItemList.removeAt(index);
       decreaseCommentCount();
       rebuildPostWidget.value = !rebuildPostWidget.value;
-      newPostBloc.add(
+      lmPostBloc.add(
         UpdatePost(
           post: postData!,
         ),
@@ -268,7 +271,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   bool checkCommentRights() {
     final MemberStateResponse memberStateResponse =
         UserLocalPreference.instance.fetchMemberRights();
-    if (memberStateResponse.state == 1) {
+    if (!memberStateResponse.success || memberStateResponse.state == 1) {
       return true;
     }
     bool memberRights = UserLocalPreference.instance.fetchMemberRight(10);
@@ -462,7 +465,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                           onTap: () {
                                             if (currentUser.sdkClientInfo !=
                                                 null) {
-                                              locator<LikeMindsService>()
+                                              locator<LMFeedClient>()
                                                   .routeToProfile(currentUser
                                                       .sdkClientInfo!
                                                       .userUniqueId);
@@ -570,11 +573,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                           String
                                                                               commentText =
                                                                               TaggingHelper.encodeString(_commentController!.text, userTags);
+
                                                                           commentText =
                                                                               commentText.trim();
                                                                           if (commentText
                                                                               .isEmpty) {
                                                                             toast("Please write something to post");
+
                                                                             return;
                                                                           }
 
@@ -689,6 +694,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                           if (commentText
                                                                               .isEmpty) {
                                                                             toast("Please write something to post");
+
                                                                             return;
                                                                           }
 
@@ -794,8 +800,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                       child: ValueListenableBuilder(
                           valueListenable: rebuildPostWidget,
                           builder: (context, _, __) {
-                            return BlocListener<NewPostBloc, NewPostState>(
-                              bloc: newPostBloc,
+                            return BlocListener<LMPostBloc, LMPostState>(
+                              bloc: lmPostBloc,
                               listener: (context, state) {
                                 if (state is EditPostUploaded) {
                                   postData = state.postData;
@@ -912,7 +918,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                         key: ValueKey(item.id),
                                                         onTagTap:
                                                             (String userId) {
-                                                          locator<LikeMindsService>()
+                                                          locator<LMFeedClient>()
                                                               .routeToProfile(
                                                                   userId);
                                                         },
@@ -946,6 +952,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                                 "comment_id": item.id,
                                                                               },
                                                                             );
+                                                                            locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+                                                                                  eventName: AnalyticsKeys.commentDeleted,
+                                                                                  eventProperties: {
+                                                                                    "post_id": widget.postId,
+                                                                                    "comment_id": item.id,
+                                                                                  },
+                                                                                ));
                                                                             if (postDetailResponse !=
                                                                                 null) {
                                                                               postDetailResponse!.users?.putIfAbsent(currentUser.userUniqueId, () => currentUser);
@@ -997,7 +1010,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                         .userId]!
                                                                     .sdkClientInfo !=
                                                                 null) {
-                                                              locator<LikeMindsService>().routeToProfile(
+                                                              locator<LMFeedClient>().routeToProfile(
                                                                   postDetailResponse!
                                                                       .users![item
                                                                           .userId]!

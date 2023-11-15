@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
 
 part 'likes_event.dart';
@@ -18,7 +17,7 @@ class LikesBloc extends Bloc<LikesEvent, LikesState> {
         }
         try {
           GetPostLikesResponse? response =
-              await locator<LikeMindsService>().getPostLikes(
+              await locator<LMFeedClient>().getPostLikes(
             (GetPostLikesRequestBuilder()
                   ..postId(event.postId)
                   ..page(event.offset)
@@ -49,7 +48,7 @@ class LikesBloc extends Bloc<LikesEvent, LikesState> {
         }
         try {
           GetCommentLikesResponse response =
-              await locator<LikeMindsService>().getCommentLikes(
+              await locator<LMFeedClient>().getCommentLikes(
             (GetCommentLikesRequestBuilder()
                   ..postId(event.postId)
                   ..commentId(event.commentId)

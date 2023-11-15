@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:flutter/material.dart';
+import 'package:likeminds_feed_ss_sample/bloc_observer/analytics_bloc_listener.dart';
+import 'package:likeminds_feed_ss_sample/bloc_observer/profile_bloc_listener.dart';
+import 'package:likeminds_feed_ss_sample/bloc_observer/routing_bloc_listener.dart';
 import 'package:likeminds_feed_ss_sample/likeminds_callback.dart';
 import 'package:likeminds_feed_ss_sample/main.dart';
 import 'package:likeminds_feed_ss_sample/network_handling.dart';
@@ -30,14 +33,40 @@ class MyApp extends StatelessWidget {
         //navigatorKey: rootNavigatorKey,
         scaffoldMessengerKey: rootScaffoldMessengerKey,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 70, 102, 246),
-            primary: const Color.fromARGB(255, 70, 102, 246),
-            secondary: const Color.fromARGB(255, 59, 130, 246),
-          ),
           useMaterial3: true,
+          primaryColor: Colors.deepPurple,
+          inputDecorationTheme: InputDecorationTheme(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            outlineBorder: const BorderSide(
+              color: Colors.deepPurple,
+              width: 2,
+            ),
+            activeIndicatorBorder: const BorderSide(
+              color: Colors.deepPurple,
+              width: 2,
+            ),
+            focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.deepPurple,
+                width: 2,
+              ),
+            ),
+            enabledBorder: const OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.deepPurple,
+                width: 2,
+              ),
+            ),
+          ),
         ),
-        home: const CredScreen(),
+        home: LMBlocListener(
+          analyticsListener: analyticsBlocListener,
+          profileListener: profileBlocListener,
+          routingListener: routingBlocListener,
+          child: const CredScreen(),
+        ),
       ),
     );
   }
@@ -78,12 +107,12 @@ class _CredScreenState extends State<CredScreen> {
 
   Future initUniLinks(BuildContext context) async {
     if (!initialURILinkHandled) {
-      initialURILinkHandled = true;
       // Get the initial deep link if the app was launched with one
       final initialLink = await getInitialLink();
 
       // Handle the deep link
       if (initialLink != null) {
+        initialURILinkHandled = true;
         // You can extract any parameters from the initialLink object here
         // and use them to navigate to a specific screen in your app
         debugPrint('Received initial deep link: $initialLink');
@@ -99,12 +128,14 @@ class _CredScreenState extends State<CredScreen> {
                   ..userName("Test User")
                   ..userUniqueId(userId ?? "Test-User-Id"))
                 .build(),
-            context);
+            rootNavigatorKey);
       }
 
       // Subscribe to link changes
       _streamSubscription = linkStream.listen((String? link) async {
+        initialURILinkHandled = true;
         if (link != null) {
+          initialURILinkHandled = true;
           // Handle the deep link
           // You can extract any parameters from the uri object here
           // and use them to navigate to a specific screen in your app
@@ -120,7 +151,7 @@ class _CredScreenState extends State<CredScreen> {
                     ..userName("Test User")
                     ..userUniqueId(userId ?? "Test-User-Id"))
                   .build(),
-              context);
+              rootNavigatorKey);
         }
       }, onError: (err) {
         // Handle exception by warning the user their action did not succeed

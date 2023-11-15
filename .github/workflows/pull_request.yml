@@ -1,0 +1,27 @@
+name: Feed SDK test on every PR
+
+on:
+  pull_request:
+    branches-ignore:
+      - master
+      
+jobs:
+  run-flutter-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+      - run: flutter pub get
+      
+      - name: Lint
+        run: flutter analyze > lint-results.txt
+
+      - name: Upload the lint results as an artifact
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: lint-results
+          path: lint-results.txt

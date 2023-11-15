@@ -2,15 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
-import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
-import 'package:likeminds_feed_ss_fl/src/models/post_view_model.dart';
-import 'package:likeminds_feed_ss_fl/src/services/bloc_service.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_action_id.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_utils.dart';
-import 'package:likeminds_feed_ss_fl/src/utils/utils.dart';
 import 'package:likeminds_feed_ss_fl/src/views/likes/likes_screen.dart';
 import 'package:likeminds_feed_ss_fl/src/views/media_preview.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post/edit_post_screen.dart';
@@ -23,7 +18,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:url_launcher/url_launcher.dart';
 
 class SSPostWidget extends StatefulWidget {
-  final PostViewModel post;
+  final PostUI post;
   final User user;
   final Map<String, Topic> topics;
   final bool isFeed;
@@ -47,7 +42,7 @@ class SSPostWidget extends StatefulWidget {
 class _SSPostWidgetState extends State<SSPostWidget> {
   int postLikes = 0;
   int comments = 0;
-  PostViewModel? postDetails;
+  PostUI? postDetails;
   bool? isLiked;
   bool? isPinned;
   ValueNotifier<bool> rebuildLikeWidget = ValueNotifier(false);
@@ -83,14 +78,14 @@ class _SSPostWidgetState extends State<SSPostWidget> {
 
   @override
   Widget build(BuildContext context) {
-    NewPostBloc newPostBloc = locator<BlocService>().newPostBlocProvider;
+    LMPostBloc lmPostBloc = locator<LMFeedBloc>().lmPostBloc;
     timeago.setLocaleMessages('en', SSCustomMessages());
     return InheritedPostProvider(
       post: widget.post.toPost(),
       child: Container(
         color: LMThemeData.kWhiteColor,
         child: BlocListener(
-          bloc: newPostBloc,
+          bloc: lmPostBloc,
           listener: (context, state) {
             if (state is PostPinnedState && state.postId == widget.post.id) {
               isPinned = state.isPinned;
@@ -109,7 +104,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
               }
               postDetails!.isPinned = isPinned!;
               rebuildPostWidget.value = !rebuildPostWidget.value;
-              newPostBloc.add(UpdatePost(post: postDetails!));
+              lmPostBloc.add(UpdatePost(post: postDetails!));
             } else if (state is PostPinError &&
                 state.postId == widget.post.id) {
               isPinned = state.isPinned;
@@ -124,6 +119,11 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                 LMAnalytics.get().track(AnalyticsKeys.commentListOpen, {
                   'postId': widget.post.id,
                 });
+                locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+                        eventName: AnalyticsKeys.commentListOpen,
+                        eventProperties: {
+                          'postId': widget.post.id,
+                        }));
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => PostDetailScreen(
@@ -158,7 +158,8 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                   LMThemeData.kHorizontalPaddingMedium,
                                   LMTextView(
                                     text: "Pinned Post",
-                                    textStyle: TextStyle(color: LMThemeData.primary500),
+                                    textStyle: TextStyle(
+                                        color: LMThemeData.primary500),
                                   )
                                 ],
                               ),
@@ -179,7 +180,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                           ),
                           onProfileTap: () {
                             if (widget.user.sdkClientInfo != null) {
-                              locator<LikeMindsService>().routeToProfile(
+                              locator<LMFeedClient>().routeToProfile(
                                   widget.user.sdkClientInfo!.userUniqueId);
                             }
                           },
@@ -225,9 +226,8 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                           'Are you sure you want to delete this post. This action can not be reversed.',
                                       action: (String reason) async {
                                         Navigator.of(childContext).pop();
-                                        final res =
-                                            await locator<LikeMindsService>()
-                                                .getMemberState();
+                                        final res = await locator<LMFeedBloc>()
+                                            .getMemberState();
 
                                         String? postType =
                                             postDetails!.attachments == null ||
@@ -251,10 +251,24 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                             "post_type": postType,
                                           },
                                         );
-                                        newPostBloc.add(
+                                        locator<LMFeedBloc>()
+                                            .lmAnalyticsBloc
+                                            .add(FireAnalyticEvent(
+                                              eventName:
+                                                  AnalyticsKeys.postDeleted,
+                                              eventProperties: {
+                                                "user_state": res.state == 1
+                                                    ? "CM"
+                                                    : "member",
+                                                "post_id": postDetails!.id,
+                                                "user_id": postDetails!.userId,
+                                                "post_type": postType,
+                                              },
+                                            ));
+                                        lmPostBloc.add(
                                           DeletePost(
                                             postId: postDetails!.id,
-                                            reason: reason ?? 'Self Post',
+                                            reason: reason,
                                           ),
                                         );
 
@@ -279,6 +293,16 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                     "post_id": postDetails!.id,
                                     "post_type": postType,
                                   });
+                                  locator<LMFeedBloc>()
+                                      .lmAnalyticsBloc
+                                      .add(FireAnalyticEvent(
+                                          eventName: AnalyticsKeys.postUnpinned,
+                                          eventProperties: {
+                                            "created_by_id":
+                                                postDetails!.userId,
+                                            "post_id": postDetails!.id,
+                                            "post_type": postType,
+                                          }));
                                 } else {
                                   LMAnalytics.get()
                                       .track(AnalyticsKeys.postPinned, {
@@ -286,9 +310,19 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                     "post_id": postDetails!.id,
                                     "post_type": postType,
                                   });
+                                  locator<LMFeedBloc>()
+                                      .lmAnalyticsBloc
+                                      .add(FireAnalyticEvent(
+                                          eventName: AnalyticsKeys.postPinned,
+                                          eventProperties: {
+                                            "created_by_id":
+                                                postDetails!.userId,
+                                            "post_id": postDetails!.id,
+                                            "post_type": postType,
+                                          }));
                                 }
 
-                                newPostBloc.add(TogglePinPost(
+                                lmPostBloc.add(TogglePinPost(
                                     postId: postDetails!.id,
                                     isPinned: !isPinned!));
                               } else if (id == postEditId) {
@@ -305,6 +339,14 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                   "post_id": postDetails!.id,
                                   "post_type": postType,
                                 });
+                                locator<LMFeedBloc>().lmAnalyticsBloc.add(
+                                        FireAnalyticEvent(
+                                            eventName: AnalyticsKeys.postEdited,
+                                            eventProperties: {
+                                          "created_by_id": postDetails!.userId,
+                                          "post_id": postDetails!.id,
+                                          "post_type": postType,
+                                        }));
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => EditPostScreen(
                                           postId: postDetails!.id,
@@ -325,7 +367,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                         ),
                   LMPostContent(
                     onTagTap: (String userId) {
-                      locator<LikeMindsService>().routeToProfile(userId);
+                      locator<LMFeedClient>().routeToProfile(userId);
                     },
                   ),
                   postDetails!.attachments != null &&
@@ -473,11 +515,10 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                 rebuildLikeWidget.value =
                                     !rebuildLikeWidget.value;
 
-                                final response =
-                                    await locator<LikeMindsService>().likePost(
-                                        (LikePostRequestBuilder()
-                                              ..postId(postDetails!.id))
-                                            .build());
+                                final response = await locator<LMFeedClient>()
+                                    .likePost((LikePostRequestBuilder()
+                                          ..postId(postDetails!.id))
+                                        .build());
                                 if (!response.success) {
                                   toast(
                                     response.errorMessage ??
@@ -499,7 +540,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                       !rebuildLikeWidget.value;
                                 } else {
                                   if (!widget.isFeed) {
-                                    newPostBloc.add(
+                                    lmPostBloc.add(
                                       UpdatePost(
                                         post: postDetails!,
                                       ),
@@ -533,6 +574,13 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                 .track(AnalyticsKeys.commentListOpen, {
                               'postId': widget.post.id,
                             });
+                            locator<LMFeedBloc>()
+                                .lmAnalyticsBloc
+                                .add(FireAnalyticEvent(
+                                    eventName: AnalyticsKeys.commentListOpen,
+                                    eventProperties: {
+                                      'postId': widget.post.id,
+                                    }));
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -568,6 +616,16 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                             "post_type": postType,
                             "user_id": user.userUniqueId,
                           });
+                          locator<LMFeedBloc>()
+                              .lmAnalyticsBloc
+                              .add(FireAnalyticEvent(
+                                eventName: AnalyticsKeys.postShared,
+                                eventProperties: {
+                                  "post_id": widget.post.id,
+                                  "post_type": postType,
+                                  "user_id": user.userUniqueId,
+                                },
+                              ));
                           SharePost().sharePost(widget.post.id);
                         },
                         icon: const LMIcon(

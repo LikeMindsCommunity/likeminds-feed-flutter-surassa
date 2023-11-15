@@ -3,7 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
+
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 
 class TaggingHelper {
@@ -74,7 +74,7 @@ class TaggingHelper {
   }
 
   static void routeToProfile(String userId) {
-    locator<LikeMindsService>().routeToProfile(userId);
+    locator<LMFeedClient>().routeToProfile(userId);
   }
 
   static String convertRouteToTag(String text, {bool withTilde = true}) {
@@ -175,7 +175,8 @@ class TaggingHelper {
       // Add a TextSpan for the remaining text
       textSpans.add(TextSpan(
         text: text.substring(lastIndex),
-        style: const TextStyle(wordSpacing: 1.5, color: LMThemeData.kGrey1Color),
+        style:
+            const TextStyle(wordSpacing: 1.5, color: LMThemeData.kGrey1Color),
       ));
     }
 

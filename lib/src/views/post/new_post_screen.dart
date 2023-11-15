@@ -9,9 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:likeminds_feed/likeminds_feed.dart';
-import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
-import 'package:likeminds_feed_ss_fl/src/services/bloc_service.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/analytics/analytics.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
@@ -53,7 +51,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
   final CustomPopupMenuController _controllerPopUp =
       CustomPopupMenuController();
 
-  NewPostBloc? newPostBloc;
+  LMPostBloc? lmPostBloc;
   late final User user;
 
   List<MediaModel> postMedia = [];
@@ -62,6 +60,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
 
   bool isDocumentPost = true; // flag for document or media post
   bool isMediaPost = true;
+  bool isVideoAttached = false;
   bool isUploading = false;
 
   String previewLink = '';
@@ -81,12 +80,12 @@ class _NewPostScreenState extends State<NewPostScreen> {
     super.initState();
     user = UserLocalPreference.instance.fetchUserData();
     getTopicsResponse =
-        locator<LikeMindsService>().getTopics((GetTopicsRequestBuilder()
+        locator<LMFeedClient>().getTopics((GetTopicsRequestBuilder()
               ..page(1)
               ..pageSize(20)
               ..isEnabled(true))
             .build());
-    newPostBloc = locator<BlocService>().newPostBlocProvider;
+    lmPostBloc = locator<LMFeedBloc>().lmPostBloc;
     if (_focusNode.canRequestFocus) {
       _focusNode.requestFocus();
     }
@@ -108,6 +107,10 @@ class _NewPostScreenState extends State<NewPostScreen> {
         }
         LMAnalytics.get().track(
             AnalyticsKeys.documentAttachedInPost, {'document_count': docCount});
+        locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+              eventName: AnalyticsKeys.documentAttachedInPost,
+              eventProperties: {'document_count': docCount},
+            ));
       } else if (mediaToBeRemoved.mediaType == MediaType.video) {
         int videoCount = 0;
         for (var element in postMedia) {
@@ -117,6 +120,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
         }
         LMAnalytics.get().track(
             AnalyticsKeys.videoAttachedToPost, {'video_count': videoCount});
+        locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+            eventName: AnalyticsKeys.videoAttachedToPost,
+            eventProperties: {'video_count': videoCount}));
       } else if (mediaToBeRemoved.mediaType == MediaType.image) {
         int imageCount = 0;
         for (var element in postMedia) {
@@ -126,6 +132,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
         }
         LMAnalytics.get().track(
             AnalyticsKeys.imageAttachedToPost, {'image_count': imageCount});
+        locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+            eventName: AnalyticsKeys.imageAttachedToPost,
+            eventProperties: {'image_count': imageCount}));
       }
 
       postMedia.removeAt(index);
@@ -133,6 +142,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
         isDocumentPost = true;
         isMediaPost = true;
         showLinkPreview = true;
+        isVideoAttached = false;
       }
       setState(() {});
     }
@@ -156,15 +166,31 @@ class _NewPostScreenState extends State<NewPostScreen> {
       }
       LMAnalytics.get().track(AnalyticsKeys.documentAttachedInPost,
           {'document_count': documentCount});
+      locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+            eventName: AnalyticsKeys.documentAttachedInPost,
+            eventProperties: {'document_count': documentCount},
+          ));
     } else {
-      int imageCount = 0;
-      for (var element in postMedia) {
-        if (element.mediaType == MediaType.image) {
-          imageCount++;
+      if (postMedia.first.mediaType == MediaType.video) {
+        LMAnalytics.get()
+            .track(AnalyticsKeys.videoAttachedToPost, {'video_count': 1});
+        locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+            eventName: AnalyticsKeys.videoAttachedToPost,
+            eventProperties: {'video_count': 1}));
+        isVideoAttached = true;
+      } else {
+        int imageCount = 0;
+        for (var element in postMedia) {
+          if (element.mediaType == MediaType.image) {
+            imageCount++;
+          }
         }
+        LMAnalytics.get().track(
+            AnalyticsKeys.imageAttachedToPost, {'image_count': imageCount});
+        locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+            eventName: AnalyticsKeys.imageAttachedToPost,
+            eventProperties: {'image_count': imageCount}));
       }
-      LMAnalytics.get().track(
-          AnalyticsKeys.imageAttachedToPost, {'image_count': imageCount});
     }
   }
 
@@ -194,6 +220,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
     } else {
       if (postMedia.isEmpty) {
         isMediaPost = true;
+        isVideoAttached = false;
         showLinkPreview = true;
       }
       setState(() {
@@ -206,7 +233,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
     if (uploadResponse) {
       isDocumentPost = true;
       showLinkPreview = false;
-      isMediaPost = true;
+      isMediaPost = false;
       setState(() {
         isUploading = false;
       });
@@ -214,6 +241,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
       if (postMedia.isEmpty) {
         isDocumentPost = true;
         isMediaPost = true;
+        isVideoAttached = false;
         showLinkPreview = true;
       }
       setState(() {
@@ -264,7 +292,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
       DecodeUrlRequest request =
           (DecodeUrlRequestBuilder()..url(previewLink)).build();
       DecodeUrlResponse response =
-          await locator<LikeMindsService>().decodeUrl(request);
+          await locator<LMFeedClient>().decodeUrl(request);
       if (response.success == true) {
         OgTags? responseTags = response.ogTags;
         linkModel = MediaModel(
@@ -283,6 +311,12 @@ class _NewPostScreenState extends State<NewPostScreen> {
             'link': previewLink,
           },
         );
+        locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+              eventName: AnalyticsKeys.linkAttachedInPost,
+              eventProperties: {
+                'link': previewLink,
+              },
+            ));
         if (postMedia.isEmpty) {
           rebuildLinkPreview.value = !rebuildLinkPreview.value;
         }
@@ -309,7 +343,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    newPostBloc = locator<BlocService>().newPostBlocProvider;
+    lmPostBloc = locator<LMFeedBloc>().lmPostBloc;
     Size screenSize = MediaQuery.of(context).size;
     ThemeData theme = LMThemeData.suraasaTheme;
     return WillPopScope(
@@ -377,7 +411,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                   child: CustomPopupMenu(
                                     controller: _controllerPopUp,
                                     showArrow: false,
-                                    verticalMargin: 10,
                                     horizontalMargin: 16.0,
                                     pressType: PressType.singleClick,
                                     menuBuilder: () => TopicPopUp(
@@ -410,7 +443,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                         color: LMThemeData.kWhiteColor,
                                         border: Border.all(
                                           color: LMThemeData.kPrimaryColor,
-                                          width: 1,
                                         ),
                                       ),
                                       child: LMTopicChip(
@@ -460,7 +492,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
                     slivers: [
                       SliverToBoxAdapter(
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
@@ -471,7 +502,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                 imageUrl: user.imageUrl,
                                 onTap: () {
                                   if (user.sdkClientInfo != null) {
-                                    locator<LikeMindsService>().routeToProfile(
+                                    locator<LMFeedClient>().routeToProfile(
                                         user.sdkClientInfo!.userUniqueId);
                                   }
                                 },
@@ -535,8 +566,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                     children: [
                                       LMLinkPreview(
                                         linkModel: linkModel,
-                                        backgroundColor: LMThemeData.kSecondary100,
-                                        showLinkUrl: false,
+                                        backgroundColor:
+                                            LMThemeData.kSecondary100,
                                         onTap: () {
                                           launchUrl(
                                             Uri.parse(
@@ -546,7 +577,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                           );
                                         },
                                         border: Border.all(
-                                          width: 1,
                                           color: LMThemeData.kSecondary100,
                                         ),
                                         title: LMTextView(
@@ -556,7 +586,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                           overflow: TextOverflow.ellipsis,
                                           textStyle: const TextStyle(
                                             fontWeight: FontWeight.w600,
-                                            color: LMThemeData.kHeadingBlackColor,
+                                            color:
+                                                LMThemeData.kHeadingBlackColor,
                                             height: 1.30,
                                           ),
                                         ),
@@ -567,7 +598,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           textStyle: const TextStyle(
-                                            color: LMThemeData.kHeadingBlackColor,
+                                            color:
+                                                LMThemeData.kHeadingBlackColor,
                                             fontWeight: FontWeight.w400,
                                             height: 1.30,
                                           ),
@@ -584,6 +616,15 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                 'link': previewLink,
                                               },
                                             );
+                                            locator<LMFeedBloc>()
+                                                .lmAnalyticsBloc
+                                                .add(FireAnalyticEvent(
+                                                  eventName: AnalyticsKeys
+                                                      .linkAttachedInPost,
+                                                  eventProperties: {
+                                                    'link': previewLink,
+                                                  },
+                                                ));
                                             showLinkPreview = false;
                                             rebuildLinkPreview.value =
                                                 !rebuildLinkPreview.value;
@@ -616,14 +657,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                         Row(
                                           children: [
                                             SizedBox(
-                                              // height: 180,
-                                              // width: postMedia[
-                                              //                 index]
-                                              //             .mediaType ==
-                                              //         MediaType
-                                              //             .video
-                                              //     ? 200
-                                              //     : 180,
                                               child: Stack(
                                                 children: [
                                                   postMedia[index].mediaType ==
@@ -647,11 +680,13 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                               //     180,
                                                               boxFit: BoxFit
                                                                   .contain,
+                                                              autoPlay: false,
                                                               showControls:
                                                                   false,
                                                               // width:
                                                               //     300,
                                                               borderRadius: 18,
+                                                              isMute: true,
                                                             ),
                                                           ),
                                                         )
@@ -666,10 +701,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                             width: 200,
                                                             color: Colors.black,
                                                             child: LMImage(
-                                                              // height:
-                                                              //     180,
-                                                              // width:
-                                                              //     180,
                                                               boxFit: BoxFit
                                                                   .contain,
                                                               borderRadius: 18,
@@ -698,7 +729,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                                   .black38,
                                                             )
                                                           ],
-                                                          color: LMThemeData.kWhiteColor
+                                                          color: LMThemeData
+                                                              .kWhiteColor
                                                               .withOpacity(0.8),
                                                         )),
                                                   )
@@ -729,13 +761,21 @@ class _NewPostScreenState extends State<NewPostScreen> {
                             'Are you sure you want to discard the current post?'),
                         actions: <Widget>[
                           TextButton(
-                            child: const Text('No'),
+                            child: Text(
+                              'No',
+                              style:
+                                  TextStyle(color: theme.colorScheme.primary),
+                            ),
                             onPressed: () {
                               Navigator.of(dialogContext).pop();
                             },
                           ),
                           TextButton(
-                            child: const Text('Yes'),
+                            child: Text(
+                              'Yes',
+                              style:
+                                  TextStyle(color: theme.colorScheme.primary),
+                            ),
                             onPressed: () {
                               Navigator.of(dialogContext).pop();
                               Navigator.of(context).pop();
@@ -776,11 +816,12 @@ class _NewPostScreenState extends State<NewPostScreen> {
                       sendPostCreationCompletedEvent(
                           postMedia, userTags, selectedTopic);
 
-                      newPostBloc!.add(
+                      lmPostBloc!.add(
                         CreateNewPost(
                           postText: result!,
                           postMedia: postMedia,
                           selectedTopics: selectedTopic,
+                          user: user,
                         ),
                       );
                       Navigator.pop(context);
@@ -809,98 +850,131 @@ class _NewPostScreenState extends State<NewPostScreen> {
                         ), //BoxShadow
                       ],
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          isMediaPost
-                              ? LMIconButton(
-                                  icon: LMIcon(
-                                    type: LMIconType.svg,
-                                    assetPath: kAssetGalleryIcon,
-                                    color:
-                                        theme.colorScheme.primary,
-                                    boxPadding: 0,
-                                    size: 44,
-                                  ),
-                                  onTap: (active) async {
-                                    LMAnalytics.get().track(
-                                        AnalyticsKeys.clickedOnAttachment,
-                                        {'type': 'image'});
-                                    final result =
-                                        await handlePermissions(context, 1);
-                                    if (result) {
-                                      pickImages();
-                                    }
-                                  },
-                                )
-                              : const SizedBox.shrink(),
-                          // isMediaPost
-                          //     ? const SizedBox(width: 8)
-                          //     : const SizedBox.shrink(),
-                          // isMediaPost
-                          //     ? LMIconButton(
-                          //         icon: LMIcon(
-                          //           type: LMIconType.svg,
-                          //           assetPath: kAssetVideoIcon,
-                          //           color:
-                          //               theme.colorScheme.primary,
-                          //           boxPadding: 0,
-                          //           size: 44,
-                          //         ),
-                          //         onTap: (active) async {
-                          //           onUploading();
-                          //           List<MediaModel>? pickedMediaFiles =
-                          //               await PostMediaPicker.pickVideos(
-                          //                   postMedia.length);
-                          //           if (pickedMediaFiles != null) {
-                          //             setPickedMediaFiles(pickedMediaFiles);
-                          //             onUploadedMedia(true);
-                          //           } else {
-                          //             onUploadedMedia(false);
-                          //           }
-                          //         },
-                          //       )
-                          //     : const SizedBox.shrink(),
-                          isDocumentPost
-                              ? const SizedBox(width: 8)
-                              : const SizedBox.shrink(),
-                          isDocumentPost
-                              ? LMIconButton(
-                                  icon: LMIcon(
-                                    type: LMIconType.svg,
-                                    assetPath: kAssetDocPDFIcon,
-                                    color:
-                                        theme.colorScheme.primary,
-                                    boxPadding: 0,
-                                    size: 44,
-                                  ),
-                                  onTap: (active) async {
-                                    if (postMedia.length >= 3) {
-                                      //  TODO: Add your own toast message for document limit
-                                      return;
-                                    }
-                                    onUploading();
-                                    LMAnalytics.get().track(
-                                        AnalyticsKeys.clickedOnAttachment,
-                                        {'type': 'file'});
-                                    List<MediaModel>? pickedMediaFiles =
-                                        await PostMediaPicker.pickDocuments(
-                                            postMedia.length);
-                                    if (pickedMediaFiles != null) {
-                                      setPickedMediaFiles(pickedMediaFiles);
-                                      onUploadedDocument(true);
-                                    } else {
-                                      onUploadedDocument(false);
-                                    }
-                                  },
-                                )
-                              : const SizedBox.shrink(),
-                          const SizedBox(width: 8),
-                        ],
-                      ),
-                    ),
+
+                    child: isVideoAttached
+                        ? const SizedBox.shrink()
+                        : Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                isMediaPost
+                                    ? LMIconButton(
+                                        icon: LMIcon(
+                                          type: LMIconType.svg,
+                                          assetPath: kAssetGalleryIcon,
+                                          color: LMThemeData
+                                              .suraasaTheme.colorScheme.primary,
+                                          boxPadding: 0,
+                                          size: 44,
+                                        ),
+                                        onTap: (active) async {
+                                          LMAnalytics.get().track(
+                                              AnalyticsKeys.clickedOnAttachment,
+                                              {'type': 'image'});
+                                          locator<LMFeedBloc>()
+                                              .lmAnalyticsBloc
+                                              .add(FireAnalyticEvent(
+                                                eventName: AnalyticsKeys
+                                                    .clickedOnAttachment,
+                                                eventProperties: const {
+                                                  'type': 'image'
+                                                },
+                                              ));
+                                          final result =
+                                              await handlePermissions(
+                                                  context, 1);
+                                          if (result) {
+                                            pickImages();
+                                          }
+                                        },
+                                      )
+                                    : const SizedBox.shrink(),
+                                isMediaPost && postMedia.isEmpty
+                                    ? const SizedBox(width: 8)
+                                    : const SizedBox.shrink(),
+                                isMediaPost && postMedia.isEmpty
+                                    ? LMIconButton(
+                                        icon: LMIcon(
+                                          type: LMIconType.svg,
+                                          assetPath: kAssetVideoIcon,
+                                          color: LMThemeData
+                                              .suraasaTheme.colorScheme.primary,
+                                          boxPadding: 0,
+                                          size: 44,
+                                        ),
+                                        onTap: (active) async {
+                                          onUploading();
+                                          locator<LMFeedBloc>()
+                                              .lmAnalyticsBloc
+                                              .add(FireAnalyticEvent(
+                                                eventName: AnalyticsKeys
+                                                    .clickedOnAttachment,
+                                                eventProperties: const {
+                                                  'type': 'video'
+                                                },
+                                              ));
+                                          List<MediaModel>? pickedMediaFiles =
+                                              await PostMediaPicker.pickVideos(
+                                                  postMedia.length);
+                                          if (pickedMediaFiles != null) {
+                                            setPickedMediaFiles(
+                                                pickedMediaFiles);
+                                            onUploadedMedia(true);
+                                          } else {
+                                            onUploadedMedia(false);
+                                          }
+                                        },
+                                      )
+                                    : const SizedBox.shrink(),
+                                isDocumentPost
+                                    ? const SizedBox(width: 8)
+                                    : const SizedBox.shrink(),
+                                isDocumentPost
+                                    ? LMIconButton(
+                                        icon: LMIcon(
+                                          type: LMIconType.svg,
+                                          assetPath: kAssetDocPDFIcon,
+                                          color: LMThemeData
+                                              .suraasaTheme.colorScheme.primary,
+                                          boxPadding: 0,
+                                          size: 44,
+                                        ),
+                                        onTap: (active) async {
+                                          if (postMedia.length >= 3) {
+                                            //  TODO: Add your own toast message for document limit
+                                            return;
+                                          }
+                                          onUploading();
+                                          LMAnalytics.get().track(
+                                              AnalyticsKeys.clickedOnAttachment,
+                                              {'type': 'file'});
+                                          locator<LMFeedBloc>()
+                                              .lmAnalyticsBloc
+                                              .add(FireAnalyticEvent(
+                                                eventName: AnalyticsKeys
+                                                    .clickedOnAttachment,
+                                                eventProperties: const {
+                                                  'type': 'file'
+                                                },
+                                              ));
+                                          List<MediaModel>? pickedMediaFiles =
+                                              await PostMediaPicker
+                                                  .pickDocuments(
+                                                      postMedia.length);
+                                          if (pickedMediaFiles != null) {
+                                            setPickedMediaFiles(
+                                                pickedMediaFiles);
+                                            onUploadedDocument(true);
+                                          } else {
+                                            onUploadedDocument(false);
+                                          }
+                                        },
+                                      )
+                                    : const SizedBox.shrink(),
+                                const SizedBox(width: 8),
+                              ],
+                            ),
+                          ),
                   ),
                 ),
               ],

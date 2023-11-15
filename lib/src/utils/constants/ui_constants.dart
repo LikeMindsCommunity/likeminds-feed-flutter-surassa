@@ -26,6 +26,7 @@ class LMThemeData {
   static const Color kBorderColor = Color(0x7ED0D8E2);
   static const Color notificationRedColor = Color(0x66D0D8E2);
 
+  
   static const double kFontSmall = 12;
   static const double kButtonFontSize = 12;
   static const double kFontXSmall = 11;

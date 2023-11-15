@@ -2,11 +2,11 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 
 part 'universal_feed_event.dart';
+
 part 'universal_feed_state.dart';
 
 class UniversalFeedBloc extends Bloc<UniversalFeedEvent, UniversalFeedState> {
@@ -42,7 +42,7 @@ class UniversalFeedBloc extends Bloc<UniversalFeedEvent, UniversalFeedState> {
     if (event.topics != null && event.topics!.isNotEmpty) {
       selectedTopics = event.topics!.map((e) => e.toTopic()).toList();
     }
-    GetFeedResponse? response = await locator<LikeMindsService>().getFeed(
+    GetFeedResponse? response = await locator<LMFeedClient>().getFeed(
       (GetFeedRequestBuilder()
             ..page(offset)
             ..topics(selectedTopics)

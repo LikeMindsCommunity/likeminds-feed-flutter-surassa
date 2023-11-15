@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_fl/packages/flutter_typeahead-4.3.7/lib/flutter_typeahead.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/analytics_bloc/analytics_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/bloc.dart';
+
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 
@@ -68,7 +70,7 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         page++;
-        final taggingData = await locator<LikeMindsService>().getTaggingList(
+        final taggingData = await locator<LMFeedClient>().getTaggingList(
           request: (GetTaggingListRequestBuilder()
                 ..page(page)
                 ..pageSize(fixedSize))
@@ -91,7 +93,7 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
         return const Iterable.empty();
       } else if (!tagComplete && currentText.contains('@')) {
         String tag = tagValue.substring(1).replaceAll(' ', '');
-        final taggingData = await locator<LikeMindsService>().getTaggingList(
+        final taggingData = await locator<LMFeedClient>().getTaggingList(
           request: (GetTaggingListRequestBuilder()
                 ..page(1)
                 ..pageSize(fixedSize)
@@ -222,6 +224,13 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
               'tagged_user_id': suggestion.sdkClientInfo?.userUniqueId,
               'tagged_user_count': tagCount,
             });
+            locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+                  eventName: AnalyticsKeys.userTaggedInPost,
+                  eventProperties: {
+                    'tagged_user_id': suggestion.sdkClientInfo?.userUniqueId,
+                    'tagged_user_count': tagCount,
+                  },
+                ));
           });
         }),
       ),

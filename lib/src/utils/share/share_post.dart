@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/credentials/credentials.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post_detail_screen.dart';
 import 'package:share_plus/share_plus.dart';
@@ -12,16 +11,16 @@ class SharePost {
   static String userId = prodFlag ? CredsProd.botId : CredsDev.botId;
   static String apiKey = prodFlag ? CredsProd.apiKey : CredsDev.apiKey;
   // TODO: Add domain to your application
-  String domain = 'suraasalearn://www.suraasa.com';
+  String domain = 'https://www.suraasa.com';
   // fetches the domain given by client at time of initialization of Feed
 
   // below function creates a link from domain and post id
   String createLink(String postId) {
     int length = domain.length;
     if (domain[length - 1] == '/') {
-      return "${domain}post?post_id=$postId";
+      return "${domain}community/post?post_id=$postId";
     } else {
-      return "$domain/post?post_id=$postId";
+      return "$domain/community/post?post_id=$postId";
     }
   }
 
@@ -43,17 +42,25 @@ class SharePost {
     }
   }
 
-  Future<DeepLinkResponse> handlePostDeepLink(DeepLinkRequest request, BuildContext context) async {
+  Future<DeepLinkResponse> handlePostDeepLink(
+    DeepLinkRequest request,
+    GlobalKey<NavigatorState> navigatorKey,
+  ) async {
     List secondPathSegment = request.link.split('post_id=');
     if (secondPathSegment.length > 1 && secondPathSegment[1] != null) {
       String postId = secondPathSegment[1];
-      await locator<LikeMindsService>().initiateUser((InitiateUserRequestBuilder()
+      await locator<LMFeedBloc>().initiateUser((InitiateUserRequestBuilder()
             ..apiKey(request.apiKey)
             ..userId(request.userUniqueId)
             ..userName(request.userName))
           .build());
 
-      Navigator.of(context).push(
+      locator<LMFeedBloc>()
+          .lmRoutingBloc
+          .add(HandleSharedPostEvent(postId: postId));
+
+      // Comment the below code if navigation is being handled by LMRoutingBloc
+      navigatorKey.currentState!.push(
         MaterialPageRoute(
           builder: (context) => PostDetailScreen(postId: postId),
         ),
@@ -71,13 +78,15 @@ class SharePost {
     }
   }
 
-  Future<DeepLinkResponse> parseDeepLink(DeepLinkRequest request, BuildContext context) async {
-    if (Uri.parse(request.link).isAbsolute) {
-      final firstPathSegment = getFirstPathSegment(request.link);
-      if (firstPathSegment == "post") {
-        return handlePostDeepLink(request, context);
+  Future<DeepLinkResponse> parseDeepLink(
+      DeepLinkRequest request, GlobalKey<NavigatorState> navigatorKey) async {
+    final link = Uri.parse(request.link);
+    if (link.isAbsolute) {
+      if (link.path == '/community/post') {
+        return handlePostDeepLink(request, navigatorKey);
       }
-      return DeepLinkResponse(success: false, errorMessage: 'URI not supported');
+      return DeepLinkResponse(
+          success: false, errorMessage: 'URI not supported');
     } else {
       return DeepLinkResponse(
         success: false,

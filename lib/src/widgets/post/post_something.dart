@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
+
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
-import 'package:likeminds_feed_ss_fl/src/utils/local_preference/user_local_preference.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post/new_post_screen.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -21,6 +20,10 @@ class PostSomething extends StatelessWidget {
       onTap: enabled
           ? () {
               LMAnalytics.get().track(AnalyticsKeys.postCreationStarted, {});
+              locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+                    eventName: AnalyticsKeys.postCreationStarted,
+                    eventProperties: const {},
+                  ));
               Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => const NewPostScreen()));
             }
@@ -49,7 +52,7 @@ class PostSomething extends StatelessWidget {
                 boxShape: BoxShape.circle,
                 onTap: () {
                   if (user.sdkClientInfo != null) {
-                    locator<LikeMindsService>()
+                    locator<LMFeedClient>()
                         .routeToProfile(user.sdkClientInfo!.userUniqueId);
                   }
                 },
