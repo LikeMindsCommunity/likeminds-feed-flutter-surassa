@@ -557,8 +557,10 @@ class _FeedRoomViewState extends State<FeedRoomView> {
       } else if (media.mediaType == MediaType.document) {
         return const LMIcon(
           type: LMIconType.svg,
-          assetPath: kAssetPDFIcon,
+          assetPath: kAssetDocPDFIcon,
+          color: Colors.red,
           size: 35,
+          boxPadding: 0,
         );
       } else {
         return const SizedBox.shrink();

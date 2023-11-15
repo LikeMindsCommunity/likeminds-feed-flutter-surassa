@@ -76,7 +76,9 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
                 ..pageSize(fixedSize))
               .build(),
         );
-        if (taggingData.members != null && taggingData.members!.isNotEmpty) {
+        if (taggingData.success &&
+            taggingData.members != null &&
+            taggingData.members!.isNotEmpty) {
           userTags.addAll(taggingData.members!.map((e) => e).toList());
           // return userTags;
         }
@@ -100,7 +102,9 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
                 ..searchQuery(tag))
               .build(),
         );
-        if (taggingData.members != null && taggingData.members!.isNotEmpty) {
+        if (taggingData.success &&
+            taggingData.members != null &&
+            taggingData.members!.isNotEmpty) {
           userTags = taggingData.members!.map((e) => e).toList();
           return userTags;
         }

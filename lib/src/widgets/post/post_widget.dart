@@ -23,6 +23,7 @@ class SSPostWidget extends StatefulWidget {
   final Map<String, Topic> topics;
   final bool isFeed;
   final Function() onTap;
+  final Function()? onCommentButtonTap;
   final Function(bool isDeleted) refresh;
 
   const SSPostWidget({
@@ -33,6 +34,7 @@ class SSPostWidget extends StatefulWidget {
     required this.topics,
     required this.refresh,
     required this.isFeed,
+    this.onCommentButtonTap,
   }) : super(key: key);
 
   @override
@@ -590,6 +592,8 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                 ),
                               ),
                             );
+                          } else if (widget.onCommentButtonTap != null) {
+                            widget.onCommentButtonTap!();
                           }
                         },
                         icon: const LMIcon(
