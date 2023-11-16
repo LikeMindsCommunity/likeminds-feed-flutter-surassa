@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
 
 part 'toggle_like_comment_event.dart';
@@ -9,7 +8,7 @@ part 'toggle_like_comment_state.dart';
 
 class ToggleLikeCommentBloc
     extends Bloc<ToggleLikeCommentEvent, ToggleLikeCommentState> {
-  final LikeMindsService lmService = locator<LikeMindsService>();
+  final LMFeedClient lmService = locator<LMFeedClient>();
 
   ToggleLikeCommentBloc() : super(ToggleLikeCommentInitial()) {
     on<ToggleLikeComment>((event, emit) async {

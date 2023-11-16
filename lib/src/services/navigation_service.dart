@@ -14,7 +14,7 @@ class NavigationService {
   }
 
   Future<dynamic> navigateTo(Route route, {Object? arguments}) {
-    print(navigatorKey.currentState!.toString());
+    debugPrint(navigatorKey.currentState!.toString());
     return navigatorKey.currentState!.push(route);
   }
 

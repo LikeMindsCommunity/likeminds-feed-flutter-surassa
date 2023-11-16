@@ -8,13 +8,8 @@ import 'package:likeminds_feed_ss_fl/src/blocs/comment/add_comment_reply/add_com
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/all_comments/all_comments_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/comment_replies/comment_replies_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/toggle_like_comment/toggle_like_comment_bloc.dart';
-import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
-import 'package:likeminds_feed_ss_fl/src/models/post_view_model.dart';
-import 'package:likeminds_feed_ss_fl/src/services/bloc_service.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
-import 'package:likeminds_feed_ss_fl/src/utils/local_preference/user_local_preference.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_action_id.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/tagging/tagging_textfield_ta.dart';
 import 'package:likeminds_feed_ss_fl/src/widgets/delete_dialog.dart';
@@ -27,6 +22,7 @@ import 'package:timeago/timeago.dart' as timeago;
 class PostDetailScreen extends StatefulWidget {
   final String postId;
   final bool fromCommentButton;
+
   const PostDetailScreen({
     super.key,
     required this.postId,
@@ -44,7 +40,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   late final AddCommentReplyBloc _addCommentReplyBloc;
   late final CommentRepliesBloc _commentRepliesBloc;
   late final ToggleLikeCommentBloc _toggleLikeCommentBloc;
-  late final NewPostBloc newPostBloc;
+  late final LMPostBloc lmPostBloc;
   final FocusNode focusNode = FocusNode();
   TextEditingController? _commentController;
   ValueNotifier<bool> rebuildButton = ValueNotifier(false);
@@ -54,7 +50,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   PostDetailResponse? postDetailResponse;
   final PagingController<int, Reply> _pagingController =
       PagingController(firstPageKey: 1);
-  PostViewModel? postData;
+  PostViewData? postData;
   User currentUser = UserLocalPreference.instance.fetchUserData();
 
   List<UserTag> userTags = [];
@@ -82,7 +78,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   @override
   void initState() {
     super.initState();
-    newPostBloc = locator<BlocService>().newPostBlocProvider;
+    lmPostBloc = locator<LMFeedBloc>().lmPostBloc;
     updatePostDetails(context);
     right = checkCommentRights();
     _commentController = TextEditingController();
@@ -177,8 +173,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   }
 
   Future updatePostDetails(BuildContext context) async {
-    final GetPostResponse postDetails =
-        await locator<LikeMindsService>().getPost(
+    final GetPostResponse postDetails = await locator<LMFeedClient>().getPost(
       (GetPostRequestBuilder()
             ..postId(widget.postId)
             ..page(1)
@@ -186,7 +181,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           .build(),
     );
     if (postDetails.success) {
-      postData = PostViewModel.fromPost(post: postDetails.post!);
+      postData = PostViewData.fromPost(post: postDetails.post!);
       rebuildPostWidget.value = !rebuildPostWidget.value;
     } else {
       toast(
@@ -212,10 +207,14 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     if (commentItemList.length >= 10) {
       commentItemList.removeAt(9);
     }
+    postDetailResponse!.users?.addAll({
+      currentUser.userUniqueId: currentUser,
+      currentUser.id.toString(): currentUser,
+    });
     commentItemList.insert(0, addCommentSuccess.addCommentResponse.reply!);
     increaseCommentCount();
     rebuildPostWidget.value = !rebuildPostWidget.value;
-    newPostBloc.add(
+    lmPostBloc.add(
       UpdatePost(
         post: postData!,
       ),
@@ -238,6 +237,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       int index = commentItemList!.indexWhere((element) =>
           element.id ==
           addCommentReplySuccess.addCommentResponse.reply!.parentComment!.id);
+      postDetailResponse!.users?.addAll({
+        currentUser.userUniqueId: currentUser,
+        currentUser.id.toString(): currentUser,
+      });
       if (index != -1) {
         commentItemList[index].repliesCount =
             commentItemList[index].repliesCount + 1;
@@ -254,7 +257,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       commentItemList.removeAt(index);
       decreaseCommentCount();
       rebuildPostWidget.value = !rebuildPostWidget.value;
-      newPostBloc.add(
+      lmPostBloc.add(
         UpdatePost(
           post: postData!,
         ),
@@ -274,7 +277,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Size screenSize = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () {
         if (Navigator.of(context).canPop()) {
@@ -302,7 +304,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           ),
         ],
         child: Theme(
-          data: suraasaTheme,
+          data: LMThemeData.suraasaTheme,
           child: Scaffold(
               resizeToAvoidBottomInset: true,
               bottomSheet: ValueListenableBuilder(
@@ -354,7 +356,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                             },
                             builder: (context, state) => Container(
                               decoration: BoxDecoration(
-                                color: kWhiteColor,
+                                color: LMThemeData.kWhiteColor,
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.black.withOpacity(0.1),
@@ -366,7 +368,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  kVerticalPaddingMedium,
+                                  LMThemeData.kVerticalPaddingMedium,
                                   ValueListenableBuilder(
                                       valueListenable: rebuildReplyWidget,
                                       builder: (context, _, __) {
@@ -382,11 +384,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                       text: isEditing
                                                           ? "Editing ${selectedReplyId != null ? 'reply' : 'comment'}"
                                                           : "Replying to",
-                                                      textStyle: const TextStyle(
+                                                      textStyle:
+                                                          const TextStyle(
                                                         fontSize: 14,
                                                         fontWeight:
                                                             FontWeight.w500,
-                                                        color: kGrey1Color,
+                                                        color: LMThemeData
+                                                            .kGrey1Color,
                                                       ),
                                                     ),
                                                     const SizedBox(
@@ -401,8 +405,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                 const TextStyle(
                                                               fontSize: 14,
                                                               fontWeight:
-                                                                  FontWeight.w500,
-                                                              color: kLinkColor,
+                                                                  FontWeight
+                                                                      .w500,
+                                                              color: LMThemeData
+                                                                  .kLinkColor,
                                                             ),
                                                           ),
                                                     const Spacer(),
@@ -411,11 +417,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                         if (isEditing) {
                                                           if (selectedReplyId !=
                                                               null) {
-                                                            _addCommentReplyBloc.add(
-                                                                EditReplyCancel());
+                                                            _addCommentReplyBloc
+                                                                .add(
+                                                                    EditReplyCancel());
                                                           } else {
-                                                            _addCommentReplyBloc.add(
-                                                                EditCommentCancel());
+                                                            _addCommentReplyBloc
+                                                                .add(
+                                                                    EditCommentCancel());
                                                           }
                                                           deselectCommentToEdit();
                                                         } else {
@@ -425,7 +433,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                       icon: const LMIcon(
                                                         type: LMIconType.icon,
                                                         icon: Icons.close,
-                                                        color: kGreyColor,
+                                                        color: LMThemeData
+                                                            .kGreyColor,
                                                         size: 24,
                                                       ),
                                                     ),
@@ -436,8 +445,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                       }),
                                   Container(
                                     decoration: BoxDecoration(
-                                        color: kPrimaryColor.withOpacity(0.04),
-                                        borderRadius: BorderRadius.circular(24)),
+                                        color: LMThemeData.kPrimaryColor
+                                            .withOpacity(0.04),
+                                        borderRadius:
+                                            BorderRadius.circular(24)),
                                     margin: const EdgeInsets.symmetric(
                                         horizontal: 8.0),
                                     padding: const EdgeInsets.all(3.0),
@@ -446,10 +457,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                         LMProfilePicture(
                                           fallbackText: currentUser.name,
                                           imageUrl: currentUser.imageUrl,
+                                          backgroundColor:
+                                              LMThemeData.kPrimaryColor,
                                           onTap: () {
                                             if (currentUser.sdkClientInfo !=
                                                 null) {
-                                              locator<LikeMindsService>()
+                                              locator<LMFeedClient>()
                                                   .routeToProfile(currentUser
                                                       .sdkClientInfo!
                                                       .userUniqueId);
@@ -491,8 +504,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                               AddCommentReplyState>(
                                                               bloc:
                                                                   _addCommentReplyBloc,
-                                                              listener: (context,
-                                                                  state) {},
+                                                              listener:
+                                                                  (context,
+                                                                      state) {},
                                                               buildWhen:
                                                                   (previous,
                                                                       current) {
@@ -522,9 +536,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                     height: 15,
                                                                     width: 15,
                                                                     child:
-                                                                        CircularProgressIndicator(
-                                                                      strokeWidth:
-                                                                          2,
+                                                                        LMLoader(
+                                                                      color: LMThemeData
+                                                                          .kPrimaryColor,
                                                                     ),
                                                                   );
                                                                 }
@@ -544,7 +558,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                           textStyle:
                                                                               TextStyle(
                                                                             color: right
-                                                                                ? kPrimaryColor
+                                                                                ? LMThemeData.kPrimaryColor
                                                                                 : Colors.transparent,
                                                                             fontSize:
                                                                                 12.5,
@@ -553,15 +567,16 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                         onTap:
                                                                             () {
                                                                           closeOnScreenKeyboard();
-                                                                          String commentText = TaggingHelper.encodeString(
-                                                                              _commentController!.text,
-                                                                              userTags);
+                                                                          String
+                                                                              commentText =
+                                                                              TaggingHelper.encodeString(_commentController!.text, userTags);
+
                                                                           commentText =
                                                                               commentText.trim();
                                                                           if (commentText
                                                                               .isEmpty) {
-                                                                            toast(
-                                                                                "Please write something to post");
+                                                                            toast("Please write something to post");
+
                                                                             return;
                                                                           }
 
@@ -590,19 +605,16 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                               );
                                                                             }
                                                                           } else {
-                                                                            _addCommentReplyBloc
-                                                                                .add(AddCommentReply(
+                                                                            _addCommentReplyBloc.add(AddCommentReply(
                                                                               addCommentRequest: (AddCommentReplyRequestBuilder()
                                                                                     ..postId(widget.postId)
                                                                                     ..text(commentText)
                                                                                     ..commentId(selectedCommentId!))
                                                                                   .build(),
-                                                                              userId:
-                                                                                  selectedUserId ?? '',
+                                                                              userId: selectedUserId ?? '',
                                                                             ));
 
-                                                                            _commentController
-                                                                                ?.clear();
+                                                                            _commentController?.clear();
                                                                           }
                                                                         },
                                                                       );
@@ -614,8 +626,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                               AddCommentState>(
                                                               bloc:
                                                                   _addCommentBloc,
-                                                              listener: (context,
-                                                                  state) {
+                                                              listener:
+                                                                  (context,
+                                                                      state) {
                                                                 if (state
                                                                     is AddCommentSuccess) {
                                                                   addCommentToList(
@@ -634,9 +647,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                     height: 15,
                                                                     width: 15,
                                                                     child:
-                                                                        CircularProgressIndicator(
-                                                                      strokeWidth:
-                                                                          2,
+                                                                        LMLoader(
+                                                                      color: LMThemeData
+                                                                          .kPrimaryColor,
                                                                     ),
                                                                   );
                                                                 }
@@ -661,7 +674,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                             fontSize:
                                                                                 12.5,
                                                                             color:
-                                                                                kPrimaryColor,
+                                                                                LMThemeData.kPrimaryColor,
                                                                           ),
                                                                         ),
                                                                         onTap:
@@ -670,23 +683,21 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                           String
                                                                               commentText =
                                                                               TaggingHelper.encodeString(
-                                                                            _commentController!
-                                                                                .text,
+                                                                            _commentController!.text,
                                                                             userTags,
                                                                           );
                                                                           commentText =
                                                                               commentText.trim();
                                                                           if (commentText
                                                                               .isEmpty) {
-                                                                            toast(
-                                                                                "Please write something to post");
+                                                                            toast("Please write something to post");
+
                                                                             return;
                                                                           }
 
                                                                           if (postDetailResponse !=
                                                                               null) {
-                                                                            postDetailResponse!.users?.putIfAbsent(
-                                                                                currentUser.userUniqueId,
+                                                                            postDetailResponse!.users?.putIfAbsent(currentUser.userUniqueId,
                                                                                 () => currentUser);
                                                                           }
 
@@ -713,7 +724,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                       ],
                                     ),
                                   ),
-                                  kVerticalPaddingLarge,
+                                  LMThemeData.kVerticalPaddingLarge,
                                 ],
                               ),
                             ),
@@ -721,13 +732,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                         );
                 },
               ),
-              backgroundColor: kBackgroundColor,
+              backgroundColor: LMThemeData.kBackgroundColor,
               appBar: AppBar(
                 leading: LMIconButton(
                   icon: const LMIcon(
                     type: LMIconType.icon,
                     icon: Icons.arrow_back_ios,
-                    color: kPrimaryColor,
+                    color: LMThemeData.kPrimaryColor,
                     size: 28,
                   ),
                   onTap: (active) {
@@ -735,13 +746,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                   },
                   containerSize: 48,
                 ),
-                backgroundColor: Colors.white,
-                title:const LMTextView(
+                backgroundColor: LMThemeData.kWhiteColor,
+                title: const LMTextView(
                   text: "Comments",
                   textStyle: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w500,
-                    color: kHeadingColor,
+                    color: LMThemeData.kHeadingColor,
                   ),
                 ),
                 elevation: 1,
@@ -751,8 +762,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                   if (state is AllCommentsLoaded) {
                     _page++;
                     if (state.postDetails.postReplies!.replies.length < 10) {
-                      _pagingController
-                          .appendLastPage(state.postDetails.postReplies!.replies);
+                      _pagingController.appendLastPage(
+                          state.postDetails.postReplies!.replies);
                     } else {
                       _pagingController.appendPage(
                           state.postDetails.postReplies!.replies, _page);
@@ -771,7 +782,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                     } else {
                       debugPrint("PaginatedAllCommentsLoading$state");
                       postDetailResponse =
-                          (state as PaginatedAllCommentsLoading).prevPostDetails;
+                          (state as PaginatedAllCommentsLoading)
+                              .prevPostDetails;
                       postDetailResponse!.users!.putIfAbsent(
                           currentUser.userUniqueId, () => currentUser);
                     }
@@ -785,8 +797,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                       child: ValueListenableBuilder(
                           valueListenable: rebuildPostWidget,
                           builder: (context, _, __) {
-                            return BlocListener<NewPostBloc, NewPostState>(
-                              bloc: newPostBloc,
+                            return BlocListener<LMPostBloc, LMPostState>(
+                              bloc: lmPostBloc,
                               listener: (context, state) {
                                 if (state is EditPostUploaded) {
                                   postData = state.postData;
@@ -804,28 +816,35 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                   SliverToBoxAdapter(
                                     child: postData == null
                                         ? const Center(
-                                            child: CircularProgressIndicator(
-                                              color: kPrimaryColor,
+                                            child: LMLoader(
+                                              color: LMThemeData.kPrimaryColor,
                                             ),
                                           )
                                         : GestureDetector(
                                             onTap: () {
                                               closeOnScreenKeyboard();
                                             },
-                                            behavior: HitTestBehavior.translucent,
+                                            behavior:
+                                                HitTestBehavior.translucent,
                                             child: Container(
                                               color: Colors.transparent,
                                               child: SSPostWidget(
                                                 post: postData!,
-                                                topics:
-                                                    postDetailResponse!.topics ??
-                                                        {},
-                                                user: postDetailResponse!.users![
-                                                    postDetailResponse!
-                                                        .postReplies!.userId]!,
+                                                topics: postDetailResponse!
+                                                        .topics ??
+                                                    {},
+                                                user:
+                                                    postDetailResponse!.users![
+                                                        postDetailResponse!
+                                                            .postReplies!
+                                                            .userId]!,
                                                 onTap: () {},
                                                 isFeed: false,
-                                                refresh: (bool isDeleted) async {
+                                                onCommentButtonTap: () {
+                                                  openOnScreenKeyboard();
+                                                },
+                                                refresh:
+                                                    (bool isDeleted) async {
                                                   if (isDeleted) {
                                                     Navigator.pop(context);
                                                   }
@@ -855,24 +874,28 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                 Text(
                                                   'No comment found',
                                                   style: TextStyle(
-                                                    fontSize: kFontMedium,
+                                                    fontSize:
+                                                        LMThemeData.kFontMedium,
                                                   ),
                                                 ),
                                                 SizedBox(height: 12),
                                                 Text(
                                                   'Be the first one to comment',
                                                   style: TextStyle(
-                                                    fontSize: kFontSmall,
+                                                    fontSize:
+                                                        LMThemeData.kFontSmall,
                                                   ),
                                                 ),
                                                 SizedBox(height: 180),
                                               ],
                                             ),
-                                            itemBuilder: (context, item, index) {
+                                            itemBuilder:
+                                                (context, item, index) {
                                               bool replyShown = false;
                                               return Container(
                                                 decoration: const BoxDecoration(
-                                                  color: kWhiteColor,
+                                                  color:
+                                                      LMThemeData.kWhiteColor,
                                                   border: Border(
                                                     bottom: BorderSide(
                                                       width: 0.2,
@@ -895,7 +918,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                         key: ValueKey(item.id),
                                                         onTagTap:
                                                             (String userId) {
-                                                          locator<LikeMindsService>()
+                                                          locator<LMFeedClient>()
                                                               .routeToProfile(
                                                                   userId);
                                                         },
@@ -906,7 +929,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                             deselectCommentToReply();
                                                             // Delete post
                                                             showDialog(
-                                                                context: context,
+                                                                context:
+                                                                    context,
                                                                 builder:
                                                                     (childContext) =>
                                                                         deleteConfirmationDialog(
@@ -917,23 +941,27 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                               item.userId,
                                                                           content:
                                                                               'Are you sure you want to delete this post. This action can not be reversed.',
-                                                                          action: (String
-                                                                              reason) async {
-                                                                            Navigator.of(childContext)
-                                                                                .pop();
+                                                                          action:
+                                                                              (String reason) async {
+                                                                            Navigator.of(childContext).pop();
                                                                             //Implement delete post analytics tracking
-                                                                            LMAnalytics.get()
-                                                                                .track(
+                                                                            LMAnalytics.get().track(
                                                                               AnalyticsKeys.commentDeleted,
                                                                               {
                                                                                 "post_id": widget.postId,
                                                                                 "comment_id": item.id,
                                                                               },
                                                                             );
+                                                                            locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+                                                                                  eventName: AnalyticsKeys.commentDeleted,
+                                                                                  eventProperties: {
+                                                                                    "post_id": widget.postId,
+                                                                                    "comment_id": item.id,
+                                                                                  },
+                                                                                ));
                                                                             if (postDetailResponse !=
                                                                                 null) {
-                                                                              postDetailResponse!.users?.putIfAbsent(currentUser.userUniqueId,
-                                                                                  () => currentUser);
+                                                                              postDetailResponse!.users?.putIfAbsent(currentUser.userUniqueId, () => currentUser);
                                                                             }
                                                                             _addCommentReplyBloc.add(DeleteComment((DeleteCommentRequestBuilder()
                                                                                   ..postId(widget.postId)
@@ -948,8 +976,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                               commentEditId) {
                                                             debugPrint(
                                                                 'Editing functionality');
-                                                            _addCommentReplyBloc.add(
-                                                                EditCommentCancel());
+                                                            _addCommentReplyBloc
+                                                                .add(
+                                                                    EditCommentCancel());
                                                             _addCommentReplyBloc
                                                                 .add(
                                                               EditingComment(
@@ -961,10 +990,15 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                           }
                                                         },
                                                         comment: item,
-                                                        user: postDetailResponse!
-                                                            .users![item.userId]!,
+                                                        user:
+                                                            postDetailResponse!
+                                                                    .users![
+                                                                item.userId]!,
                                                         profilePicture:
                                                             LMProfilePicture(
+                                                          backgroundColor:
+                                                              LMThemeData
+                                                                  .kPrimaryColor,
                                                           fallbackText:
                                                               postDetailResponse!
                                                                   .users![item
@@ -976,7 +1010,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                         .userId]!
                                                                     .sdkClientInfo !=
                                                                 null) {
-                                                              locator<LikeMindsService>().routeToProfile(
+                                                              locator<LMFeedClient>().routeToProfile(
                                                                   postDetailResponse!
                                                                       .users![item
                                                                           .userId]!
@@ -990,10 +1024,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                       .userId]!
                                                                   .imageUrl,
                                                           size: 36,
-                                                          backgroundColor:
-                                                              kPrimaryColor,
                                                         ),
-                                                        subtitleText: LMTextView(
+                                                        subtitleText:
+                                                            LMTextView(
                                                           text:
                                                               "@${postDetailResponse!.users![item.userId]!.name.toLowerCase().split(' ').join()} · ${timeago.format(item.createdAt)}",
                                                           textStyle:
@@ -1001,13 +1034,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                             fontSize: 12,
                                                             fontWeight:
                                                                 FontWeight.w400,
-                                                            color:
-                                                                kSecondaryColor700,
+                                                            color: LMThemeData
+                                                                .kSecondaryColor700,
                                                           ),
                                                         ),
                                                         actionsPadding:
-                                                            const EdgeInsets.only(
-                                                                left: 48),
+                                                            const EdgeInsets
+                                                                .only(left: 48),
                                                         commentActions: [
                                                           LMTextButton(
                                                             margin: 10,
@@ -1019,12 +1052,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                           1
                                                                       ? "1 Like"
                                                                       : "${item.likesCount} Likes",
-                                                              textStyle:
-                                                                  const TextStyle(
-                                                                      color:
-                                                                          kSecondaryColor700,
-                                                                      fontSize:
-                                                                          12),
+                                                              textStyle: const TextStyle(
+                                                                  color: LMThemeData
+                                                                      .kSecondaryColor700,
+                                                                  fontSize: 12),
                                                             ),
                                                             activeText:
                                                                 LMTextView(
@@ -1035,12 +1066,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                           1
                                                                       ? "1 Like"
                                                                       : "${item.likesCount} Likes",
-                                                              textStyle:
-                                                                  const TextStyle(
-                                                                      color:
-                                                                          kPrimaryColor,
-                                                                      fontSize:
-                                                                          12),
+                                                              textStyle: const TextStyle(
+                                                                  color: LMThemeData
+                                                                      .kPrimaryColor,
+                                                                  fontSize: 12),
                                                             ),
                                                             onTap: () {
                                                               _toggleLikeCommentBloc
@@ -1048,14 +1077,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                 ToggleLikeComment(
                                                                   toggleLikeCommentRequest:
                                                                       (ToggleLikeCommentRequestBuilder()
-                                                                            ..commentId(
-                                                                                item.id)
-                                                                            ..postId(
-                                                                                widget.postId))
+                                                                            ..commentId(item.id)
+                                                                            ..postId(widget.postId))
                                                                           .build(),
                                                                 ),
                                                               );
-                                                              setCommentState(() {
+                                                              setCommentState(
+                                                                  () {
                                                                 if (item
                                                                     .isLiked) {
                                                                   item.likesCount -=
@@ -1065,20 +1093,21 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                       1;
                                                                 }
                                                                 item.isLiked =
-                                                                    !item.isLiked;
+                                                                    !item
+                                                                        .isLiked;
                                                               });
                                                             },
                                                             icon: const LMIcon(
-                                                              type:
-                                                                  LMIconType.svg,
+                                                              type: LMIconType
+                                                                  .svg,
                                                               assetPath:
                                                                   kAssetLikeIcon,
                                                               size: 20,
                                                             ),
                                                             activeIcon:
                                                                 const LMIcon(
-                                                              type:
-                                                                  LMIconType.svg,
+                                                              type: LMIconType
+                                                                  .svg,
                                                               assetPath:
                                                                   kAssetLikeFilledIcon,
                                                               size: 20,
@@ -1105,26 +1134,29 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                   selectCommentToReply(
                                                                     item.id,
                                                                     postDetailResponse!
-                                                                        .users![item
-                                                                            .userId]!
+                                                                        .users![
+                                                                            item.userId]!
                                                                         .name,
                                                                     item.userId,
                                                                   );
                                                                 },
                                                                 icon:
                                                                     const LMIcon(
-                                                                  type: LMIconType
-                                                                      .svg,
+                                                                  type:
+                                                                      LMIconType
+                                                                          .svg,
                                                                   assetPath:
                                                                       kAssetCommentIcon,
                                                                   size: 20,
                                                                 ),
                                                               ),
-                                                              kHorizontalPaddingMedium,
+                                                              LMThemeData
+                                                                  .kHorizontalPaddingMedium,
                                                               item.repliesCount >
                                                                       0
                                                                   ? LMTextButton(
-                                                                      onTap: () {
+                                                                      onTap:
+                                                                          () {
                                                                         if (!replyShown) {
                                                                           _commentRepliesBloc.add(GetCommentReplies(
                                                                               commentDetailRequest: (GetCommentRequestBuilder()
@@ -1144,7 +1176,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                         textStyle:
                                                                             const TextStyle(
                                                                           color:
-                                                                              kPrimaryColor,
+                                                                              LMThemeData.kPrimaryColor,
                                                                         ),
                                                                       ),
                                                                     )
@@ -1176,7 +1208,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                           }),
                     );
                   }
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(
+                      child: LMLoader(
+                    color: LMThemeData.kPrimaryColor,
+                  ));
                 },
               )),
         ),

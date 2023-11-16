@@ -18,6 +18,8 @@ dependencies:
   url_launcher:
   shared_preferences:
   simple_s3: 0.3.2
+  equatable: 
+  bloc: 
   flutter_bloc:
   firebase_core:
   firebase_messaging:

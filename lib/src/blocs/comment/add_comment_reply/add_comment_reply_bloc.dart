@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/analytics_bloc/analytics_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/analytics/analytics.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -40,7 +41,7 @@ class AddCommentReplyBloc
     });
     on<EditReply>((event, emit) async {
       emit(EditReplyLoading());
-      EditCommentReplyResponse? response = await locator<LikeMindsService>()
+      EditCommentReplyResponse? response = await locator<LMFeedClient>()
           .editCommentReply(event.editCommentReplyRequest);
       if (!response.success) {
         emit(const EditReplyError(message: "An error occurred"));
@@ -63,8 +64,8 @@ class AddCommentReplyBloc
     });
     on<EditComment>((event, emit) async {
       emit(EditCommentLoading());
-      EditCommentResponse? response = await locator<LikeMindsService>()
-          .editComment(event.editCommentRequest);
+      EditCommentResponse? response =
+          await locator<LMFeedClient>().editComment(event.editCommentRequest);
       if (!response.success) {
         emit(const EditCommentError(message: "An error occurred"));
       } else {
@@ -75,7 +76,7 @@ class AddCommentReplyBloc
       (event, emit) async {
         try {
           emit(CommentDeletionLoading());
-          final response = await locator<LikeMindsService>().deleteComment(
+          final response = await locator<LMFeedClient>().deleteComment(
             event.deleteCommentRequest,
           );
 
@@ -88,6 +89,13 @@ class AddCommentReplyBloc
               "post_id": event.deleteCommentRequest.postId,
               "comment_id": event.deleteCommentRequest.commentId,
             });
+            locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+                  eventName: AnalyticsKeys.commentDeleted,
+                  eventProperties: {
+                    "post_id": event.deleteCommentRequest.postId,
+                    "comment_id": event.deleteCommentRequest.commentId,
+                  },
+                ));
             emit(
               CommentDeleted(
                 commentId: event.deleteCommentRequest.commentId,
@@ -113,7 +121,7 @@ class AddCommentReplyBloc
       (event, emit) async {
         try {
           emit(ReplyDeletionLoading());
-          final response = await locator<LikeMindsService>().deleteComment(
+          final response = await locator<LMFeedClient>().deleteComment(
             event.deleteCommentReplyRequest,
           );
 
@@ -126,6 +134,14 @@ class AddCommentReplyBloc
               "post_id": event.deleteCommentReplyRequest.postId,
               "comment_reply_id": event.deleteCommentReplyRequest.commentId,
             });
+            locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+                  eventName: AnalyticsKeys.replyDeleted,
+                  eventProperties: {
+                    "post_id": event.deleteCommentReplyRequest.postId,
+                    "comment_reply_id":
+                        event.deleteCommentReplyRequest.commentId,
+                  },
+                ));
             emit(
               CommentReplyDeleted(
                 replyId: event.deleteCommentReplyRequest.commentId,
@@ -153,7 +169,7 @@ class AddCommentReplyBloc
       {required AddCommentReply addCommentReplyEvent,
       required Emitter<AddCommentReplyState> emit}) async {
     emit(AddCommentReplyLoading());
-    AddCommentReplyResponse response = await locator<LikeMindsService>()
+    AddCommentReplyResponse response = await locator<LMFeedClient>()
         .addCommentReply(addCommentReplyEvent.addCommentRequest);
     if (!response.success) {
       emit(const AddCommentReplyError(message: "An error occurred"));
@@ -167,6 +183,15 @@ class AddCommentReplyBloc
           "user_id": addCommentReplyEvent.userId
         },
       );
+      locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+            eventName: AnalyticsKeys.replyPosted,
+            eventProperties: {
+              "post_id": addCommentReplyEvent.addCommentRequest.postId,
+              "comment_id": addCommentReplyEvent.addCommentRequest.commentId,
+              "comment_reply_id": response.reply?.id,
+              "user_id": addCommentReplyEvent.userId
+            },
+          ));
       emit(AddCommentReplySuccess(addCommentResponse: response));
     }
   }

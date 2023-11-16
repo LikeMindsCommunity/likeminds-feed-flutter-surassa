@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -9,15 +7,13 @@ import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
-import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/analytics_bloc/analytics_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/post_bloc/post_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/simple_bloc_observer.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/universal_feed/universal_feed_bloc.dart';
-import 'package:likeminds_feed_ss_fl/src/models/post_view_model.dart';
-import 'package:likeminds_feed_ss_fl/src/services/bloc_service.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
-import 'package:likeminds_feed_ss_fl/src/utils/utils.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post/new_post_screen.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post_detail_screen.dart';
 import 'package:likeminds_feed_ss_fl/src/widgets/post/post_something.dart';
@@ -70,7 +66,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
   final ValueNotifier _rebuildAppBar = ValueNotifier(false);
 
   // to control paging on FeedRoom View
-  final PagingController<int, PostViewModel> _pagingController =
+  final PagingController<int, PostViewData> _pagingController =
       PagingController(firstPageKey: 1);
 
   final ValueNotifier postSomethingNotifier = ValueNotifier(false);
@@ -81,7 +77,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
   void initState() {
     super.initState();
     _addPaginationListener();
-    getTopicsResponse = locator<LikeMindsService>().getTopics(
+    getTopicsResponse = locator<LMFeedClient>().getTopics(
       (GetTopicsRequestBuilder()
             ..page(1)
             ..pageSize(20))
@@ -140,7 +136,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
   // and updates the respective future
   void updateUnreadNotificationCount() async {
     getUnreadNotificationCount =
-        locator<LikeMindsService>().getUnreadNotificationCount();
+        locator<LMFeedClient>().getUnreadNotificationCount();
     await getUnreadNotificationCount;
     _rebuildAppBar.value = !_rebuildAppBar.value;
   }
@@ -182,8 +178,8 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
   void updatePagingControllers(Object? state) {
     if (state is UniversalFeedLoaded) {
       _pageFeed++;
-      List<PostViewModel> listOfPosts =
-          state.feed.posts.map((e) => PostViewModel.fromPost(post: e)).toList();
+      List<PostViewData> listOfPosts =
+          state.feed.posts.map((e) => PostViewData.fromPost(post: e)).toList();
       if (state.feed.posts.length < 10) {
         _pagingController.appendLastPage(listOfPosts);
       } else {
@@ -207,7 +203,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
       elevation: 5,
       isDismissible: true,
       useRootNavigator: true,
-      backgroundColor: kWhiteColor,
+      backgroundColor: LMThemeData.kWhiteColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(28.0),
@@ -228,12 +224,11 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Size screenSize = MediaQuery.of(context).size;
-    ThemeData theme = Theme.of(context);
+    ThemeData theme = LMThemeData.suraasaTheme;
     return Scaffold(
-      backgroundColor: kWhiteColor,
+      backgroundColor: LMThemeData.kWhiteColor,
       appBar: AppBar(
-        backgroundColor: kWhiteColor,
+        backgroundColor: LMThemeData.kWhiteColor,
         centerTitle: false,
         title: GestureDetector(
           onTap: () {
@@ -275,7 +270,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
         },
         child: Column(
           children: [
-            kVerticalPaddingLarge,
+            LMThemeData.kVerticalPaddingLarge,
             ValueListenableBuilder(
               valueListenable: postSomethingNotifier,
               builder: (context, _, __) {
@@ -325,9 +320,10 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                                             borderRadius: 20.0,
                                             borderWidth: 1,
                                             showBorder: true,
-                                            borderColor: appSecondaryBlack,
+                                            borderColor:
+                                                LMThemeData.appSecondaryBlack,
                                             textStyle: const TextStyle(
-                                              color: appBlack,
+                                              color: LMThemeData.appBlack,
                                             ),
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 12.0,
@@ -336,7 +332,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                                               type: LMIconType.icon,
                                               icon: CupertinoIcons.chevron_down,
                                               size: 16,
-                                              color: appBlack,
+                                              color: LMThemeData.appBlack,
                                             ),
                                           )
                                         : selectedTopics.length == 1
@@ -354,7 +350,8 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                                                 backgroundColor:
                                                     theme.colorScheme.secondary,
                                                 textStyle: const TextStyle(
-                                                  color: kWhiteColor,
+                                                  color:
+                                                      LMThemeData.kWhiteColor,
                                                 ),
                                                 padding:
                                                     const EdgeInsets.symmetric(
@@ -365,7 +362,8 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                                                   icon: CupertinoIcons
                                                       .chevron_down,
                                                   size: 16,
-                                                  color: kWhiteColor,
+                                                  color:
+                                                      LMThemeData.kWhiteColor,
                                                 ),
                                               )
                                             : LMTopicChip(
@@ -379,7 +377,8 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                                                 backgroundColor:
                                                     theme.colorScheme.secondary,
                                                 textStyle: const TextStyle(
-                                                  color: kWhiteColor,
+                                                  color:
+                                                      LMThemeData.kWhiteColor,
                                                 ),
                                                 padding:
                                                     const EdgeInsets.symmetric(
@@ -387,7 +386,8 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                                                         vertical: 4.0),
                                                 icon: Row(
                                                   children: [
-                                                    kHorizontalPaddingXSmall,
+                                                    LMThemeData
+                                                        .kHorizontalPaddingXSmall,
                                                     Container(
                                                       padding: const EdgeInsets
                                                           .symmetric(
@@ -419,13 +419,15 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                                                         ),
                                                       ),
                                                     ),
-                                                    kHorizontalPaddingSmall,
+                                                    LMThemeData
+                                                        .kHorizontalPaddingSmall,
                                                     const LMIcon(
                                                       type: LMIconType.icon,
                                                       icon: CupertinoIcons
                                                           .chevron_down,
                                                       size: 16,
-                                                      color: kWhiteColor,
+                                                      color: LMThemeData
+                                                          .kWhiteColor,
                                                     ),
                                                   ],
                                                 ),
@@ -473,9 +475,11 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                     return FeedRoomErrorView(message: state.message);
                   }
                   return const Scaffold(
-                    backgroundColor: kBackgroundColor,
+                    backgroundColor: LMThemeData.kBackgroundColor,
                     body: Center(
-                      child: CircularProgressIndicator(),
+                      child: LMLoader(
+                        color: LMThemeData.kPrimaryColor,
+                      ),
                     ),
                   );
                 }),
@@ -496,7 +500,8 @@ class FeedRoomErrorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: kBackgroundColor, body: Center(child: Text(message)));
+        backgroundColor: LMThemeData.kBackgroundColor,
+        body: Center(child: Text(message)));
   }
 }
 
@@ -505,7 +510,7 @@ class FeedRoomView extends StatefulWidget {
   final User user;
   final UniversalFeedBloc universalFeedBloc;
   final GetFeedResponse feedResponse;
-  final PagingController<int, PostViewModel> feedRoomPagingController;
+  final PagingController<int, PostViewData> feedRoomPagingController;
   final ScrollController scrollController;
   final VoidCallback onRefresh;
   final VoidCallback openTopicBottomSheet;
@@ -552,8 +557,10 @@ class _FeedRoomViewState extends State<FeedRoomView> {
       } else if (media.mediaType == MediaType.document) {
         return const LMIcon(
           type: LMIconType.svg,
-          assetPath: kAssetPDFIcon,
+          assetPath: kAssetDocPDFIcon,
+          color: Colors.red,
           size: 35,
+          boxPadding: 0,
         );
       } else {
         return const SizedBox.shrink();
@@ -580,6 +587,9 @@ class _FeedRoomViewState extends State<FeedRoomView> {
     super.initState();
     LMAnalytics.get()
         .track(AnalyticsKeys.feedOpened, {'feed_type': "universal_feed"});
+    locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+        eventName: AnalyticsKeys.feedOpened,
+        eventProperties: const {'feed_type': "universal_feed"}));
     _controller = widget.scrollController..addListener(_scrollListener);
     right = checkPostCreationRights();
   }
@@ -603,16 +613,17 @@ class _FeedRoomViewState extends State<FeedRoomView> {
 
   @override
   Widget build(BuildContext context) {
-    NewPostBloc newPostBloc = locator<BlocService>().newPostBlocProvider;
+    LMPostBloc newPostBloc = locator<LMFeedBloc>().lmPostBloc;
+    final ThemeData theme = LMThemeData.suraasaTheme;
     return Scaffold(
-      backgroundColor: kBackgroundColor,
+      backgroundColor: LMThemeData.kBackgroundColor,
       body: Column(
         children: [
-          BlocConsumer<NewPostBloc, NewPostState>(
+          BlocConsumer<LMPostBloc, LMPostState>(
             bloc: newPostBloc,
             listener: (prev, curr) {
               if (curr is PostDeleted) {
-                List<PostViewModel>? feedRoomItemList =
+                List<PostViewData>? feedRoomItemList =
                     widget.feedRoomPagingController.itemList;
                 feedRoomItemList?.removeWhere((item) => item.id == curr.postId);
                 widget.feedRoomPagingController.itemList = feedRoomItemList;
@@ -631,10 +642,10 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                 postUploading.value = false;
               }
               if (curr is NewPostUploaded) {
-                PostViewModel? item = curr.postData;
+                PostViewData? item = curr.postData;
                 int length =
                     widget.feedRoomPagingController.itemList?.length ?? 0;
-                List<PostViewModel> feedRoomItemList =
+                List<PostViewData> feedRoomItemList =
                     widget.feedRoomPagingController.itemList ?? [];
                 for (int i = 0; i < feedRoomItemList.length; i++) {
                   if (!feedRoomItemList[i].isPinned) {
@@ -650,14 +661,15 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                   feedRoomItemList.removeLast();
                 }
                 widget.feedResponse.users.addAll(curr.userData);
-                widget.feedResponse.topics.addAll(curr.topics);
+                widget.feedResponse.topics.addAll(curr.topics
+                    .map((key, value) => MapEntry(key, value.toTopic())));
                 widget.feedRoomPagingController.itemList = feedRoomItemList;
                 postUploading.value = false;
                 rebuildPostWidget.value = !rebuildPostWidget.value;
               }
               if (curr is EditPostUploaded) {
-                PostViewModel? item = curr.postData;
-                List<PostViewModel>? feedRoomItemList =
+                PostViewData? item = curr.postData;
+                List<PostViewData>? feedRoomItemList =
                     widget.feedRoomPagingController.itemList;
                 int index = feedRoomItemList
                         ?.indexWhere((element) => element.id == item.id) ??
@@ -666,7 +678,8 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                   feedRoomItemList?[index] = item;
                 }
                 widget.feedResponse.users.addAll(curr.userData);
-                widget.feedResponse.topics.addAll(curr.topics);
+                widget.feedResponse.topics.addAll(curr.topics
+                    .map((key, value) => MapEntry(key, value.toTopic())));
                 postUploading.value = false;
                 rebuildPostWidget.value = !rebuildPostWidget.value;
               }
@@ -678,7 +691,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                 );
               }
               if (curr is PostUpdateState) {
-                List<PostViewModel>? feedRoomItemList =
+                List<PostViewData>? feedRoomItemList =
                     widget.feedRoomPagingController.itemList;
                 int index = feedRoomItemList
                         ?.indexWhere((element) => element.id == curr.post.id) ??
@@ -693,7 +706,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
               if (state is EditPostUploading) {
                 return Container(
                   height: 60,
-                  color: kWhiteColor,
+                  color: LMThemeData.kWhiteColor,
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: const Row(
@@ -708,13 +721,14 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                             width: 50,
                             height: 50,
                           ),
-                          kHorizontalPaddingMedium,
+                          LMThemeData.kHorizontalPaddingMedium,
                           Text('Saving')
                         ],
                       ),
                       CircularProgressIndicator(
-                        backgroundColor: kGrey3Color,
-                        valueColor: AlwaysStoppedAnimation(kPrimaryColor),
+                        backgroundColor: LMThemeData.kGrey3Color,
+                        valueColor:
+                            AlwaysStoppedAnimation(LMThemeData.kPrimaryColor),
                         strokeWidth: 3,
                       ),
                     ],
@@ -724,7 +738,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
               if (state is NewPostUploading) {
                 return Container(
                   height: 60,
-                  color: kWhiteColor,
+                  color: LMThemeData.kWhiteColor,
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Row(
@@ -736,7 +750,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           getLoaderThumbnail(state.thumbnailMedia),
-                          kHorizontalPaddingMedium,
+                          LMThemeData.kHorizontalPaddingMedium,
                           const Text('Posting')
                         ],
                       ),
@@ -752,9 +766,9 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                           snapshot.data == 0.0
                                       ? null
                                       : snapshot.data?.toDouble()),
-                                  backgroundColor: kGrey3Color,
+                                  backgroundColor: LMThemeData.kGrey3Color,
                                   valueColor: const AlwaysStoppedAnimation(
-                                      kPrimaryColor),
+                                      LMThemeData.kPrimaryColor),
                                   strokeWidth: 3,
                                 ));
                           }),
@@ -773,12 +787,12 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                   child: ValueListenableBuilder(
                     valueListenable: rebuildPostWidget,
                     builder: (context, _, __) {
-                      return PagedListView<int, PostViewModel>(
+                      return PagedListView<int, PostViewData>(
                         pagingController: widget.feedRoomPagingController,
                         scrollController: _controller,
                         padding: EdgeInsets.zero,
                         builderDelegate:
-                            PagedChildBuilderDelegate<PostViewModel>(
+                            PagedChildBuilderDelegate<PostViewData>(
                           noItemsFoundIndicatorBuilder: (context) {
                             if (widget.universalFeedBloc.state
                                     is UniversalFeedLoaded &&
@@ -795,7 +809,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                           "Looks like there are no posts for this topic yet.",
                                       textStyle: TextStyle(
                                         fontSize: 15,
-                                        color: onSurface500,
+                                        color: LMThemeData.onSurface500,
                                         fontWeight: FontWeight.w600,
                                         height: 0,
                                       ),
@@ -809,7 +823,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                           borderRadius: 48,
                                           height: 40,
                                           border: Border.all(
-                                            color: primary500,
+                                            color: LMThemeData.primary500,
                                             width: 2,
                                           ),
                                           padding: const EdgeInsets.symmetric(
@@ -818,7 +832,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                             text: "Change Filter",
                                             textAlign: TextAlign.center,
                                             textStyle: TextStyle(
-                                              color: primary500,
+                                              color: LMThemeData.primary500,
                                               fontSize: 15,
                                               fontWeight: FontWeight.w500,
                                             ),
@@ -855,7 +869,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                       textStyle: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w300,
-                                          color: kGrey2Color)),
+                                          color: LMThemeData.kGrey2Color)),
                                   const SizedBox(height: 28),
                                   LMTextButton(
                                     borderRadius: 28,
@@ -863,14 +877,11 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                     width: 153,
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 12, horizontal: 20),
-                                    backgroundColor:
-                                        Theme.of(context).colorScheme.primary,
+                                    backgroundColor: theme.colorScheme.primary,
                                     text: LMTextView(
                                       text: "Create Post",
                                       textStyle: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary,
+                                        color: theme.colorScheme.onPrimary,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -879,9 +890,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                       type: LMIconType.icon,
                                       icon: Icons.add,
                                       size: 18,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary,
+                                      color: theme.colorScheme.onPrimary,
                                     ),
                                     onTap: right
                                         ? () {
@@ -890,6 +899,13 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                                   AnalyticsKeys
                                                       .postCreationStarted,
                                                   {});
+                                              locator<LMFeedBloc>()
+                                                  .lmAnalyticsBloc
+                                                  .add(FireAnalyticEvent(
+                                                      eventName: AnalyticsKeys
+                                                          .postCreationStarted,
+                                                      eventProperties: const {}));
+
                                               Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
@@ -928,19 +944,27 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                                         .track(AnalyticsKeys.commentListOpen, {
                                       'postId': item.id,
                                     });
+                                    locator<LMFeedBloc>()
+                                        .lmAnalyticsBloc
+                                        .add(FireAnalyticEvent(
+                                            eventName:
+                                                AnalyticsKeys.commentListOpen,
+                                            eventProperties: {
+                                              'postId': item.id,
+                                            }));
                                     Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              PostDetailScreen(
-                                            postId: item.id,
-                                          ),
-                                        ));
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => PostDetailScreen(
+                                          postId: item.id,
+                                        ),
+                                      ),
+                                    );
                                   },
                                   isFeed: true,
                                   refresh: (bool isDeleted) async {
                                     if (isDeleted) {
-                                      List<PostViewModel>? feedRoomItemList =
+                                      List<PostViewData>? feedRoomItemList =
                                           widget.feedRoomPagingController
                                               .itemList;
                                       feedRoomItemList?.removeAt(index);
@@ -978,13 +1002,13 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                       const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
                   borderRadius: 28,
                   backgroundColor: right
-                      ? Theme.of(context).colorScheme.primary
-                      : kGrey3Color,
+                      ? theme.colorScheme.primary
+                      : LMThemeData.kGrey3Color,
                   placement: LMIconPlacement.end,
                   text: LMTextView(
                     text: "Create Post",
                     textStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimary,
+                      color: theme.colorScheme.onPrimary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -994,13 +1018,18 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                     icon: Icons.add,
                     fit: BoxFit.cover,
                     size: 18,
-                    color: Theme.of(context).colorScheme.onPrimary,
+                    color: theme.colorScheme.onPrimary,
                   ),
                   onTap: right
                       ? () {
                           if (!postUploading.value) {
                             LMAnalytics.get()
                                 .track(AnalyticsKeys.postCreationStarted, {});
+                            locator<LMFeedBloc>().lmAnalyticsBloc.add(
+                                FireAnalyticEvent(
+                                    eventName:
+                                        AnalyticsKeys.postCreationStarted,
+                                    eventProperties: const {}));
                             Navigator.push(
                               context,
                               MaterialPageRoute(

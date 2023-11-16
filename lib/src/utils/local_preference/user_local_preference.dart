@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserLocalPreference {
@@ -57,7 +57,7 @@ class UserLocalPreference {
         _sharedPreferences!.getString('memberRights');
 
     if (getMemberStateString == null) {
-      locator<LikeMindsService>().getMemberState();
+      locator<LMFeedClient>().getMemberState();
       return MemberStateResponse(
           success: false, errorMessage: "An error occurred");
     }

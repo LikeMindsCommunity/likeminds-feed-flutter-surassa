@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_fl/packages/flutter_typeahead-4.3.7/lib/flutter_typeahead.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
-import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/analytics_bloc/analytics_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/bloc.dart';
+
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 
@@ -69,13 +70,15 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         page++;
-        final taggingData = await locator<LikeMindsService>().getTaggingList(
+        final taggingData = await locator<LMFeedClient>().getTaggingList(
           request: (GetTaggingListRequestBuilder()
                 ..page(page)
                 ..pageSize(fixedSize))
               .build(),
         );
-        if (taggingData.members != null && taggingData.members!.isNotEmpty) {
+        if (taggingData.success &&
+            taggingData.members != null &&
+            taggingData.members!.isNotEmpty) {
           userTags.addAll(taggingData.members!.map((e) => e).toList());
           // return userTags;
         }
@@ -92,14 +95,16 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
         return const Iterable.empty();
       } else if (!tagComplete && currentText.contains('@')) {
         String tag = tagValue.substring(1).replaceAll(' ', '');
-        final taggingData = await locator<LikeMindsService>().getTaggingList(
+        final taggingData = await locator<LMFeedClient>().getTaggingList(
           request: (GetTaggingListRequestBuilder()
                 ..page(1)
                 ..pageSize(fixedSize)
                 ..searchQuery(tag))
               .build(),
         );
-        if (taggingData.members != null && taggingData.members!.isNotEmpty) {
+        if (taggingData.success &&
+            taggingData.members != null &&
+            taggingData.members!.isNotEmpty) {
           userTags = taggingData.members!.map((e) => e).toList();
           return userTags;
         }
@@ -118,7 +123,6 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
       padding: const EdgeInsets.symmetric(horizontal: 6.0),
       child: TypeAheadField<UserTag>(
         onTagTap: (p) {},
-
         suggestionsBoxController: _suggestionsBoxController,
         suggestionsBoxDecoration: SuggestionsBoxDecoration(
           elevation: 4,
@@ -167,7 +171,7 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
               color: Colors.white,
               border: Border(
                 bottom: BorderSide(
-                  color: kGrey3Color,
+                  color: LMThemeData.kGrey3Color,
                   width: 0.5,
                 ),
               ),
@@ -183,6 +187,7 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
                       absorbing: true,
                       child: LMProfilePicture(
                         fallbackText: opt.name!,
+                        backgroundColor: LMThemeData.kPrimaryColor,
                         imageUrl: opt.imageUrl!,
                         onTap: null,
                         size: 32,
@@ -202,7 +207,7 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
           );
         },
         onSuggestionSelected: ((suggestion) {
-          print(suggestion);
+          debugPrint(suggestion.toString());
           widget.onTagSelected.call(suggestion);
           setState(() {
             tagComplete = true;
@@ -223,6 +228,13 @@ class _TaggingAheadTextFieldState extends State<TaggingAheadTextField> {
               'tagged_user_id': suggestion.sdkClientInfo?.userUniqueId,
               'tagged_user_count': tagCount,
             });
+            locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+                  eventName: AnalyticsKeys.userTaggedInPost,
+                  eventProperties: {
+                    'tagged_user_id': suggestion.sdkClientInfo?.userUniqueId,
+                    'tagged_user_count': tagCount,
+                  },
+                ));
           });
         }),
       ),
