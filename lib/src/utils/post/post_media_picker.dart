@@ -95,7 +95,12 @@ class PostMediaPicker {
 
       final config =
           await UserLocalPreference.instance.getCommunityConfigurations();
-      final sizeLimit = (config.value!["max_video_size"]! / 1024).floor();
+      final sizeLimit;
+      if (config.value != null && config.value!["max_image_size"] != null) {
+        sizeLimit = config.value!["max_image_size"]! / 1024;
+      } else {
+        sizeLimit = 100;
+      }
 
       if (pickedFiles!.files.isNotEmpty) {
         if (currentMediaLength + 1 > 10) {
