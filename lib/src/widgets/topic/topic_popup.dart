@@ -110,7 +110,8 @@ class _TopicPopUpState extends State<TopicPopUp> {
       width: min(screenSize.width, 265),
       constraints: const BoxConstraints(maxHeight: 250),
       decoration: BoxDecoration(
-          color: LMThemeData.kWhiteColor, borderRadius: BorderRadius.circular(4.0)),
+          color: LMThemeData.kWhiteColor,
+          borderRadius: BorderRadius.circular(4.0)),
       margin: const EdgeInsets.only(top: 32),
       padding: const EdgeInsets.all(8.0),
       child: BlocConsumer<TopicBloc, TopicState>(
@@ -223,8 +224,8 @@ class _TopicPopUpState extends State<TopicPopUp> {
                   );
                 });
           } else if (state is TopicError) {
-            return Center(
-              child: Text(state.errorMessage),
+            return const Center(
+              child: Text("Unable to fetch topics, Please try again later"),
             );
           }
           return const SizedBox();
