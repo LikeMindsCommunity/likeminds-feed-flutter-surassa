@@ -127,11 +127,6 @@ class LMNotificationHandler {
             },
           ));
 
-      locator<LMFeedBloc>()
-          .lmRoutingBloc
-          .add(HandlePostNotificationEvent(postId: postId));
-
-      // Comment below code if navigation is being handle by LMRoutingBloc
       locator<NavigationService>().navigateTo(MaterialPageRoute(
         builder: (context) {
           return PostDetailScreen(postId: postId);
