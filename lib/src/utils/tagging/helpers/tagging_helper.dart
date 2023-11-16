@@ -13,7 +13,7 @@ class TaggingHelper {
   static const String tagRoute =
       r'<<([^<>]+)\|route://member/([a-zA-Z-0-9]+)>>';
   static const String linkRoute =
-      r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+';
+      r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+|(\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b)';
 
   /// Encodes the string with the user tags and returns the encoded string
   static String encodeString(String string, List<UserTag> userTags) {
@@ -190,7 +190,7 @@ List<String> extractLinkFromString(String text) {
   List<String> links = [];
   for (var match in matches) {
     String link = text.substring(match.start, match.end);
-    if (link.isNotEmpty) {
+    if (link.isNotEmpty && match.group(1) == null) {
       links.add(link);
     }
   }
