@@ -52,6 +52,7 @@ class _MediaPreviewState extends State<MediaPreview> {
   Widget build(BuildContext context) {
     final DateFormat formatter = DateFormat('MMMM d, hh:mm');
     final String formatted = formatter.format(post.createdAt);
+    final ThemeData theme = LMThemeData.suraasaTheme;
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -63,7 +64,7 @@ class _MediaPreviewState extends State<MediaPreview> {
           },
           icon: const LMIcon(
             type: LMIconType.icon,
-            color: kWhiteColor,
+            color: LMThemeData.kWhiteColor,
             icon: CupertinoIcons.xmark,
             size: 28,
             boxSize: 64,
@@ -76,10 +77,10 @@ class _MediaPreviewState extends State<MediaPreview> {
           children: <Widget>[
             LMTextView(
               text: user.name,
-              textStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              textStyle: theme.textTheme.bodyMedium!.copyWith(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: kWhiteColor,
+                    color: LMThemeData.kWhiteColor,
                   ),
             ),
             ValueListenableBuilder(
@@ -88,9 +89,9 @@ class _MediaPreviewState extends State<MediaPreview> {
                 return LMTextView(
                   text:
                       '${currPosition + 1} of ${postAttachments.length} media • $formatted',
-                  textStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  textStyle: theme.textTheme.bodyMedium!.copyWith(
                         fontSize: 12,
-                        color: kWhiteColor,
+                        color: LMThemeData.kWhiteColor,
                       ),
                 );
               },
@@ -159,13 +160,13 @@ class _MediaPreviewState extends State<MediaPreview> {
                   return Column(
                     children: [
                       checkIfMultipleAttachments()
-                          ? kVerticalPaddingMedium
+                          ? LMThemeData.kVerticalPaddingMedium
                           : const SizedBox(),
                       checkIfMultipleAttachments()
                           ? Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: postAttachments!.map((url) {
-                                int index = postAttachments!.indexOf(url);
+                              children: postAttachments.map((url) {
+                                int index = postAttachments.indexOf(url);
                                 return Container(
                                   width: 8.0,
                                   height: 8.0,
@@ -174,8 +175,8 @@ class _MediaPreviewState extends State<MediaPreview> {
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     color: currPosition == index
-                                        ? kWhiteColor
-                                        : kGrey3Color,
+                                        ? LMThemeData.kWhiteColor
+                                        : LMThemeData.kGrey3Color,
                                   ),
                                 );
                               }).toList())

@@ -18,14 +18,14 @@ Widget getLikesTileShimmer() {
             height: 50,
             width: 50,
             child: CircleAvatar(
-              backgroundColor: kWhiteColor,
+              backgroundColor: LMThemeData.kWhiteColor,
             ),
           ),
-          kHorizontalPaddingXLarge,
+          LMThemeData.kHorizontalPaddingXLarge,
           Container(
             height: 12,
             width: 150,
-            color: kWhiteColor,
+            color: LMThemeData.kWhiteColor,
           )
         ],
       ),

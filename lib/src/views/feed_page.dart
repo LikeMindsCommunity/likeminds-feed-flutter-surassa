@@ -4,8 +4,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/universal_feed/universal_feed_bloc.dart';
-import 'package:likeminds_feed_ss_fl/src/models/post_view_model.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
+
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post/new_post_screen.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post_detail_screen.dart';
@@ -27,7 +26,7 @@ class _FeedScreenState extends State<FeedScreen> {
   ValueNotifier<bool> rebuildPostWidget = ValueNotifier(false);
   final ValueNotifier postUploading = ValueNotifier(false);
 
-  final PagingController<int, PostViewModel> _pagingController =
+  final PagingController<int, PostViewData> _pagingController =
       PagingController(
     firstPageKey: 1,
   );
@@ -103,8 +102,8 @@ class _FeedScreenState extends State<FeedScreen> {
   void updatePagingControllers(Object? state) {
     if (state is UniversalFeedLoaded) {
       _pageFeed++;
-      List<PostViewModel> listOfPosts =
-          state.feed.posts.map((e) => PostViewModel.fromPost(post: e)).toList();
+      List<PostViewData> listOfPosts =
+          state.feed.posts.map((e) => PostViewData.fromPost(post: e)).toList();
       if (state.feed.posts.length < 10) {
         _pagingController.appendLastPage(listOfPosts);
       } else {
@@ -115,10 +114,11 @@ class _FeedScreenState extends State<FeedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = LMThemeData.suraasaTheme;
     return Scaffold(
-      backgroundColor: kWhiteColor.withOpacity(0.95),
+      backgroundColor: LMThemeData.kWhiteColor.withOpacity(0.95),
       appBar: AppBar(
-        backgroundColor: kWhiteColor,
+        backgroundColor: LMThemeData.kWhiteColor,
         centerTitle: false,
         title: const LMTextView(
           text: "Feed",
@@ -151,10 +151,10 @@ class _FeedScreenState extends State<FeedScreen> {
           builder: ((context, state) {
             if (state is UniversalFeedLoaded) {
               GetFeedResponse feedResponse = state.feed;
-              return PagedListView<int, PostViewModel>(
+              return PagedListView<int, PostViewData>(
                 pagingController: _pagingController,
                 scrollController: scrollController,
-                builderDelegate: PagedChildBuilderDelegate<PostViewModel>(
+                builderDelegate: PagedChildBuilderDelegate<PostViewData>(
                   noItemsFoundIndicatorBuilder: (context) => Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -175,25 +175,24 @@ class _FeedScreenState extends State<FeedScreen> {
                             style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w300,
-                                color: kGrey2Color)),
+                                color: LMThemeData.kGrey2Color)),
                         const SizedBox(height: 28),
                         LMTextButton(
                           height: 48,
                           width: 142,
                           borderRadius: 28,
-                          backgroundColor:
-                              Theme.of(context).colorScheme.primary,
+                          backgroundColor: theme.colorScheme.primary,
                           text: LMTextView(
                             text: "Create Post",
                             textStyle: TextStyle(
-                              color: Theme.of(context).colorScheme.onPrimary,
+                              color: theme.colorScheme.onPrimary,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           icon: LMIcon(
                             type: LMIconType.icon,
                             icon: Icons.add,
-                            color: Theme.of(context).colorScheme.onPrimary,
+                            color: theme.colorScheme.onPrimary,
                           ),
                           onTap: () {
                             if (!postUploading.value) {
@@ -227,6 +226,13 @@ class _FeedScreenState extends State<FeedScreen> {
                                 .track(AnalyticsKeys.commentListOpen, {
                               'postId': item.id,
                             });
+                            locator<LMFeedBloc>()
+                                .lmAnalyticsBloc
+                                .add(FireAnalyticEvent(
+                                    eventName: AnalyticsKeys.commentListOpen,
+                                    eventProperties: {
+                                      'postId': item.id,
+                                    }));
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -240,23 +246,23 @@ class _FeedScreenState extends State<FeedScreen> {
                           refresh: (bool isDeleted) async {
                             if (!isDeleted) {
                               final GetPostResponse updatedPostDetails =
-                                  await locator<LikeMindsService>().getPost(
+                                  await locator<LMFeedClient>().getPost(
                                 (GetPostRequestBuilder()
                                       ..postId(item.id)
                                       ..page(1)
                                       ..pageSize(10))
                                     .build(),
                               );
-                              item = PostViewModel.fromPost(
+                              item = PostViewData.fromPost(
                                   post: updatedPostDetails.post!);
-                              List<PostViewModel>? feedRoomItemList =
+                              List<PostViewData>? feedRoomItemList =
                                   _pagingController.itemList;
                               feedRoomItemList?[index] = item;
                               _pagingController.itemList = feedRoomItemList;
                               rebuildPostWidget.value =
                                   !rebuildPostWidget.value;
                             } else {
-                              List<PostViewModel>? feedRoomItemList =
+                              List<PostViewData>? feedRoomItemList =
                                   _pagingController.itemList;
                               feedRoomItemList!.removeAt(index);
                               _pagingController.itemList = feedRoomItemList;
@@ -271,7 +277,10 @@ class _FeedScreenState extends State<FeedScreen> {
                 ),
               );
             }
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+                child: LMLoader(
+              color: LMThemeData.kPrimaryColor,
+            ));
           }),
         ),
       ),
@@ -286,7 +295,7 @@ class _FeedScreenState extends State<FeedScreen> {
             width: 25,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: kPrimaryColor,
+              color: LMThemeData.kPrimaryColor,
               boxShadow: [
                 BoxShadow(
                   offset: const Offset(0, 4),
@@ -313,11 +322,11 @@ class _FeedScreenState extends State<FeedScreen> {
             height: 48,
             width: 142,
             borderRadius: 28,
-            backgroundColor: Theme.of(context).colorScheme.primary,
+            backgroundColor: theme.colorScheme.primary,
             text: LMTextView(
               text: "Create Post",
               textStyle: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimary,
+                color: theme.colorScheme.onPrimary,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -325,7 +334,7 @@ class _FeedScreenState extends State<FeedScreen> {
               type: LMIconType.icon,
               icon: Icons.add,
               size: 12,
-              color: Theme.of(context).colorScheme.onPrimary,
+              color: theme.colorScheme.onPrimary,
             ),
             onTap: () {
               Navigator.push(

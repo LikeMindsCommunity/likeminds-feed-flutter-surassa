@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 
@@ -25,16 +24,17 @@ class LMUserTile extends StatelessWidget {
       children: [
         LMProfilePicture(
           size: imageSize ?? 50,
+          backgroundColor: LMThemeData.kPrimaryColor,
           fallbackText: user.name,
           onTap: () {
             if (user.sdkClientInfo != null) {
-              locator<LikeMindsService>()
+              locator<LMFeedClient>()
                   .routeToProfile(user.sdkClientInfo!.userUniqueId);
             }
           },
           imageUrl: user.imageUrl,
         ),
-        kHorizontalPaddingLarge,
+        LMThemeData.kHorizontalPaddingLarge,
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,12 +43,12 @@ class LMUserTile extends StatelessWidget {
                   LMTextView(
                     text: user.name,
                     textStyle: const TextStyle(
-                      fontSize: kFontMedium,
-                      color: kGrey1Color,
+                      fontSize: LMThemeData.kFontMedium,
+                      color: LMThemeData.kGrey1Color,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-              kVerticalPaddingMedium,
+              LMThemeData.kVerticalPaddingMedium,
               subText ?? const SizedBox(),
             ],
           ),

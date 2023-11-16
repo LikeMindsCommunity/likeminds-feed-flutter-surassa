@@ -7,7 +7,6 @@ abstract class CommentRepliesState extends Equatable {
 
 class CommentRepliesInitial extends CommentRepliesState {
   @override
-  // TODO: implement props
   List<Object?> get props => [];
 }
 

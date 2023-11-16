@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
-import 'package:likeminds_feed_ss_fl/src/blocs/comment/all_comments/all_comments_bloc.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
-import 'package:likeminds_feed_ss_fl/src/services/navigation_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/credentials/credentials.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post_detail_screen.dart';
 import 'package:share_plus/share_plus.dart';
@@ -52,12 +49,11 @@ class SharePost {
     List secondPathSegment = request.link.split('post_id=');
     if (secondPathSegment.length > 1 && secondPathSegment[1] != null) {
       String postId = secondPathSegment[1];
-      await locator<LikeMindsService>()
-          .initiateUser((InitiateUserRequestBuilder()
-                ..apiKey(request.apiKey)
-                ..userId(request.userUniqueId)
-                ..userName(request.userName))
-              .build());
+      await locator<LMFeedBloc>().initiateUser((InitiateUserRequestBuilder()
+            ..apiKey(request.apiKey)
+            ..userId(request.userUniqueId)
+            ..userName(request.userName))
+          .build());
 
       navigatorKey.currentState!.push(
         MaterialPageRoute(

@@ -7,12 +7,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:likeminds_feed/likeminds_feed.dart';
-import 'package:likeminds_feed_ss_fl/src/blocs/new_post/new_post_bloc.dart';
-import 'package:likeminds_feed_ss_fl/src/services/bloc_service.dart';
-import 'package:likeminds_feed_ss_fl/src/services/likeminds_service.dart';
+import 'package:likeminds_feed_ss_fl/src/blocs/bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/services/service_locator.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/analytics/analytics.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
@@ -54,7 +51,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
   final CustomPopupMenuController _controllerPopUp =
       CustomPopupMenuController();
 
-  NewPostBloc? newPostBloc;
+  LMPostBloc? lmPostBloc;
   late final User user;
 
   List<MediaModel> postMedia = [];
@@ -83,12 +80,12 @@ class _NewPostScreenState extends State<NewPostScreen> {
     super.initState();
     user = UserLocalPreference.instance.fetchUserData();
     getTopicsResponse =
-        locator<LikeMindsService>().getTopics((GetTopicsRequestBuilder()
+        locator<LMFeedClient>().getTopics((GetTopicsRequestBuilder()
               ..page(1)
               ..pageSize(20)
               ..isEnabled(true))
             .build());
-    newPostBloc = locator<BlocService>().newPostBlocProvider;
+    lmPostBloc = locator<LMFeedBloc>().lmPostBloc;
     if (_focusNode.canRequestFocus) {
       _focusNode.requestFocus();
     }
@@ -110,6 +107,10 @@ class _NewPostScreenState extends State<NewPostScreen> {
         }
         LMAnalytics.get().track(
             AnalyticsKeys.documentAttachedInPost, {'document_count': docCount});
+        locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+              eventName: AnalyticsKeys.documentAttachedInPost,
+              eventProperties: {'document_count': docCount},
+            ));
       } else if (mediaToBeRemoved.mediaType == MediaType.video) {
         int videoCount = 0;
         for (var element in postMedia) {
@@ -119,6 +120,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
         }
         LMAnalytics.get().track(
             AnalyticsKeys.videoAttachedToPost, {'video_count': videoCount});
+        locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+            eventName: AnalyticsKeys.videoAttachedToPost,
+            eventProperties: {'video_count': videoCount}));
       } else if (mediaToBeRemoved.mediaType == MediaType.image) {
         int imageCount = 0;
         for (var element in postMedia) {
@@ -128,6 +132,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
         }
         LMAnalytics.get().track(
             AnalyticsKeys.imageAttachedToPost, {'image_count': imageCount});
+        locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+            eventName: AnalyticsKeys.imageAttachedToPost,
+            eventProperties: {'image_count': imageCount}));
       }
 
       postMedia.removeAt(index);
@@ -159,10 +166,17 @@ class _NewPostScreenState extends State<NewPostScreen> {
       }
       LMAnalytics.get().track(AnalyticsKeys.documentAttachedInPost,
           {'document_count': documentCount});
+      locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+            eventName: AnalyticsKeys.documentAttachedInPost,
+            eventProperties: {'document_count': documentCount},
+          ));
     } else {
       if (postMedia.first.mediaType == MediaType.video) {
         LMAnalytics.get()
-            .track(AnalyticsKeys.imageAttachedToPost, {'video_count': 1});
+            .track(AnalyticsKeys.videoAttachedToPost, {'video_count': 1});
+        locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+            eventName: AnalyticsKeys.videoAttachedToPost,
+            eventProperties: {'video_count': 1}));
         isVideoAttached = true;
       } else {
         int imageCount = 0;
@@ -173,6 +187,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
         }
         LMAnalytics.get().track(
             AnalyticsKeys.imageAttachedToPost, {'image_count': imageCount});
+        locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+            eventName: AnalyticsKeys.imageAttachedToPost,
+            eventProperties: {'image_count': imageCount}));
       }
     }
   }
@@ -256,6 +273,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
           size: 45,
           boxPadding: 0,
         ),
+        backgroundColor: LMThemeData.kSecondary100,
         documentFile: postMedia[index].mediaFile,
         onRemove: () => removeAttachmenetAtIndex(index),
       ),
@@ -275,7 +293,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
       DecodeUrlRequest request =
           (DecodeUrlRequestBuilder()..url(previewLink)).build();
       DecodeUrlResponse response =
-          await locator<LikeMindsService>().decodeUrl(request);
+          await locator<LMFeedClient>().decodeUrl(request);
       if (response.success == true) {
         OgTags? responseTags = response.ogTags;
         linkModel = MediaModel(
@@ -294,6 +312,12 @@ class _NewPostScreenState extends State<NewPostScreen> {
             'link': previewLink,
           },
         );
+        locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
+              eventName: AnalyticsKeys.linkAttachedInPost,
+              eventProperties: {
+                'link': previewLink,
+              },
+            ));
         if (postMedia.isEmpty) {
           rebuildLinkPreview.value = !rebuildLinkPreview.value;
         }
@@ -320,8 +344,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    newPostBloc = locator<BlocService>().newPostBlocProvider;
+    lmPostBloc = locator<LMFeedBloc>().lmPostBloc;
     Size screenSize = MediaQuery.of(context).size;
+    ThemeData theme = LMThemeData.suraasaTheme;
     return WillPopScope(
       onWillPop: () {
         showDialog(
@@ -353,7 +378,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.dark,
         child: Scaffold(
-          backgroundColor: kWhiteColor,
+          backgroundColor: LMThemeData.kWhiteColor,
           floatingActionButton: Padding(
             padding: const EdgeInsets.only(bottom: 64.0, left: 16.0),
             child: Row(
@@ -387,7 +412,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                   child: CustomPopupMenu(
                                     controller: _controllerPopUp,
                                     showArrow: false,
-                                    verticalMargin: 10,
                                     horizontalMargin: 16.0,
                                     pressType: PressType.singleClick,
                                     menuBuilder: () => TopicPopUp(
@@ -417,10 +441,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                       decoration: BoxDecoration(
                                         borderRadius:
                                             BorderRadius.circular(500),
-                                        color: kWhiteColor,
+                                        color: LMThemeData.kWhiteColor,
                                         border: Border.all(
-                                          color: kPrimaryColor,
-                                          width: 1,
+                                          color: LMThemeData.kPrimaryColor,
                                         ),
                                       ),
                                       child: LMTopicChip(
@@ -432,12 +455,12 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                 .build()
                                             : selectedTopic.first,
                                         textStyle: const TextStyle(
-                                            color: kPrimaryColor),
+                                            color: LMThemeData.kPrimaryColor),
                                         icon: const LMIcon(
                                           type: LMIconType.icon,
                                           icon: CupertinoIcons.chevron_down,
                                           size: 16,
-                                          color: kPrimaryColor,
+                                          color: LMThemeData.kPrimaryColor,
                                         ),
                                       ),
                                     ),
@@ -458,7 +481,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
           body: SafeArea(
             child: Stack(
               children: [
-                kVerticalPaddingMedium,
+                LMThemeData.kVerticalPaddingMedium,
                 Padding(
                   padding: const EdgeInsets.only(
                     left: 16.0,
@@ -470,30 +493,30 @@ class _NewPostScreenState extends State<NewPostScreen> {
                     slivers: [
                       SliverToBoxAdapter(
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
                               padding: const EdgeInsets.only(top: 4.0),
                               child: LMProfilePicture(
                                 fallbackText: user.name,
+                                backgroundColor: LMThemeData.kPrimaryColor,
                                 imageUrl: user.imageUrl,
                                 onTap: () {
                                   if (user.sdkClientInfo != null) {
-                                    locator<LikeMindsService>().routeToProfile(
+                                    locator<LMFeedClient>().routeToProfile(
                                         user.sdkClientInfo!.userUniqueId);
                                   }
                                 },
                                 size: 36,
                               ),
                             ),
-                            kHorizontalPaddingMedium,
+                            LMThemeData.kHorizontalPaddingMedium,
                             Column(
                               children: [
                                 Container(
                                   width: screenSize.width - 80,
                                   decoration: const BoxDecoration(
-                                    color: kWhiteColor,
+                                    color: LMThemeData.kWhiteColor,
                                   ),
                                   // constraints: BoxConstraints(
                                   //     maxHeight: screenSize.height * 0.8),
@@ -512,8 +535,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                     onChange: _onTextChanged,
                                   ),
                                 ),
-                                kVerticalPaddingXLarge,
-                                kVerticalPaddingMedium,
+                                LMThemeData.kVerticalPaddingXLarge,
+                                LMThemeData.kVerticalPaddingMedium,
                               ],
                             ),
                           ],
@@ -523,11 +546,13 @@ class _NewPostScreenState extends State<NewPostScreen> {
                         const SliverToBoxAdapter(
                           child: Padding(
                             padding: EdgeInsets.only(
-                              top: kPaddingMedium,
-                              bottom: kPaddingLarge,
+                              top: LMThemeData.kPaddingMedium,
+                              bottom: LMThemeData.kPaddingLarge,
                             ),
                             child: Center(
-                              child: LMLoader(),
+                              child: LMLoader(
+                                color: LMThemeData.kPrimaryColor,
+                              ),
                             ),
                           ),
                         ),
@@ -542,8 +567,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                     children: [
                                       LMLinkPreview(
                                         linkModel: linkModel,
-                                        backgroundColor: kSecondary100,
-                                        showLinkUrl: false,
+                                        backgroundColor:
+                                            LMThemeData.kSecondary100,
                                         onTap: () {
                                           launchUrl(
                                             Uri.parse(
@@ -553,8 +578,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                           );
                                         },
                                         border: Border.all(
-                                          width: 1,
-                                          color: kSecondary100,
+                                          color: LMThemeData.kSecondary100,
                                         ),
                                         title: LMTextView(
                                           text:
@@ -563,7 +587,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                           overflow: TextOverflow.ellipsis,
                                           textStyle: const TextStyle(
                                             fontWeight: FontWeight.w600,
-                                            color: kHeadingBlackColor,
+                                            color:
+                                                LMThemeData.kHeadingBlackColor,
                                             height: 1.30,
                                           ),
                                         ),
@@ -574,7 +599,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           textStyle: const TextStyle(
-                                            color: kHeadingBlackColor,
+                                            color:
+                                                LMThemeData.kHeadingBlackColor,
                                             fontWeight: FontWeight.w400,
                                             height: 1.30,
                                           ),
@@ -591,6 +617,15 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                 'link': previewLink,
                                               },
                                             );
+                                            locator<LMFeedBloc>()
+                                                .lmAnalyticsBloc
+                                                .add(FireAnalyticEvent(
+                                                  eventName: AnalyticsKeys
+                                                      .linkAttachedInPost,
+                                                  eventProperties: {
+                                                    'link': previewLink,
+                                                  },
+                                                ));
                                             showLinkPreview = false;
                                             rebuildLinkPreview.value =
                                                 !rebuildLinkPreview.value;
@@ -609,7 +644,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                             : SliverToBoxAdapter(
                                 child: Container(
                                   padding: const EdgeInsets.only(
-                                    top: kPaddingSmall,
+                                    top: LMThemeData.kPaddingSmall,
                                     left: 44.0,
                                   ),
                                   height: 200,
@@ -695,7 +730,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                                   .black38,
                                                             )
                                                           ],
-                                                          color: kWhiteColor
+                                                          color: LMThemeData
+                                                              .kWhiteColor
                                                               .withOpacity(0.8),
                                                         )),
                                                   )
@@ -711,7 +747,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                 ),
                               ),
                       const SliverToBoxAdapter(
-                        child: kVerticalPaddingLarge,
+                        child: LMThemeData.kVerticalPaddingLarge,
                       ),
                     ],
                   ),
@@ -726,13 +762,21 @@ class _NewPostScreenState extends State<NewPostScreen> {
                             'Are you sure you want to discard the current post?'),
                         actions: <Widget>[
                           TextButton(
-                            child: const Text('No'),
+                            child: Text(
+                              'No',
+                              style:
+                                  TextStyle(color: theme.colorScheme.primary),
+                            ),
                             onPressed: () {
                               Navigator.of(dialogContext).pop();
                             },
                           ),
                           TextButton(
-                            child: const Text('Yes'),
+                            child: Text(
+                              'Yes',
+                              style:
+                                  TextStyle(color: theme.colorScheme.primary),
+                            ),
                             onPressed: () {
                               Navigator.of(dialogContext).pop();
                               Navigator.of(context).pop();
@@ -747,7 +791,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                     textStyle: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
-                      color: kGrey1Color,
+                      color: LMThemeData.kGrey1Color,
                     ),
                   ),
                   onTap: () {
@@ -773,11 +817,12 @@ class _NewPostScreenState extends State<NewPostScreen> {
                       sendPostCreationCompletedEvent(
                           postMedia, userTags, selectedTopic);
 
-                      newPostBloc!.add(
+                      lmPostBloc!.add(
                         CreateNewPost(
                           postText: result!,
                           postMedia: postMedia,
                           selectedTopics: selectedTopic,
+                          user: user,
                         ),
                       );
                       Navigator.pop(context);
@@ -797,30 +842,29 @@ class _NewPostScreenState extends State<NewPostScreen> {
                   child: Container(
                     // height: 32,
                     decoration: BoxDecoration(
-                      color: kWhiteColor,
+                      color: LMThemeData.kWhiteColor,
                       boxShadow: [
                         BoxShadow(
-                          color: kGrey3Color.withOpacity(0.4),
+                          color: LMThemeData.kGrey3Color.withOpacity(0.4),
                           offset: const Offset(0.0, -1.0),
                           blurRadius: 1.0,
                         ), //BoxShadow
                       ],
                     ),
+
                     child: isVideoAttached
                         ? const SizedBox.shrink()
                         : Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 isMediaPost
                                     ? LMIconButton(
                                         icon: LMIcon(
                                           type: LMIconType.svg,
                                           assetPath: kAssetGalleryIcon,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
+                                          color: LMThemeData
+                                              .suraasaTheme.colorScheme.primary,
                                           boxPadding: 0,
                                           size: 44,
                                         ),
@@ -828,6 +872,15 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                           LMAnalytics.get().track(
                                               AnalyticsKeys.clickedOnAttachment,
                                               {'type': 'image'});
+                                          locator<LMFeedBloc>()
+                                              .lmAnalyticsBloc
+                                              .add(FireAnalyticEvent(
+                                                eventName: AnalyticsKeys
+                                                    .clickedOnAttachment,
+                                                eventProperties: const {
+                                                  'type': 'image'
+                                                },
+                                              ));
                                           final result =
                                               await handlePermissions(
                                                   context, 1);
@@ -845,14 +898,22 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                         icon: LMIcon(
                                           type: LMIconType.svg,
                                           assetPath: kAssetVideoIcon,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
+                                          color: LMThemeData
+                                              .suraasaTheme.colorScheme.primary,
                                           boxPadding: 0,
                                           size: 44,
                                         ),
                                         onTap: (active) async {
                                           onUploading();
+                                          locator<LMFeedBloc>()
+                                              .lmAnalyticsBloc
+                                              .add(FireAnalyticEvent(
+                                                eventName: AnalyticsKeys
+                                                    .clickedOnAttachment,
+                                                eventProperties: const {
+                                                  'type': 'video'
+                                                },
+                                              ));
                                           List<MediaModel>? pickedMediaFiles =
                                               await PostMediaPicker.pickVideos(
                                                   postMedia.length);
@@ -874,9 +935,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                         icon: LMIcon(
                                           type: LMIconType.svg,
                                           assetPath: kAssetDocPDFIcon,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
+                                          color: LMThemeData
+                                              .suraasaTheme.colorScheme.primary,
                                           boxPadding: 0,
                                           size: 44,
                                         ),
@@ -889,6 +949,15 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                           LMAnalytics.get().track(
                                               AnalyticsKeys.clickedOnAttachment,
                                               {'type': 'file'});
+                                          locator<LMFeedBloc>()
+                                              .lmAnalyticsBloc
+                                              .add(FireAnalyticEvent(
+                                                eventName: AnalyticsKeys
+                                                    .clickedOnAttachment,
+                                                eventProperties: const {
+                                                  'type': 'file'
+                                                },
+                                              ));
                                           List<MediaModel>? pickedMediaFiles =
                                               await PostMediaPicker
                                                   .pickDocuments(
@@ -1043,7 +1112,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
         duration: Toast.LENGTH_LONG,
       );
       onUploadedMedia(false);
-      print(e.toString());
+      debugPrint(e.toString());
       return;
     }
   }

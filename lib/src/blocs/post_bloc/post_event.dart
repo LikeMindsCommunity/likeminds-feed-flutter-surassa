@@ -1,23 +1,25 @@
-part of 'new_post_bloc.dart';
+part of 'post_bloc.dart';
 
-abstract class NewPostEvents extends Equatable {
+abstract class LMPostEvents extends Equatable {
   @override
   List<Object> get props => [];
 }
 
-class CreateNewPost extends NewPostEvents {
+class CreateNewPost extends LMPostEvents {
   final List<MediaModel>? postMedia;
   final String postText;
+  final User user;
   final List<TopicUI> selectedTopics;
 
   CreateNewPost({
     this.postMedia,
+    required this.user,
     required this.postText,
     required this.selectedTopics,
   });
 }
 
-class EditPost extends NewPostEvents {
+class EditPost extends LMPostEvents {
   final List<Attachment>? attachments;
   final String postText;
   final String postId;
@@ -31,7 +33,7 @@ class EditPost extends NewPostEvents {
   });
 }
 
-class DeletePost extends NewPostEvents {
+class DeletePost extends LMPostEvents {
   final String postId;
   final String reason;
   final int? feedRoomId;
@@ -46,8 +48,8 @@ class DeletePost extends NewPostEvents {
   List<Object> get props => [postId, reason];
 }
 
-class UpdatePost extends NewPostEvents {
-  final PostViewModel post;
+class UpdatePost extends LMPostEvents {
+  final PostViewData post;
 
   UpdatePost({
     required this.post,
@@ -57,7 +59,7 @@ class UpdatePost extends NewPostEvents {
   List<Object> get props => [post];
 }
 
-class TogglePinPost extends NewPostEvents {
+class TogglePinPost extends LMPostEvents {
   final String postId;
   final bool isPinned;
 
