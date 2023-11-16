@@ -49,7 +49,7 @@ class DeletePost extends LMPostEvents {
 }
 
 class UpdatePost extends LMPostEvents {
-  final PostUI post;
+  final PostViewData post;
 
   UpdatePost({
     required this.post,

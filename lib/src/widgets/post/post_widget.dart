@@ -18,7 +18,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:url_launcher/url_launcher.dart';
 
 class SSPostWidget extends StatefulWidget {
-  final PostUI post;
+  final PostViewData post;
   final User user;
   final Map<String, Topic> topics;
   final bool isFeed;
@@ -44,7 +44,7 @@ class SSPostWidget extends StatefulWidget {
 class _SSPostWidgetState extends State<SSPostWidget> {
   int postLikes = 0;
   int comments = 0;
-  PostUI? postDetails;
+  PostViewData? postDetails;
   bool? isLiked;
   bool? isPinned;
   ValueNotifier<bool> rebuildLikeWidget = ValueNotifier(false);
@@ -83,7 +83,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
     LMPostBloc lmPostBloc = locator<LMFeedBloc>().lmPostBloc;
     timeago.setLocaleMessages('en', SSCustomMessages());
     return InheritedPostProvider(
-      post: widget.post.toPost(),
+      post: widget.post,
       child: Container(
         color: LMThemeData.kWhiteColor,
         child: BlocListener(

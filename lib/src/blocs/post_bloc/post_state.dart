@@ -19,7 +19,7 @@ class NewPostUploading extends LMPostState {
 class EditPostUploading extends LMPostState {}
 
 class NewPostUploaded extends LMPostState {
-  final PostUI postData;
+  final PostViewData postData;
   final Map<String, User> userData;
   final Map<String, TopicUI> topics;
 
@@ -31,7 +31,7 @@ class NewPostUploaded extends LMPostState {
 }
 
 class EditPostUploaded extends LMPostState {
-  final PostUI postData;
+  final PostViewData postData;
   final Map<String, User> userData;
   final Map<String, TopicUI> topics;
 
@@ -67,7 +67,7 @@ class PostDeleted extends LMPostState {
 }
 
 class PostUpdateState extends LMPostState {
-  final PostUI post;
+  final PostViewData post;
 
   const PostUpdateState({required this.post});
 

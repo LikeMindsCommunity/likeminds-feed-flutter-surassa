@@ -17,7 +17,7 @@ Future<void> editPostEventHandler(
     if (response.success) {
       emit(
         EditPostUploaded(
-          postData: PostUI.fromPost(post: response.post!),
+          postData: PostViewData.fromPost(post: response.post!),
           userData: response.user!,
           topics: (response.topics ?? <String, Topic>{}).map(
             (key, value) => MapEntry(

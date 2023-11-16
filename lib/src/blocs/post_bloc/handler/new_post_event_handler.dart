@@ -85,7 +85,7 @@ newPostEventHandler(CreateNewPost event, Emitter<LMPostState> emit) async {
     if (response.success) {
       emit(
         NewPostUploaded(
-          postData: PostUI.fromPost(post: response.post!),
+          postData: PostViewData.fromPost(post: response.post!),
           userData: response.user!,
           topics: (response.topics ?? <String, Topic>{}).map(
             (key, value) => MapEntry(

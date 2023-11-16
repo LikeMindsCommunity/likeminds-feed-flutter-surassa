@@ -50,7 +50,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   PostDetailResponse? postDetailResponse;
   final PagingController<int, Reply> _pagingController =
       PagingController(firstPageKey: 1);
-  PostUI? postData;
+  PostViewData? postData;
   User currentUser = UserLocalPreference.instance.fetchUserData();
 
   List<UserTag> userTags = [];
@@ -181,7 +181,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           .build(),
     );
     if (postDetails.success) {
-      postData = PostUI.fromPost(post: postDetails.post!);
+      postData = PostViewData.fromPost(post: postDetails.post!);
       rebuildPostWidget.value = !rebuildPostWidget.value;
     } else {
       toast(

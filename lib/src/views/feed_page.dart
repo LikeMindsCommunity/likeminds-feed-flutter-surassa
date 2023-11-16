@@ -26,7 +26,8 @@ class _FeedScreenState extends State<FeedScreen> {
   ValueNotifier<bool> rebuildPostWidget = ValueNotifier(false);
   final ValueNotifier postUploading = ValueNotifier(false);
 
-  final PagingController<int, PostUI> _pagingController = PagingController(
+  final PagingController<int, PostViewData> _pagingController =
+      PagingController(
     firstPageKey: 1,
   );
 
@@ -101,8 +102,8 @@ class _FeedScreenState extends State<FeedScreen> {
   void updatePagingControllers(Object? state) {
     if (state is UniversalFeedLoaded) {
       _pageFeed++;
-      List<PostUI> listOfPosts =
-          state.feed.posts.map((e) => PostUI.fromPost(post: e)).toList();
+      List<PostViewData> listOfPosts =
+          state.feed.posts.map((e) => PostViewData.fromPost(post: e)).toList();
       if (state.feed.posts.length < 10) {
         _pagingController.appendLastPage(listOfPosts);
       } else {
@@ -150,10 +151,10 @@ class _FeedScreenState extends State<FeedScreen> {
           builder: ((context, state) {
             if (state is UniversalFeedLoaded) {
               GetFeedResponse feedResponse = state.feed;
-              return PagedListView<int, PostUI>(
+              return PagedListView<int, PostViewData>(
                 pagingController: _pagingController,
                 scrollController: scrollController,
-                builderDelegate: PagedChildBuilderDelegate<PostUI>(
+                builderDelegate: PagedChildBuilderDelegate<PostViewData>(
                   noItemsFoundIndicatorBuilder: (context) => Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -252,16 +253,16 @@ class _FeedScreenState extends State<FeedScreen> {
                                       ..pageSize(10))
                                     .build(),
                               );
-                              item = PostUI.fromPost(
+                              item = PostViewData.fromPost(
                                   post: updatedPostDetails.post!);
-                              List<PostUI>? feedRoomItemList =
+                              List<PostViewData>? feedRoomItemList =
                                   _pagingController.itemList;
                               feedRoomItemList?[index] = item;
                               _pagingController.itemList = feedRoomItemList;
                               rebuildPostWidget.value =
                                   !rebuildPostWidget.value;
                             } else {
-                              List<PostUI>? feedRoomItemList =
+                              List<PostViewData>? feedRoomItemList =
                                   _pagingController.itemList;
                               feedRoomItemList!.removeAt(index);
                               _pagingController.itemList = feedRoomItemList;
