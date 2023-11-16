@@ -55,11 +55,6 @@ class SharePost {
             ..userName(request.userName))
           .build());
 
-      locator<LMFeedBloc>()
-          .lmRoutingBloc
-          .add(HandleSharedPostEvent(postId: postId));
-
-      // Comment the below code if navigation is being handled by LMRoutingBloc
       navigatorKey.currentState!.push(
         MaterialPageRoute(
           builder: (context) => PostDetailScreen(postId: postId),
