@@ -1071,7 +1071,13 @@ class _NewPostScreenState extends State<NewPostScreen> {
       );
       final config =
           await UserLocalPreference.instance.getCommunityConfigurations();
-      final sizeLimit = config.value!["max_image_size"]! / 1024;
+      final sizeLimit;
+      if (config.value != null && config.value!["max_image_size"] != null) {
+        sizeLimit = config.value!["max_image_size"]! / 1024;
+      } else {
+        sizeLimit = 100;
+      }
+
       if (list != null && list.files.isNotEmpty) {
         if (postMedia.length + list.files.length > 10) {
           toast(
