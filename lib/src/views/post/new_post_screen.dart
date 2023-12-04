@@ -1077,11 +1077,10 @@ class _NewPostScreenState extends State<NewPostScreen> {
         if (configResponse.success &&
             configResponse.communityConfigurations != null &&
             configResponse.communityConfigurations!.isNotEmpty) {
-          await UserLocalPreference.instance.storeCommunityConfigurations(
+          config = configResponse.communityConfigurations!.first;
+          UserLocalPreference.instance.storeCommunityConfigurations(
               configResponse.communityConfigurations!.first);
         }
-        config =
-          await UserLocalPreference.instance.getCommunityConfigurations();
       }
       final double sizeLimit;
       if (config.value != null && config.value!["max_image_size"] != null) {
