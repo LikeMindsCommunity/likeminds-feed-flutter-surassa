@@ -1071,7 +1071,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
       );
       CommunityConfigurations config =
           await UserLocalPreference.instance.getCommunityConfigurations();
-      if (config.value == null) {
+      if (config.value == null || config.value!["max_image_size"] == null) {
         final configResponse =
             await locator<LMFeedClient>().getCommunityConfigurations();
         if (configResponse.success &&

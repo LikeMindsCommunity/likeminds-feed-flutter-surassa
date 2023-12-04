@@ -97,7 +97,7 @@ class PostMediaPicker {
 
       CommunityConfigurations config =
           await UserLocalPreference.instance.getCommunityConfigurations();
-      if (config.value == null) {
+      if (config.value == null ||config.value!["max_video_size"] == null) {
         final configResponse =
             await locator<LMFeedClient>().getCommunityConfigurations();
         if (configResponse.success &&
@@ -109,8 +109,8 @@ class PostMediaPicker {
         }
       }
       final double sizeLimit;
-      if (config.value != null && config.value!["max_image_size"] != null) {
-        sizeLimit = config.value!["max_image_size"]! / 1024;
+      if (config.value != null && config.value!["max_video_size"] != null) {
+        sizeLimit = config.value!["max_video_size"]! / 1024;
       } else {
         sizeLimit = 100;
       }
