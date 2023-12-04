@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/widgets.dart';
+import 'package:likeminds_feed/likeminds_feed.dart';
+import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/local_preference/user_local_preference.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_utils.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
@@ -93,9 +95,21 @@ class PostMediaPicker {
         // allowedExtensions: videoExtentions,
       );
 
-      final config =
+      CommunityConfigurations config =
           await UserLocalPreference.instance.getCommunityConfigurations();
-      final sizeLimit;
+      if (config.value == null) {
+        final configResponse =
+            await locator<LMFeedClient>().getCommunityConfigurations();
+        if (configResponse.success &&
+            configResponse.communityConfigurations != null &&
+            configResponse.communityConfigurations!.isNotEmpty) {
+          await UserLocalPreference.instance.storeCommunityConfigurations(
+              configResponse.communityConfigurations!.first);
+        }
+        config =
+            await UserLocalPreference.instance.getCommunityConfigurations();
+      }
+      final double sizeLimit;
       if (config.value != null && config.value!["max_image_size"] != null) {
         sizeLimit = config.value!["max_image_size"]! / 1024;
       } else {
@@ -116,7 +130,7 @@ class PostMediaPicker {
             double fileSize = getFileSizeInDouble(fileBytes);
             if (fileSize > sizeLimit) {
               toast(
-                'Max file size allowed: ${sizeLimit}MB',
+                'Max file size allowed: ${sizeLimit.toStringAsFixed(2)}MB',
                 duration: Toast.LENGTH_LONG,
               );
             } else {

@@ -200,7 +200,16 @@ class _LMFeedState extends State<LMFeed> {
                     user = response.initiateUser?.user;
 
                     //Get community configurations
-                    locator<LMFeedClient>().getCommunityConfigurations();
+                    locator<LMFeedClient>()
+                        .getCommunityConfigurations()
+                        .then((value) => {
+                              if (value.success &&
+                                  value.communityConfigurations != null &&
+                                  value.communityConfigurations!.isNotEmpty)
+                                UserLocalPreference.instance
+                                    .storeCommunityConfigurations(
+                                        value.communityConfigurations!.first)
+                            });
 
                     LMNotificationHandler.instance.registerDevice(user!.id);
                     return FutureBuilder(
