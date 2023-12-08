@@ -130,6 +130,7 @@ class _CredScreenState extends State<CredScreen> {
               String postId = secondPathSegment[1];
               LMFeedDeepLinkHandler().parseDeepLink(
                   (deepLinkRequestBuilder
+                        ..path(LMFeedDeepLinkPath.OPEN_POST)
                         ..data({
                           "post_id": postId,
                         }))
@@ -138,7 +139,9 @@ class _CredScreenState extends State<CredScreen> {
             }
           } else if (uriLink.path == '/community/post/create') {
             LMFeedDeepLinkHandler().parseDeepLink(
-                deepLinkRequestBuilder.build(), rootNavigatorKey);
+                (deepLinkRequestBuilder..path(LMFeedDeepLinkPath.CREATE_POST))
+                    .build(),
+                rootNavigatorKey);
           }
         }
       }
@@ -168,6 +171,7 @@ class _CredScreenState extends State<CredScreen> {
                 String postId = secondPathSegment[1];
                 LMFeedDeepLinkHandler().parseDeepLink(
                     (deepLinkRequestBuilder
+                          ..path(LMFeedDeepLinkPath.OPEN_POST)
                           ..data({
                             "post_id": postId,
                           }))
@@ -176,7 +180,8 @@ class _CredScreenState extends State<CredScreen> {
               }
             } else if (uriLink.path == '/community/post/create') {
               LMFeedDeepLinkHandler().parseDeepLink(
-                deepLinkRequestBuilder.build(),
+                (deepLinkRequestBuilder..path(LMFeedDeepLinkPath.CREATE_POST))
+                    .build(),
                 rootNavigatorKey,
               );
             }
