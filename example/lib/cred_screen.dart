@@ -121,15 +121,15 @@ class _CredScreenState extends State<CredScreen> {
         // TODO: add user id and user name of logged in user
         final uriLink = Uri.parse(initialLink);
         if (uriLink.isAbsolute) {
+          final deepLinkRequestBuilder = LMFeedDeepLinkRequestBuilder()
+            ..userId(userId ?? "Test-User-Id")
+            ..userName("Test User");
           if (uriLink.path == '/community/post') {
             List secondPathSegment = initialLink.split('post_id=');
             if (secondPathSegment.length > 1 && secondPathSegment[1] != null) {
               String postId = secondPathSegment[1];
               LMFeedDeepLinkHandler().parseDeepLink(
-                  (LMFeedDeepLinkRequestBuilder()
-                        ..path(LMFeedDeepLinkPath.OPEN_POST)
-                        ..userId(userId ?? "Test-User-Id")
-                        ..userName("Test User")
+                  (deepLinkRequestBuilder
                         ..data({
                           "post_id": postId,
                         }))
@@ -138,12 +138,7 @@ class _CredScreenState extends State<CredScreen> {
             }
           } else if (uriLink.path == '/community/post/create') {
             LMFeedDeepLinkHandler().parseDeepLink(
-                (LMFeedDeepLinkRequestBuilder()
-                      ..path(LMFeedDeepLinkPath.CREATE_POST)
-                      ..userId(userId ?? "Test-User-Id")
-                      ..userName("Test User"))
-                    .build(),
-                rootNavigatorKey);
+                deepLinkRequestBuilder.build(), rootNavigatorKey);
           }
         }
       }
