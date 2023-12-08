@@ -189,15 +189,15 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                           titleText: LMTextView(
                             text: widget.user.name,
                             textStyle: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                           subText: LMTextView(
                             text:
                                 "@${widget.user.name.toLowerCase().split(" ").join("")}",
                             textStyle: const TextStyle(
-                              fontSize: 12,
+                              fontSize: 14,
                               fontWeight: FontWeight.w400,
                               color: LMThemeData.kGreyColor,
                             ),
@@ -205,7 +205,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                           createdAt: LMTextView(
                             text: timeago.format(widget.post.createdAt),
                             textStyle: const TextStyle(
-                              fontSize: 12,
+                              fontSize: 14,
                               fontWeight: FontWeight.w400,
                               color: LMThemeData.kGreyColor,
                             ),
@@ -371,6 +371,10 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                     onTagTap: (String userId) {
                       locator<LMFeedClient>().routeToProfile(userId);
                     },
+                    textStyle: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                   postDetails!.attachments != null &&
                           postDetails!.text.isNotEmpty
