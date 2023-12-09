@@ -78,10 +78,10 @@ class _MediaPreviewState extends State<MediaPreview> {
             LMTextView(
               text: user.name,
               textStyle: theme.textTheme.bodyMedium!.copyWith(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: LMThemeData.kWhiteColor,
-                  ),
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: LMThemeData.kWhiteColor,
+              ),
             ),
             ValueListenableBuilder(
               valueListenable: rebuildCurr,
@@ -90,9 +90,9 @@ class _MediaPreviewState extends State<MediaPreview> {
                   text:
                       '${currPosition + 1} of ${postAttachments.length} media • $formatted',
                   textStyle: theme.textTheme.bodyMedium!.copyWith(
-                        fontSize: 12,
-                        color: LMThemeData.kWhiteColor,
-                      ),
+                    fontSize: 12,
+                    color: LMThemeData.kWhiteColor,
+                  ),
                 );
               },
             ),
@@ -100,18 +100,14 @@ class _MediaPreviewState extends State<MediaPreview> {
         ),
       ),
       body: SafeArea(
-        bottom: true,
         top: false,
         child: Column(
           children: <Widget>[
             Expanded(
               child: CarouselSlider.builder(
                   options: CarouselOptions(
-                      clipBehavior: Clip.hardEdge,
-                      scrollDirection: Axis.horizontal,
                       initialPage: position ?? 0,
                       aspectRatio: 9 / 16,
-                      enlargeCenterPage: false,
                       enableInfiniteScroll: false,
                       enlargeFactor: 0.0,
                       viewportFraction: 1.0,
@@ -125,6 +121,8 @@ class _MediaPreviewState extends State<MediaPreview> {
                       return LMVideo(
                         videoUrl: postAttachments[index].attachmentMeta.url,
                         showControls: true,
+                        isMute: false,
+                        allowMuting: false,
                       );
                     }
 
@@ -133,7 +131,6 @@ class _MediaPreviewState extends State<MediaPreview> {
                       width: MediaQuery.of(context).size.width,
                       child: ExtendedImage.network(
                         postAttachments[index].attachmentMeta.url!,
-                        cache: true,
                         fit: BoxFit.contain,
                         mode: ExtendedImageMode.gesture,
                         initGestureConfigHandler: (state) {
@@ -143,11 +140,7 @@ class _MediaPreviewState extends State<MediaPreview> {
                             animationMinScale: 0.7,
                             maxScale: 3.0,
                             animationMaxScale: 3.5,
-                            speed: 1.0,
-                            inertialSpeed: 100.0,
-                            initialScale: 1.0,
                             inPageView: true,
-                            initialAlignment: InitialAlignment.center,
                           );
                         },
                       ),
