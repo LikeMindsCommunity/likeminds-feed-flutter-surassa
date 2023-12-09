@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -752,17 +755,26 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
               ),
               backgroundColor: LMThemeData.kBackgroundColor,
               appBar: AppBar(
-                leading: LMIconButton(
-                  icon: const LMIcon(
+                leading: LMTextButton(
+                  icon: LMIcon(
                     type: LMIconType.icon,
-                    icon: Icons.arrow_back_ios,
+                    icon: Platform.isIOS
+                        ? CupertinoIcons.chevron_back
+                        : Icons.arrow_back,
                     color: LMThemeData.kPrimaryColor,
                     size: 28,
                   ),
-                  onTap: (active) {
+                  onTap: () {
                     Navigator.pop(context);
                   },
-                  containerSize: 48,
+                  text: LMTextView(
+                    text: Platform.isIOS ? "Back" : "",
+                    textStyle: const TextStyle(
+                      color: LMThemeData.kPrimaryColor,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
                 ),
                 backgroundColor: LMThemeData.kWhiteColor,
                 title: const LMTextView(
@@ -773,6 +785,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                     color: LMThemeData.kHeadingColor,
                   ),
                 ),
+                centerTitle: Platform.isIOS ? true : false,
+                titleSpacing: 0,
                 elevation: 1,
               ),
               body: BlocConsumer<AllCommentsBloc, AllCommentsState>(
