@@ -18,15 +18,15 @@ dependencies:
   url_launcher:
   shared_preferences:
   simple_s3: 0.3.2
-  equatable: 
-  bloc: 
+  equatable:
+  bloc:
   flutter_bloc:
   firebase_core:
   firebase_messaging:
   overlay_support:
   lazy_load_scrollview:
   infinite_scroll_pagination:
-  device_info_plus:
+  device_info_plus: 9.1.0
   permission_handler:
   image_picker:
   file_picker:
@@ -39,6 +39,9 @@ dependencies:
   flutter_no_internet_widget: ^1.0.0+18-dev.1
   extended_image: 8.1.1
   http:
+  media_kit: ^1.1.7 # Primary package.
+  media_kit_video: ^1.1.8 # For video rendering.
+  media_kit_libs_video: ^1.0.1
 
   flutter_typeahead_mm:
     path: lib/packages/flutter_typeahead-4.3.7
@@ -49,8 +52,9 @@ dependencies:
   likeminds_feed_ui_fl:
     path: ../LikeMinds-Flutter-Feed-UI
 
-  likeminds_feed: 1.6.3
-   # path: ../LikeMinds-Flutter-Feed-SDK
+  likeminds_feed:
+    1.6.5
+    # path: ../LikeMinds-Flutter-Feed-SDK
 
 dependency_override:
   sliver_tools: 0.2.12
