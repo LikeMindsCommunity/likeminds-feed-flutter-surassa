@@ -470,6 +470,7 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                       onRefresh: refresh,
                       scrollController: _controller,
                       openTopicBottomSheet: showTopicSelectSheet,
+                      selectedTopics: selectedTopics,
                     );
                   } else if (state is UniversalFeedError) {
                     return FeedRoomErrorView(message: state.message);
@@ -514,6 +515,7 @@ class FeedRoomView extends StatefulWidget {
   final ScrollController scrollController;
   final VoidCallback onRefresh;
   final VoidCallback openTopicBottomSheet;
+  final List<TopicUI> selectedTopics;
 
   const FeedRoomView({
     super.key,
@@ -525,6 +527,7 @@ class FeedRoomView extends StatefulWidget {
     required this.onRefresh,
     required this.scrollController,
     required this.openTopicBottomSheet,
+    required this.selectedTopics,
   });
 
   @override
@@ -537,6 +540,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
   ScrollController? _controller;
   final ValueNotifier postSomethingNotifier = ValueNotifier(false);
   bool right = true;
+  List<TopicUI> selectedTopics = [];
 
   Widget getLoaderThumbnail(MediaModel? media) {
     if (media != null) {
@@ -592,6 +596,15 @@ class _FeedRoomViewState extends State<FeedRoomView> {
         eventProperties: const {'feed_type': "universal_feed"}));
     _controller = widget.scrollController..addListener(_scrollListener);
     right = checkPostCreationRights();
+    selectedTopics = widget.selectedTopics;
+  }
+
+  @override
+  void didUpdateWidget(covariant FeedRoomView oldWidget) {
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
+    right = checkPostCreationRights();
+    selectedTopics = widget.selectedTopics;
   }
 
   void _scrollListener() {
@@ -642,7 +655,16 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                 postUploading.value = false;
               }
               if (curr is NewPostUploaded) {
+                if (selectedTopics.isNotEmpty) {
+                  int index = selectedTopics.indexWhere(
+                      (element) => element.id == curr.postData.topics.first);
+                  if (index == -1) {
+                    return;
+                  }
+                }
+
                 PostViewData? item = curr.postData;
+
                 int length =
                     widget.feedRoomPagingController.itemList?.length ?? 0;
                 List<PostViewData> feedRoomItemList =
