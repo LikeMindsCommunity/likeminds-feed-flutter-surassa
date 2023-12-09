@@ -13,6 +13,7 @@ import 'package:likeminds_feed_ss_fl/src/views/post_detail_screen.dart';
 import 'package:likeminds_feed_ss_fl/src/widgets/delete_dialog.dart';
 import 'package:likeminds_feed_ss_fl/src/widgets/topic/topic_chip_widget.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:url_launcher/url_launcher.dart';
@@ -50,6 +51,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
   ValueNotifier<bool> rebuildLikeWidget = ValueNotifier(false);
   ValueNotifier<bool> rebuildPostWidget = ValueNotifier(false);
   User user = UserLocalPreference.instance.fetchUserData();
+  VideoController? videoController;
 
   @override
   void initState() {
@@ -122,24 +124,26 @@ class _SSPostWidgetState extends State<SSPostWidget> {
           },
           child: GestureDetector(
             behavior: HitTestBehavior.deferToChild,
-            onTap: () {
+            onTap: () async {
               // Navigate to LMPostPage using material route
               if (widget.isFeed) {
                 LMAnalytics.get().track(AnalyticsKeys.commentListOpen, {
                   'postId': widget.post.id,
                 });
+                await videoController?.player.pause();
                 locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
                         eventName: AnalyticsKeys.commentListOpen,
                         eventProperties: {
                           'postId': widget.post.id,
                         }));
-                Navigator.of(context).push(
+                await Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => PostDetailScreen(
                       postId: widget.post.id,
                     ),
                   ),
                 );
+                await videoController?.player.play();
               }
             },
             child: Padding(
@@ -435,8 +439,9 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                           : SizedBox(
                               child: GestureDetector(
                                 behavior: HitTestBehavior.opaque,
-                                onTap: () {
-                                  Navigator.push(
+                                onTap: () async {
+                                  await videoController?.player.pause();
+                                  await Navigator.push(
                                     context,
                                     MaterialPageRoute(builder: (context) {
                                       return MediaPreview(
@@ -447,10 +452,15 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                       );
                                     }),
                                   );
+                                  await videoController?.player.play();
                                 },
                                 child: LMPostMedia(
                                   attachments: postDetails!.attachments!,
                                   borderRadius: 16.0,
+                                  initialiseVideoController: (VideoController
+                                      initialisevideoController) {
+                                    videoController = initialisevideoController;
+                                  },
                                   backgroundColor: LMThemeData.kSecondary100,
                                   documentIcon: const LMIcon(
                                     type: LMIconType.svg,
