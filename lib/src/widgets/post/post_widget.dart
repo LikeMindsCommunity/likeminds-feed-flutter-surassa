@@ -85,7 +85,14 @@ class _SSPostWidgetState extends State<SSPostWidget> {
     return InheritedPostProvider(
       post: widget.post,
       child: Container(
-        color: LMThemeData.kWhiteColor,
+        decoration:
+            const BoxDecoration(color: LMThemeData.kWhiteColor, boxShadow: [
+          BoxShadow(
+            blurRadius: 5,
+            color: Colors.black12,
+            offset: Offset(1, 1),
+          ),
+        ]),
         child: BlocListener(
           bloc: lmPostBloc,
           listener: (context, state) {
@@ -195,7 +202,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                           ),
                           subText: LMTextView(
                             text:
-                                "@${widget.user.name.toLowerCase().split(" ").join("")}",
+                                "@${widget.user.name.toLowerCase().split(" ").join()}",
                             textStyle: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
@@ -386,7 +393,6 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                           ? LMLinkPreview(
                               attachment: postDetails!.attachments![0],
                               backgroundColor: LMThemeData.kSecondary100,
-                              showLinkUrl: false,
                               onTap: () {
                                 if (postDetails!.attachments!.first
                                         .attachmentMeta.url !=
@@ -399,7 +405,6 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                 }
                               },
                               border: Border.all(
-                                width: 1,
                                 color: LMThemeData.kSecondary100,
                               ),
                               title: LMTextView(
@@ -446,7 +451,6 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                 child: LMPostMedia(
                                   attachments: postDetails!.attachments!,
                                   borderRadius: 16.0,
-                                  showLinkUrl: false,
                                   backgroundColor: LMThemeData.kSecondary100,
                                   documentIcon: const LMIcon(
                                     type: LMIconType.svg,
