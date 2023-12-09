@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Integration App for UI + SDK package',
         debugShowCheckedModeBanner: false,
-        //navigatorKey: rootNavigatorKey,
+        navigatorKey: rootNavigatorKey,
         scaffoldMessengerKey: rootScaffoldMessengerKey,
         theme: ThemeData(
           useMaterial3: true,
@@ -121,10 +121,10 @@ class _CredScreenState extends State<CredScreen> {
         // TODO: add user id and user name of logged in user
         SharePost().parseDeepLink(
             (DeepLinkRequestBuilder()
-                  ..apiKey(SharePost.apiKey)
                   ..callback(LikeMindsCallback())
                   ..isGuest(false)
                   ..link(initialLink)
+                  // TODO: add user id and user name of logged in user
                   ..userName("Test User")
                   ..userUniqueId(userId ?? "Test-User-Id"))
                 .build(),
@@ -144,10 +144,10 @@ class _CredScreenState extends State<CredScreen> {
           // TODO: add user id and user name of logged in user
           SharePost().parseDeepLink(
               (DeepLinkRequestBuilder()
-                    ..apiKey(SharePost.apiKey)
                     ..isGuest(false)
                     ..callback(LikeMindsCallback())
                     ..link(link)
+                    // TODO: add user id and user name of logged in user
                     ..userName("Test User")
                     ..userUniqueId(userId ?? "Test-User-Id"))
                   .build(),

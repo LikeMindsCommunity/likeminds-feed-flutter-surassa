@@ -5,7 +5,7 @@ class DeepLinkRequest {
   String userName;
   String userUniqueId;
   bool isGuest;
-  String apiKey;
+  String? apiKey;
   int? feedRoomId;
   LMSDKCallback? callback;
 
@@ -13,7 +13,7 @@ class DeepLinkRequest {
     required this.isGuest,
     required this.userName,
     required this.userUniqueId,
-    required this.apiKey,
+    this.apiKey,
     required this.link,
     this.callback,
     this.feedRoomId,
@@ -51,7 +51,7 @@ class DeepLinkRequestBuilder {
       isGuest: _isGuest!,
       userName: _userName!,
       userUniqueId: _userUniqueId!,
-      apiKey: _apiKey!,
+      apiKey: _apiKey,
       callback: _callback,
       feedRoomId: _feedRoomId,
     );

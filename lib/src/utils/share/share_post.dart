@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
-import 'package:likeminds_feed_ss_fl/src/utils/credentials/credentials.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post_detail_screen.dart';
 import 'package:share_plus/share_plus.dart';
 part 'deep_link_request.dart';
 part 'deep_link_response.dart';
 
 class SharePost {
-  static String userId = prodFlag ? CredsProd.botId : CredsDev.botId;
-  static String apiKey = prodFlag ? CredsProd.apiKey : CredsDev.apiKey;
   // TODO: Add domain to your application
   String domain = 'https://www.suraasa.com';
   // fetches the domain given by client at time of initialization of Feed
@@ -50,7 +47,6 @@ class SharePost {
     if (secondPathSegment.length > 1 && secondPathSegment[1] != null) {
       String postId = secondPathSegment[1];
       await locator<LMFeedBloc>().initiateUser((InitiateUserRequestBuilder()
-            ..apiKey(request.apiKey)
             ..userId(request.userUniqueId)
             ..userName(request.userName))
           .build());

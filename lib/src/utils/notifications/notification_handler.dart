@@ -63,7 +63,7 @@ class LMNotificationHandler {
   /// and is needed to be handled, i.e. shown and routed to the appropriate screen
   Future<void> handleNotification(RemoteMessage message, bool show) async {
     debugPrint("--- Notification received in LEVEL 2 ---");
-    if (message.data["category"] == "Feed") {
+    if (message.data["category"].toString().toLowerCase() == "feed") {
       message.toMap().forEach((key, value) {
         debugPrint("$key: $value");
         if (key == "data") {
@@ -81,6 +81,8 @@ class LMNotificationHandler {
         // Second, extract the notification data and routes to the appropriate screen
         routeNotification(message);
       }
+    } else {
+      return;
     }
   }
 
@@ -90,7 +92,8 @@ class LMNotificationHandler {
 
     LMAnalytics.get().track(AnalyticsKeys.notificationClicked, {});
     locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
-        eventName: AnalyticsKeys.notificationClicked, eventProperties: {}));
+        eventName: AnalyticsKeys.notificationClicked,
+        eventProperties: const {}));
 
     // Only notifications with data payload are handled
     if (message.data.isNotEmpty) {
@@ -179,13 +182,12 @@ class LMNotificationHandler {
           color: Colors.grey.shade400,
           size: 18,
         ),
-        position: NotificationPosition.top,
         slideDismissDirection: DismissDirection.horizontal,
       );
       LMAnalytics.get().track(AnalyticsKeys.notificationReceived, {});
       locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
             eventName: AnalyticsKeys.notificationReceived,
-            eventProperties: {},
+            eventProperties: const {},
           ));
     }
   }
