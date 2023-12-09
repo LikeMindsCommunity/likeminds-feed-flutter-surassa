@@ -354,6 +354,23 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                 updateCommentInList(state);
                               }
                               if (state is EditReplySuccess) {}
+                              if (state is CommentReplyDeleted) {
+                                List<Reply>? commentItemList =
+                                    _pagingController.itemList;
+
+                                if (commentItemList != null) {
+                                  int index = commentItemList.indexWhere(
+                                      (element) =>
+                                          element.id == state.commentId);
+                                  if (index != -1) {
+                                    commentItemList[index].repliesCount =
+                                        commentItemList[index].repliesCount - 1;
+                                    rebuildPostWidget.value =
+                                        !rebuildPostWidget.value;
+                                  }
+                                }
+                                setState(() {});
+                              }
                             },
                             builder: (context, state) => Container(
                               decoration: BoxDecoration(

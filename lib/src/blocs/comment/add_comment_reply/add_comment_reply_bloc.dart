@@ -145,6 +145,7 @@ class AddCommentReplyBloc
             emit(
               CommentReplyDeleted(
                 replyId: event.deleteCommentReplyRequest.commentId,
+                commentId: event.parentCommentId,
               ),
             );
           } else {

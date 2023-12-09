@@ -84,8 +84,10 @@ class ReplyDeletionLoading extends AddCommentReplyState {}
 
 class CommentReplyDeleted extends AddCommentReplyState {
   final String replyId;
+  final String commentId;
   const CommentReplyDeleted({
     required this.replyId,
+    required this.commentId,
   });
 }
 

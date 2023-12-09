@@ -27,7 +27,9 @@ class DeleteComment extends AddCommentReplyEvent {
 
 class DeleteCommentReply extends AddCommentReplyEvent {
   final DeleteCommentRequest deleteCommentReplyRequest;
-  const DeleteCommentReply(this.deleteCommentReplyRequest);
+  final String parentCommentId;
+  const DeleteCommentReply(
+      this.deleteCommentReplyRequest, this.parentCommentId);
 }
 
 class EditComment extends AddCommentReplyEvent {

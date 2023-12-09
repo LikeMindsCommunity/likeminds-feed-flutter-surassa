@@ -133,14 +133,17 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                           Navigator.of(childContext).pop();
                           //Implement delete post analytics tracking
 
-                          addCommentReplyBloc!.add(DeleteCommentReply(
-                              (DeleteCommentRequestBuilder()
-                                    ..postId(postId)
-                                    ..commentId(element.id)
-                                    ..reason(reason.isEmpty
-                                        ? "Reason for deletion"
-                                        : reason))
-                                  .build()));
+                          addCommentReplyBloc!.add(
+                            DeleteCommentReply(
+                                (DeleteCommentRequestBuilder()
+                                      ..postId(postId)
+                                      ..commentId(element.id)
+                                      ..reason(reason.isEmpty
+                                          ? "Reason for deletion"
+                                          : reason))
+                                    .build(),
+                                element.parentComment?.id ?? ""),
+                          );
                         }, actionText: 'Delete'));
               } else if (value == commentEditId) {
                 addCommentReplyBloc!.add(EditReplyCancel());
