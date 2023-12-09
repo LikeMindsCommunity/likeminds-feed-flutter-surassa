@@ -52,6 +52,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       PagingController(firstPageKey: 1);
   PostViewData? postData;
   User currentUser = UserLocalPreference.instance.fetchUserData();
+  Map<String, bool> commentReplyShown = {};
 
   List<UserTag> userTags = [];
   String? result = '';
@@ -891,7 +892,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                             ),
                                             itemBuilder:
                                                 (context, item, index) {
-                                              bool replyShown = false;
                                               return Container(
                                                 decoration: const BoxDecoration(
                                                   color:
@@ -1157,7 +1157,14 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                   ? LMTextButton(
                                                                       onTap:
                                                                           () {
-                                                                        if (!replyShown) {
+                                                                        if (commentReplyShown.containsKey(item.id) &&
+                                                                            commentReplyShown[item.id] ==
+                                                                                true) {
+                                                                          commentReplyShown[item.id] =
+                                                                              false;
+                                                                          _commentRepliesBloc
+                                                                              .add(ClearCommentReplies());
+                                                                        } else {
                                                                           _commentRepliesBloc.add(GetCommentReplies(
                                                                               commentDetailRequest: (GetCommentRequestBuilder()
                                                                                     ..commentId(item.id)
@@ -1165,7 +1172,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                                     ..page(1))
                                                                                   .build(),
                                                                               forLoadMore: true));
-                                                                          replyShown =
+                                                                          commentReplyShown[item.id] =
                                                                               true;
                                                                         }
                                                                       },

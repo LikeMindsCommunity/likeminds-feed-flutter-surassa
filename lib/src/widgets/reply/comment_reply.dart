@@ -69,6 +69,13 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
     initialiseReply();
   }
 
+  @override
+  void didUpdateWidget(covariant CommentReplyWidget oldWidget) {
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
+    initialiseReply();
+  }
+
   int page = 1;
 
   List<Widget> mapRepliesToWidget(
@@ -208,7 +215,6 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
   Widget build(BuildContext context) {
     addCommentReplyBloc = BlocProvider.of<AddCommentReplyBloc>(context);
     _commentRepliesBloc = BlocProvider.of<CommentRepliesBloc>(context);
-    initialiseReply();
     return ValueListenableBuilder(
       valueListenable: rebuildReplyList,
       builder: (context, _, __) {
@@ -244,7 +250,9 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                     child: SizedBox(
                       height: 20,
                       width: 20,
-                      child: LMLoader(color: LMThemeData.kPrimaryColor, ),
+                      child: LMLoader(
+                        color: LMThemeData.kPrimaryColor,
+                      ),
                     ),
                   ),
                 );
@@ -303,8 +311,8 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                                 child: LMTextView(
                                   text: 'View more replies',
                                   textStyle: TextStyle(
-                                    color:
-                                      LMThemeData.suraasaTheme.colorScheme.primary,
+                                    color: LMThemeData
+                                        .suraasaTheme.colorScheme.primary,
                                     fontSize: 14,
                                   ),
                                 ),
@@ -486,7 +494,6 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                     padding: const EdgeInsets.only(
                       left: 48,
                       top: 8,
-                      bottom: 0,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
