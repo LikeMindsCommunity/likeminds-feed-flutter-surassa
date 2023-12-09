@@ -176,7 +176,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
             .track(AnalyticsKeys.videoAttachedToPost, {'video_count': 1});
         locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
             eventName: AnalyticsKeys.videoAttachedToPost,
-            eventProperties: {'video_count': 1}));
+            eventProperties: const {'video_count': 1}));
         isVideoAttached = true;
       } else {
         int imageCount = 0;
@@ -382,7 +382,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
           floatingActionButton: Padding(
             padding: const EdgeInsets.only(bottom: 64.0, left: 16.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Align(
                   alignment: Alignment.bottomLeft,
@@ -408,7 +407,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                   _controllerPopUp.showMenu();
                                 },
                                 child: AbsorbPointer(
-                                  absorbing: true,
                                   child: CustomPopupMenu(
                                     controller: _controllerPopUp,
                                     showArrow: false,
@@ -683,11 +681,11 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                                   .contain,
                                                               autoPlay: false,
                                                               showControls:
-                                                                  false,
+                                                                  true,
                                                               // width:
                                                               //     300,
                                                               borderRadius: 18,
-                                                              isMute: true,
+                                                              isMute: false,
                                                             ),
                                                           ),
                                                         )
