@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
@@ -33,17 +35,27 @@ class PostComposerHeader extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            LMTextButton(
-              text: LMTextView(
-                text: "Cancel",
-                textStyle: TextStyle(color: theme.colorScheme.primary),
-              ),
-              onTap: onPressedBack == null
-                  ? () {
-                      Navigator.pop(context);
-                    }
-                  : () => onPressedBack!(),
-            ),
+            Platform.isIOS
+                ? LMTextButton(
+                    text: LMTextView(
+                      text: "Cancel",
+                      textStyle: TextStyle(color: theme.colorScheme.primary),
+                    ),
+                    onTap: onPressedBack == null
+                        ? () {
+                            Navigator.pop(context);
+                          }
+                        : () => onPressedBack!(),
+                  )
+                : LMIconButton(
+                    icon: const LMIcon(
+                        type: LMIconType.icon, icon: Icons.arrow_back),
+                    onTap: onPressedBack == null
+                        ? (_) {
+                            Navigator.pop(context);
+                          }
+                        : (_) => onPressedBack!(),
+                  ),
             const Spacer(),
             title,
             const Spacer(),
