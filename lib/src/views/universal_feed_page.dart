@@ -238,7 +238,6 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
             padding: EdgeInsets.only(left: 4.0),
             child: LMTextView(
               text: "Feed",
-              textAlign: TextAlign.start,
               textStyle: TextStyle(
                 color: Colors.black,
                 fontSize: 27,
@@ -349,7 +348,6 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                                                           .first.name))
                                                     .build(),
                                                 borderRadius: 20.0,
-                                                showBorder: false,
                                                 backgroundColor:
                                                     theme.colorScheme.secondary,
                                                 textStyle: const TextStyle(
@@ -376,7 +374,6 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
                                                       ..name("Topics"))
                                                     .build(),
                                                 borderRadius: 20.0,
-                                                showBorder: false,
                                                 backgroundColor:
                                                     theme.colorScheme.secondary,
                                                 textStyle: const TextStyle(
@@ -714,11 +711,8 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           SizedBox(
                             width: 50,
@@ -746,11 +740,8 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           getLoaderThumbnail(state.thumbnailMedia),
                           LMThemeData.kHorizontalPaddingMedium,
@@ -937,7 +928,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                             }
                             return Column(
                               children: [
-                                const SizedBox(height: 8),
+                                const SizedBox(height: 16),
                                 SSPostWidget(
                                   post: item,
                                   topics: widget.feedResponse.topics,
