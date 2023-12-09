@@ -39,7 +39,11 @@ class PostComposerHeader extends StatelessWidget {
                 ? LMTextButton(
                     text: LMTextView(
                       text: "Cancel",
-                      textStyle: TextStyle(color: theme.colorScheme.primary),
+                      textStyle: TextStyle(
+                        color: theme.colorScheme.primary,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                     onTap: onPressedBack == null
                         ? () {
