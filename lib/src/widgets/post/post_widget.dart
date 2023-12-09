@@ -531,6 +531,15 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                   postDetails!.likeCount += 1;
                                   postDetails!.isLiked = true;
                                 }
+
+                                if (!widget.isFeed) {
+                                  lmPostBloc.add(
+                                    UpdatePost(
+                                      post: postDetails!,
+                                    ),
+                                  );
+                                }
+
                                 isLiked = !isLiked!;
                                 rebuildLikeWidget.value =
                                     !rebuildLikeWidget.value;
@@ -558,7 +567,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                   isLiked = !isLiked!;
                                   rebuildLikeWidget.value =
                                       !rebuildLikeWidget.value;
-                                } else {
+
                                   if (!widget.isFeed) {
                                     lmPostBloc.add(
                                       UpdatePost(
