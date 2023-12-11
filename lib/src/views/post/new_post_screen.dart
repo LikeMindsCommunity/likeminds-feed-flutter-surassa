@@ -22,6 +22,7 @@ import 'package:likeminds_feed_ss_fl/src/views/post/post_composer_header.dart';
 import 'package:likeminds_feed_ss_fl/src/widgets/topic/topic_popup.dart';
 
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -50,6 +51,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
   ValueNotifier<bool> rebuildTopicFloatingButton = ValueNotifier(false);
   final CustomPopupMenuController _controllerPopUp =
       CustomPopupMenuController();
+  VideoController? videoController;
 
   LMPostBloc? lmPostBloc;
   late final User user;
@@ -176,7 +178,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
             .track(AnalyticsKeys.videoAttachedToPost, {'video_count': 1});
         locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
             eventName: AnalyticsKeys.videoAttachedToPost,
-            eventProperties: {'video_count': 1}));
+            eventProperties: const {'video_count': 1}));
         isVideoAttached = true;
       } else {
         int imageCount = 0;
@@ -382,7 +384,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
           floatingActionButton: Padding(
             padding: const EdgeInsets.only(bottom: 64.0, left: 16.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Align(
                   alignment: Alignment.bottomLeft,
@@ -408,7 +409,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                   _controllerPopUp.showMenu();
                                 },
                                 child: AbsorbPointer(
-                                  absorbing: true,
                                   child: CustomPopupMenu(
                                     controller: _controllerPopUp,
                                     showArrow: false,
@@ -682,8 +682,12 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                                   postMedia[
                                                                           index]
                                                                       .mediaFile!,
-                                                              // height:
-                                                              //     180,
+                                                              initialiseVideoController:
+                                                                  (VideoController
+                                                                      p0) {
+                                                                videoController =
+                                                                    p0;
+                                                              },
                                                               boxFit: BoxFit
                                                                   .contain,
                                                               autoPlay: false,
@@ -783,6 +787,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                   TextStyle(color: theme.colorScheme.primary),
                             ),
                             onPressed: () {
+                              videoController?.player.pause();
                               Navigator.of(dialogContext).pop();
                               Navigator.of(context).pop();
                             },
@@ -830,6 +835,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                           user: user,
                         ),
                       );
+                      videoController?.player.pause();
                       Navigator.pop(context);
                     } else {
                       toast(
