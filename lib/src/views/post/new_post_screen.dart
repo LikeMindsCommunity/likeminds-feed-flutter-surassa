@@ -526,6 +526,11 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                     // maxLines: 200,
                                     decoration: const InputDecoration(
                                       border: InputBorder.none,
+                                      focusedBorder: InputBorder.none,
+                                      enabledBorder: InputBorder.none,
+                                      errorBorder: InputBorder.none,
+                                      disabledBorder: InputBorder.none,
+                                      focusedErrorBorder: InputBorder.none,
                                     ),
                                     onTagSelected: (tag) {
                                       userTags.add(tag);
