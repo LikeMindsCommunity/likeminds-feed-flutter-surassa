@@ -1074,13 +1074,24 @@ class _NewPostScreenState extends State<NewPostScreen> {
         allowMultiple: true,
         type: FileType.image,
       );
-      final config =
+      CommunityConfigurations config =
           await UserLocalPreference.instance.getCommunityConfigurations();
-      final sizeLimit;
+      if (config.value == null || config.value!["max_image_size"] == null) {
+        final configResponse =
+            await locator<LMFeedClient>().getCommunityConfigurations();
+        if (configResponse.success &&
+            configResponse.communityConfigurations != null &&
+            configResponse.communityConfigurations!.isNotEmpty) {
+          config = configResponse.communityConfigurations!.first;
+          UserLocalPreference.instance.storeCommunityConfigurations(
+              configResponse.communityConfigurations!.first);
+        }
+      }
+      final double sizeLimit;
       if (config.value != null && config.value!["max_image_size"] != null) {
         sizeLimit = config.value!["max_image_size"]! / 1024;
       } else {
-        sizeLimit = 100;
+        sizeLimit = 5;
       }
 
       if (list != null && list.files.isNotEmpty) {
@@ -1097,7 +1108,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
           double fileSize = getFileSizeInDouble(fileBytes);
           if (fileSize > sizeLimit) {
             toast(
-              'Max file size allowed: ${sizeLimit}MB',
+              'Max file size allowed: ${sizeLimit.toStringAsFixed(2)}MB',
               duration: Toast.LENGTH_LONG,
             );
             onUploadedMedia(false);
