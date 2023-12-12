@@ -137,6 +137,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                   ),
                 );
                 await _videoController?.player.play();
+                _videoController?.player.setVolume(100);
               }
             },
             child: Padding(
@@ -446,6 +447,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                     }),
                                   );
                                   await _videoController?.player.play();
+                                  _videoController?.player.setVolume(100);
                                 },
                                 child: LMPostMedia(
                                   attachments: postDetails!.attachments!,

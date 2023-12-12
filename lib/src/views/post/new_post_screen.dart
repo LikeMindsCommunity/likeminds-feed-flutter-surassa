@@ -27,6 +27,7 @@ import 'package:open_filex/open_filex.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:video_player/video_player.dart';
 
 class NewPostScreen extends StatefulWidget {
   final String? populatePostText;
@@ -892,9 +893,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                   'type': 'image'
                                                 },
                                               ));
-                                          final result =
-                                              await handlePermissions(
-                                                  context, 1);
+                                          final result = await PostMediaPicker
+                                              .handlePermissions(context, 1);
                                           if (result) {
                                             pickImages();
                                           }
@@ -925,10 +925,18 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                   'type': 'video'
                                                 },
                                               ));
+                                          bool isAllowed = await PostMediaPicker
+                                              .handlePermissions(context, 2);
+                                          if (!isAllowed) {
+                                            onUploadedMedia(false);
+                                            return;
+                                          }
                                           List<MediaModel>? pickedMediaFiles =
                                               await PostMediaPicker.pickVideos(
-                                                  postMedia.length);
-                                          if (pickedMediaFiles != null) {
+                                                  postMedia.length,
+                                                  onUploadedMedia);
+                                          if (pickedMediaFiles != null &&
+                                              pickedMediaFiles.isNotEmpty) {
                                             setPickedMediaFiles(
                                                 pickedMediaFiles);
                                             onUploadedMedia(true);
@@ -969,6 +977,12 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                   'type': 'file'
                                                 },
                                               ));
+                                          bool isAllowed = await PostMediaPicker
+                                              .handlePermissions(context, 3);
+                                          if (!isAllowed) {
+                                            onUploadedDocument(false);
+                                            return;
+                                          }
                                           List<MediaModel>? pickedMediaFiles =
                                               await PostMediaPicker
                                                   .pickDocuments(
@@ -1004,73 +1018,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
     _debounce = Timer(const Duration(milliseconds: 500), () {
       handleTextLinks(p0);
     });
-  }
-
-  Future<bool> handlePermissions(BuildContext context, int mediaType) async {
-    if (Platform.isAndroid) {
-      PermissionStatus permissionStatus;
-
-      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-      if (androidInfo.version.sdkInt >= 33) {
-        if (mediaType == 1) {
-          permissionStatus = await Permission.photos.status;
-          if (permissionStatus == PermissionStatus.granted) {
-            return true;
-          } else if (permissionStatus == PermissionStatus.denied) {
-            permissionStatus = await Permission.photos.request();
-            if (permissionStatus == PermissionStatus.permanentlyDenied) {
-              toast(
-                'Permissions denied, change app settings',
-                duration: Toast.LENGTH_LONG,
-              );
-              return false;
-            } else if (permissionStatus == PermissionStatus.granted) {
-              return true;
-            } else {
-              return false;
-            }
-          }
-        } else {
-          permissionStatus = await Permission.videos.status;
-          if (permissionStatus == PermissionStatus.granted) {
-            return true;
-          } else if (permissionStatus == PermissionStatus.denied) {
-            permissionStatus = await Permission.videos.request();
-            if (permissionStatus == PermissionStatus.permanentlyDenied) {
-              toast(
-                'Permissions denied, change app settings',
-                duration: Toast.LENGTH_LONG,
-              );
-              return false;
-            } else if (permissionStatus == PermissionStatus.granted) {
-              return true;
-            } else {
-              return false;
-            }
-          }
-        }
-      } else {
-        permissionStatus = await Permission.storage.status;
-        if (permissionStatus == PermissionStatus.granted) {
-          return true;
-        } else {
-          permissionStatus = await Permission.storage.request();
-          if (permissionStatus == PermissionStatus.granted) {
-            return true;
-          } else if (permissionStatus == PermissionStatus.denied) {
-            return false;
-          } else if (permissionStatus == PermissionStatus.permanentlyDenied) {
-            toast(
-              'Permissions denied, change app settings',
-              duration: Toast.LENGTH_LONG,
-            );
-            return false;
-          }
-        }
-      }
-    }
-    return true;
   }
 
   void pickImages() async {
@@ -1134,16 +1081,14 @@ class _NewPostScreenState extends State<NewPostScreen> {
         onUploadedMedia(false);
         return;
       }
-    } catch (e) {
+    } on Exception catch (err) {
       toast(
         'An error occurred',
         duration: Toast.LENGTH_LONG,
       );
       onUploadedMedia(false);
-      debugPrint(e.toString());
+      debugPrint(err.toString());
       return;
     }
   }
-
-  void pickVideos(BuildContext context) async {}
 }
