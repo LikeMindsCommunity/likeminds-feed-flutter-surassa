@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Integration App for UI + SDK package',
         debugShowCheckedModeBanner: false,
-        //navigatorKey: rootNavigatorKey,
+        navigatorKey: rootNavigatorKey,
         scaffoldMessengerKey: rootScaffoldMessengerKey,
         theme: ThemeData(
           useMaterial3: true,
@@ -119,16 +119,31 @@ class _CredScreenState extends State<CredScreen> {
 
         // TODO: add api key to the DeepLinkRequest
         // TODO: add user id and user name of logged in user
-        SharePost().parseDeepLink(
-            (DeepLinkRequestBuilder()
-                  ..apiKey(SharePost.apiKey)
-                  ..callback(LikeMindsCallback())
-                  ..isGuest(false)
-                  ..link(initialLink)
-                  ..userName("Test User")
-                  ..userUniqueId(userId ?? "Test-User-Id"))
-                .build(),
-            rootNavigatorKey);
+        final uriLink = Uri.parse(initialLink);
+        if (uriLink.isAbsolute) {
+          final deepLinkRequestBuilder = LMFeedDeepLinkRequestBuilder()
+            ..userId(userId ?? "Test-User-Id")
+            ..userName("Test User");
+          if (uriLink.path == '/community/post') {
+            List secondPathSegment = initialLink.split('post_id=');
+            if (secondPathSegment.length > 1 && secondPathSegment[1] != null) {
+              String postId = secondPathSegment[1];
+              LMFeedDeepLinkHandler().parseDeepLink(
+                  (deepLinkRequestBuilder
+                        ..path(LMFeedDeepLinkPath.OPEN_POST)
+                        ..data({
+                          "post_id": postId,
+                        }))
+                      .build(),
+                  rootNavigatorKey);
+            }
+          } else if (uriLink.path == '/community/post/create') {
+            LMFeedDeepLinkHandler().parseDeepLink(
+                (deepLinkRequestBuilder..path(LMFeedDeepLinkPath.CREATE_POST))
+                    .build(),
+                rootNavigatorKey);
+          }
+        }
       }
 
       // Subscribe to link changes
@@ -142,16 +157,35 @@ class _CredScreenState extends State<CredScreen> {
           debugPrint('Received deep link: $link');
           // TODO: add api key to the DeepLinkRequest
           // TODO: add user id and user name of logged in user
-          SharePost().parseDeepLink(
-              (DeepLinkRequestBuilder()
-                    ..apiKey(SharePost.apiKey)
-                    ..isGuest(false)
-                    ..callback(LikeMindsCallback())
-                    ..link(link)
-                    ..userName("Test User")
-                    ..userUniqueId(userId ?? "Test-User-Id"))
-                  .build(),
-              rootNavigatorKey);
+
+          final uriLink = Uri.parse(link);
+          if (uriLink.isAbsolute) {
+            final deepLinkRequestBuilder = LMFeedDeepLinkRequestBuilder()
+              ..userId(userId ?? "Test-User-Id")
+              ..userName("Test User");
+
+            if (uriLink.path == '/community/post') {
+              List secondPathSegment = link.split('post_id=');
+              if (secondPathSegment.length > 1 &&
+                  secondPathSegment[1] != null) {
+                String postId = secondPathSegment[1];
+                LMFeedDeepLinkHandler().parseDeepLink(
+                    (deepLinkRequestBuilder
+                          ..path(LMFeedDeepLinkPath.OPEN_POST)
+                          ..data({
+                            "post_id": postId,
+                          }))
+                        .build(),
+                    rootNavigatorKey);
+              }
+            } else if (uriLink.path == '/community/post/create') {
+              LMFeedDeepLinkHandler().parseDeepLink(
+                (deepLinkRequestBuilder..path(LMFeedDeepLinkPath.CREATE_POST))
+                    .build(),
+                rootNavigatorKey,
+              );
+            }
+          }
         }
       }, onError: (err) {
         // Handle exception by warning the user their action did not succeed
