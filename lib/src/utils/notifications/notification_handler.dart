@@ -61,7 +61,8 @@ class LMNotificationHandler {
   /// Handle the notification when it is received
   /// This is called from the client side when notification [message] is received
   /// and is needed to be handled, i.e. shown and routed to the appropriate screen
-  Future<void> handleNotification(RemoteMessage message, bool show) async {
+  Future<void> handleNotification(RemoteMessage message, bool show,
+      GlobalKey<NavigatorState> navigatorKey) async {
     debugPrint("--- Notification received in LEVEL 2 ---");
     if (message.data["category"] == "Feed") {
       message.toMap().forEach((key, value) {
@@ -76,21 +77,23 @@ class LMNotificationHandler {
       // First, check if the message contains a data payload.
       if (show && message.data.isNotEmpty) {
         //TODO: Add LM check for showing LM notifications
-        showNotification(message);
+        showNotification(message, navigatorKey);
       } else if (message.data.isNotEmpty) {
         // Second, extract the notification data and routes to the appropriate screen
-        routeNotification(message);
+        routeNotification(message, navigatorKey);
       }
     }
   }
 
-  void routeNotification(RemoteMessage message) async {
+  void routeNotification(
+      RemoteMessage message, GlobalKey<NavigatorState> navigatorKey) async {
     Map<String, String> queryParams = {};
     String host = "";
 
     LMAnalytics.get().track(AnalyticsKeys.notificationClicked, {});
     locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
-        eventName: AnalyticsKeys.notificationClicked, eventProperties: {}));
+        eventName: AnalyticsKeys.notificationClicked,
+        eventProperties: const {}));
 
     // Only notifications with data payload are handled
     if (message.data.isNotEmpty) {
@@ -127,7 +130,7 @@ class LMNotificationHandler {
             },
           ));
 
-      locator<NavigationService>().navigateTo(MaterialPageRoute(
+      navigatorKey.currentState!.push(MaterialPageRoute(
         builder: (context) {
           return PostDetailScreen(postId: postId);
         },
@@ -138,12 +141,13 @@ class LMNotificationHandler {
   /// Show a simple notification using overlay package
   /// This is a dismissable notification shown on the top of the screen
   /// It is shown when the notification is received in foreground
-  void showNotification(RemoteMessage message) {
+  void showNotification(
+      RemoteMessage message, GlobalKey<NavigatorState> navigatorKey) {
     if (message.data.isNotEmpty) {
       showSimpleNotification(
         GestureDetector(
           onTap: () {
-            routeNotification(message);
+            routeNotification(message, navigatorKey);
           },
           behavior: HitTestBehavior.opaque,
           child: Column(
@@ -179,13 +183,12 @@ class LMNotificationHandler {
           color: Colors.grey.shade400,
           size: 18,
         ),
-        position: NotificationPosition.top,
         slideDismissDirection: DismissDirection.horizontal,
       );
       LMAnalytics.get().track(AnalyticsKeys.notificationReceived, {});
       locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
             eventName: AnalyticsKeys.notificationReceived,
-            eventProperties: {},
+            eventProperties: const {},
           ));
     }
   }

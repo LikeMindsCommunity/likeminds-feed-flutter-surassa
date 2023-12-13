@@ -30,7 +30,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                    android:scheme="suraasalearn"
+                    android:scheme="http"
                     android:host="www.suraasa.com" />
                 <data
                     android:scheme="https"

@@ -21,7 +21,8 @@ const debug = bool.fromEnvironment('DEBUG');
 /// Make sure to call [setupNotifications] before this function
 Future<void> _handleNotification(RemoteMessage message) async {
   debugPrint("--- Notification received in LEVEL 1 ---");
-  await LMNotificationHandler.instance.handleNotification(message, true);
+  await LMNotificationHandler.instance
+      .handleNotification(message, true, rootNavigatorKey);
 }
 
 void main() async {
@@ -64,13 +65,15 @@ Future<void> setupNotifications() async {
   });
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
     debugPrint("---The app is opened from a notification---");
-    await LMNotificationHandler.instance.handleNotification(message, false);
+    await LMNotificationHandler.instance
+        .handleNotification(message, false, rootNavigatorKey);
   });
   FirebaseMessaging.instance.getInitialMessage().then(
     (RemoteMessage? message) async {
       if (message != null) {
         debugPrint("---The terminated app is opened from a notification---");
-        await LMNotificationHandler.instance.handleNotification(message, false);
+        await LMNotificationHandler.instance
+            .handleNotification(message, false, rootNavigatorKey);
       }
     },
   );

@@ -32,16 +32,8 @@ class SharePost {
     Share.share(postUrl);
   }
 
-  String getFirstPathSegment(String url) {
-    final uri = Uri.parse(url);
-    final pathSegments = uri.pathSegments;
-    if (pathSegments.isNotEmpty) {
-      return pathSegments.first;
-    } else {
-      return '';
-    }
-  }
-
+  @Deprecated(
+      "Use LMFeedDeepLinkHandler().parseDeepLink( LMFeedDeepLinkRequest request, GlobalKey<NavigatorState> navigatorKey,) instead")
   Future<DeepLinkResponse> handlePostDeepLink(
     DeepLinkRequest request,
     GlobalKey<NavigatorState> navigatorKey,

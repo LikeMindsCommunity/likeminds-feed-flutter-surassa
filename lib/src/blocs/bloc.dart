@@ -1,10 +1,6 @@
 // Events
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
-import 'package:likeminds_feed_ss_fl/src/blocs/analytics_bloc/analytics_bloc.dart';
-import 'package:likeminds_feed_ss_fl/src/blocs/post_bloc/post_bloc.dart';
-import 'package:likeminds_feed_ss_fl/src/blocs/profile_bloc/profile_bloc.dart';
-import 'package:likeminds_feed_ss_fl/src/blocs/routing_bloc/routing_bloc.dart';
 
 export 'package:likeminds_feed_ss_fl/src/blocs/analytics_bloc/analytics_bloc.dart';
 export 'package:likeminds_feed_ss_fl/src/blocs/post_bloc/post_bloc.dart';
@@ -47,6 +43,19 @@ class LMFeedBloc {
     if (response.success) {
       UserLocalPreference.instance
           .storeMemberRightsFromMemberStateResponse(response);
+    }
+    return response;
+  }
+
+  Future<GetCommunityConfigurationsResponse>
+      getCommunityConfigurations() async {
+    GetCommunityConfigurationsResponse response =
+        await locator<LMFeedClient>().getCommunityConfigurations();
+    if (response.success &&
+        response.communityConfigurations != null &&
+        response.communityConfigurations!.isNotEmpty) {
+      UserLocalPreference.instance.storeCommunityConfigurations(
+          response.communityConfigurations!.first);
     }
     return response;
   }
