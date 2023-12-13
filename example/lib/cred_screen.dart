@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
       ),
       child: MaterialApp(
         title: 'Integration App for UI + SDK package',
-        debugShowCheckedModeBanner: false,
+        debugShowCheckedModeBanner: debug ? true : false,
         navigatorKey: rootNavigatorKey,
         scaffoldMessengerKey: rootScaffoldMessengerKey,
         theme: ThemeData(

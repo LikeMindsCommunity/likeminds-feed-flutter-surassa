@@ -668,7 +668,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                       ? ClipRRect(
                                                           borderRadius:
                                                               const BorderRadius
-                                                                  .all(Radius
+                                                                      .all(
+                                                                  Radius
                                                                       .circular(
                                                                           12)),
                                                           child: Container(
@@ -701,7 +702,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                       : ClipRRect(
                                                           borderRadius:
                                                               const BorderRadius
-                                                                  .all(Radius
+                                                                      .all(
+                                                                  Radius
                                                                       .circular(
                                                                           12)),
                                                           child: Container(
@@ -1028,8 +1030,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
             configResponse.communityConfigurations != null &&
             configResponse.communityConfigurations!.isNotEmpty) {
           config = configResponse.communityConfigurations!.first;
-          UserLocalPreference.instance.storeCommunityConfigurations(
-              configResponse.communityConfigurations!.first);
         }
       }
       final double sizeLimit;

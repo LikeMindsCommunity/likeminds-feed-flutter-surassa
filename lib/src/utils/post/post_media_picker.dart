@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
-import 'package:likeminds_feed_ss_fl/src/utils/local_preference/user_local_preference.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_utils.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -107,7 +106,6 @@ class PostMediaPicker {
       List<MediaModel> videoFiles = [];
       final FilePickerResult? pickedFiles = await FilePicker.platform.pickFiles(
         type: FileType.video,
-        // allowedExtensions: videoExtentions,
       );
 
       if (pickedFiles == null || pickedFiles.files.isEmpty) {
@@ -119,13 +117,11 @@ class PostMediaPicker {
           await UserLocalPreference.instance.getCommunityConfigurations();
       if (config.value == null || config.value!["max_video_size"] == null) {
         final configResponse =
-            await locator<LMFeedClient>().getCommunityConfigurations();
+            await locator<LMFeedBloc>().getCommunityConfigurations();
         if (configResponse.success &&
             configResponse.communityConfigurations != null &&
             configResponse.communityConfigurations!.isNotEmpty) {
           config = configResponse.communityConfigurations!.first;
-          UserLocalPreference.instance.storeCommunityConfigurations(
-              configResponse.communityConfigurations!.first);
         }
       }
       final double sizeLimit;
