@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,9 +21,9 @@ import 'package:likeminds_feed_ss_fl/src/views/post/post_composer_header.dart';
 import 'package:likeminds_feed_ss_fl/src/widgets/topic/topic_popup.dart';
 
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:overlay_support/overlay_support.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class NewPostScreen extends StatefulWidget {
@@ -50,6 +49,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
   ValueNotifier<bool> rebuildTopicFloatingButton = ValueNotifier(false);
   final CustomPopupMenuController _controllerPopUp =
       CustomPopupMenuController();
+  VideoController? videoController;
 
   LMPostBloc? lmPostBloc;
   late final User user;
@@ -176,7 +176,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
             .track(AnalyticsKeys.videoAttachedToPost, {'video_count': 1});
         locator<LMFeedBloc>().lmAnalyticsBloc.add(FireAnalyticEvent(
             eventName: AnalyticsKeys.videoAttachedToPost,
-            eventProperties: {'video_count': 1}));
+            eventProperties: const {'video_count': 1}));
         isVideoAttached = true;
       } else {
         int imageCount = 0;
@@ -382,7 +382,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
           floatingActionButton: Padding(
             padding: const EdgeInsets.only(bottom: 64.0, left: 16.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Align(
                   alignment: Alignment.bottomLeft,
@@ -408,7 +407,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                   _controllerPopUp.showMenu();
                                 },
                                 child: AbsorbPointer(
-                                  absorbing: true,
                                   child: CustomPopupMenu(
                                     controller: _controllerPopUp,
                                     showArrow: false,
@@ -670,7 +668,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                       ? ClipRRect(
                                                           borderRadius:
                                                               const BorderRadius
-                                                                  .all(Radius
+                                                                      .all(
+                                                                  Radius
                                                                       .circular(
                                                                           12)),
                                                           child: Container(
@@ -682,8 +681,12 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                                   postMedia[
                                                                           index]
                                                                       .mediaFile!,
-                                                              // height:
-                                                              //     180,
+                                                              initialiseVideoController:
+                                                                  (VideoController
+                                                                      p0) {
+                                                                videoController =
+                                                                    p0;
+                                                              },
                                                               boxFit: BoxFit
                                                                   .contain,
                                                               autoPlay: false,
@@ -699,7 +702,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                       : ClipRRect(
                                                           borderRadius:
                                                               const BorderRadius
-                                                                  .all(Radius
+                                                                      .all(
+                                                                  Radius
                                                                       .circular(
                                                                           12)),
                                                           child: Container(
@@ -783,6 +787,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                   TextStyle(color: theme.colorScheme.primary),
                             ),
                             onPressed: () {
+                              videoController?.player.pause();
                               Navigator.of(dialogContext).pop();
                               Navigator.of(context).pop();
                             },
@@ -830,6 +835,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                           user: user,
                         ),
                       );
+                      videoController?.player.pause();
                       Navigator.pop(context);
                     } else {
                       toast(
@@ -886,9 +892,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                   'type': 'image'
                                                 },
                                               ));
-                                          final result =
-                                              await handlePermissions(
-                                                  context, 1);
+                                          final result = await PostMediaPicker
+                                              .handlePermissions(context, 1);
                                           if (result) {
                                             pickImages();
                                           }
@@ -919,10 +924,18 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                   'type': 'video'
                                                 },
                                               ));
+                                          bool isAllowed = await PostMediaPicker
+                                              .handlePermissions(context, 2);
+                                          if (!isAllowed) {
+                                            onUploadedMedia(false);
+                                            return;
+                                          }
                                           List<MediaModel>? pickedMediaFiles =
                                               await PostMediaPicker.pickVideos(
-                                                  postMedia.length);
-                                          if (pickedMediaFiles != null) {
+                                                  postMedia.length,
+                                                  onUploadedMedia);
+                                          if (pickedMediaFiles != null &&
+                                              pickedMediaFiles.isNotEmpty) {
                                             setPickedMediaFiles(
                                                 pickedMediaFiles);
                                             onUploadedMedia(true);
@@ -963,6 +976,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                   'type': 'file'
                                                 },
                                               ));
+
                                           List<MediaModel>? pickedMediaFiles =
                                               await PostMediaPicker
                                                   .pickDocuments(
@@ -1000,73 +1014,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
     });
   }
 
-  Future<bool> handlePermissions(BuildContext context, int mediaType) async {
-    if (Platform.isAndroid) {
-      PermissionStatus permissionStatus;
-
-      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-      if (androidInfo.version.sdkInt >= 33) {
-        if (mediaType == 1) {
-          permissionStatus = await Permission.photos.status;
-          if (permissionStatus == PermissionStatus.granted) {
-            return true;
-          } else if (permissionStatus == PermissionStatus.denied) {
-            permissionStatus = await Permission.photos.request();
-            if (permissionStatus == PermissionStatus.permanentlyDenied) {
-              toast(
-                'Permissions denied, change app settings',
-                duration: Toast.LENGTH_LONG,
-              );
-              return false;
-            } else if (permissionStatus == PermissionStatus.granted) {
-              return true;
-            } else {
-              return false;
-            }
-          }
-        } else {
-          permissionStatus = await Permission.videos.status;
-          if (permissionStatus == PermissionStatus.granted) {
-            return true;
-          } else if (permissionStatus == PermissionStatus.denied) {
-            permissionStatus = await Permission.videos.request();
-            if (permissionStatus == PermissionStatus.permanentlyDenied) {
-              toast(
-                'Permissions denied, change app settings',
-                duration: Toast.LENGTH_LONG,
-              );
-              return false;
-            } else if (permissionStatus == PermissionStatus.granted) {
-              return true;
-            } else {
-              return false;
-            }
-          }
-        }
-      } else {
-        permissionStatus = await Permission.storage.status;
-        if (permissionStatus == PermissionStatus.granted) {
-          return true;
-        } else {
-          permissionStatus = await Permission.storage.request();
-          if (permissionStatus == PermissionStatus.granted) {
-            return true;
-          } else if (permissionStatus == PermissionStatus.denied) {
-            return false;
-          } else if (permissionStatus == PermissionStatus.permanentlyDenied) {
-            toast(
-              'Permissions denied, change app settings',
-              duration: Toast.LENGTH_LONG,
-            );
-            return false;
-          }
-        }
-      }
-    }
-    return true;
-  }
-
   void pickImages() async {
     onUploading();
     try {
@@ -1083,8 +1030,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
             configResponse.communityConfigurations != null &&
             configResponse.communityConfigurations!.isNotEmpty) {
           config = configResponse.communityConfigurations!.first;
-          UserLocalPreference.instance.storeCommunityConfigurations(
-              configResponse.communityConfigurations!.first);
         }
       }
       final double sizeLimit;
@@ -1128,16 +1073,14 @@ class _NewPostScreenState extends State<NewPostScreen> {
         onUploadedMedia(false);
         return;
       }
-    } catch (e) {
+    } on Exception catch (err) {
       toast(
         'An error occurred',
         duration: Toast.LENGTH_LONG,
       );
       onUploadedMedia(false);
-      debugPrint(e.toString());
+      debugPrint(err.toString());
       return;
     }
   }
-
-  void pickVideos(BuildContext context) async {}
 }

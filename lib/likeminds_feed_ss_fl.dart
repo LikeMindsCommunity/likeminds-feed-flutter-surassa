@@ -6,7 +6,7 @@ import 'package:flutter_no_internet_widget/flutter_no_internet_widget.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/network_handling.dart';
-import 'package:likeminds_feed_ss_fl/src/utils/utils.dart';
+import 'package:likeminds_feed_ss_fl/src/utils/notifications/notification_handler.dart';
 import 'package:likeminds_feed_ss_fl/src/views/universal_feed_page.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 
@@ -97,6 +97,7 @@ class _LMFeedState extends State<LMFeed> {
   late final bool isProd;
   late final NetworkConnectivity networkConnectivity;
   Future<InitiateUserResponse>? initiateUser;
+  Future<MemberStateResponse>? memberState;
   ValueNotifier<bool> rebuildOnConnectivityChange = ValueNotifier<bool>(false);
 
   @override
@@ -117,20 +118,39 @@ class _LMFeedState extends State<LMFeed> {
     firebase();
   }
 
+  void callSetupFunctions(InitiateUserResponse response) {
+    locator<LMFeedBloc>().getCommunityConfigurations();
+    memberState = locator<LMFeedBloc>().getMemberState();
+    LMNotificationHandler.instance
+        .registerDevice(response.initiateUser!.user.id);
+  }
+
   void callInitiateUser() {
     if (imageUrl == null || imageUrl!.isEmpty) {
-      initiateUser =
-          locator<LMFeedBloc>().initiateUser((InitiateUserRequestBuilder()
+      initiateUser = locator<LMFeedBloc>()
+          .initiateUser((InitiateUserRequestBuilder()
                 ..userId(userId)
                 ..userName(userName))
-              .build());
+              .build())
+          .then((value) {
+        if (value.success) {
+          callSetupFunctions(value);
+        }
+        return value;
+      });
     } else {
-      initiateUser =
-          locator<LMFeedBloc>().initiateUser((InitiateUserRequestBuilder()
+      initiateUser = locator<LMFeedBloc>()
+          .initiateUser((InitiateUserRequestBuilder()
                 ..userId(userId)
                 ..userName(userName)
                 ..imageUrl(imageUrl!))
-              .build());
+              .build())
+          .then((value) {
+        if (value.success) {
+          callSetupFunctions(value);
+        }
+        return value;
+      });
     }
   }
 
@@ -200,21 +220,8 @@ class _LMFeedState extends State<LMFeed> {
                   if (response.success) {
                     user = response.initiateUser?.user;
 
-                    //Get community configurations
-                    locator<LMFeedClient>()
-                        .getCommunityConfigurations()
-                        .then((value) => {
-                              if (value.success &&
-                                  value.communityConfigurations != null &&
-                                  value.communityConfigurations!.isNotEmpty)
-                                UserLocalPreference.instance
-                                    .storeCommunityConfigurations(
-                                        value.communityConfigurations!.first)
-                            });
-
-                    LMNotificationHandler.instance.registerDevice(user!.id);
                     return FutureBuilder(
-                      future: locator<LMFeedBloc>().getMemberState(),
+                      future: memberState,
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (snapshot.hasData) {
                           return UniversalFeedScreen(

@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
       ),
       child: MaterialApp(
         title: 'Integration App for UI + SDK package',
-        debugShowCheckedModeBanner: false,
+        debugShowCheckedModeBanner: debug ? true : false,
         navigatorKey: rootNavigatorKey,
         scaffoldMessengerKey: rootScaffoldMessengerKey,
         theme: ThemeData(
@@ -148,7 +148,6 @@ class _CredScreenState extends State<CredScreen> {
 
       // Subscribe to link changes
       _streamSubscription = linkStream.listen((String? link) async {
-        initialURILinkHandled = true;
         if (link != null) {
           initialURILinkHandled = true;
           // Handle the deep link

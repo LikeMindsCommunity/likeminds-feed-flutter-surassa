@@ -13,6 +13,7 @@ import 'package:likeminds_feed_ss_fl/src/views/post_detail_screen.dart';
 import 'package:likeminds_feed_ss_fl/src/widgets/delete_dialog.dart';
 import 'package:likeminds_feed_ss_fl/src/widgets/topic/topic_chip_widget.dart';
 import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:url_launcher/url_launcher.dart';
@@ -50,6 +51,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
   ValueNotifier<bool> rebuildLikeWidget = ValueNotifier(false);
   ValueNotifier<bool> rebuildPostWidget = ValueNotifier(false);
   User user = UserLocalPreference.instance.fetchUserData();
+  VideoController? _videoController;
 
   @override
   void initState() {
@@ -115,7 +117,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
           },
           child: GestureDetector(
             behavior: HitTestBehavior.deferToChild,
-            onTap: () {
+            onTap: () async {
               // Navigate to LMPostPage using material route
               if (widget.isFeed) {
                 LMAnalytics.get().track(AnalyticsKeys.commentListOpen, {
@@ -126,13 +128,16 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                         eventProperties: {
                           'postId': widget.post.id,
                         }));
-                Navigator.of(context).push(
+                await _videoController?.player.pause();
+                await Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => PostDetailScreen(
                       postId: widget.post.id,
                     ),
                   ),
                 );
+                await _videoController?.player.play();
+                _videoController?.player.setVolume(100);
               }
             },
             child: Padding(
@@ -195,7 +200,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                           ),
                           subText: LMTextView(
                             text:
-                                "@${widget.user.name.toLowerCase().split(" ").join("")}",
+                                "@${widget.user.name.toLowerCase().split(" ").join()}",
                             textStyle: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
@@ -386,7 +391,6 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                           ? LMLinkPreview(
                               attachment: postDetails!.attachments![0],
                               backgroundColor: LMThemeData.kSecondary100,
-                              showLinkUrl: false,
                               onTap: () {
                                 if (postDetails!.attachments!.first
                                         .attachmentMeta.url !=
@@ -399,7 +403,6 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                 }
                               },
                               border: Border.all(
-                                width: 1,
                                 color: LMThemeData.kSecondary100,
                               ),
                               title: LMTextView(
@@ -430,8 +433,9 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                           : SizedBox(
                               child: GestureDetector(
                                 behavior: HitTestBehavior.opaque,
-                                onTap: () {
-                                  Navigator.push(
+                                onTap: () async {
+                                  await _videoController?.player.pause();
+                                  await Navigator.push(
                                     context,
                                     MaterialPageRoute(builder: (context) {
                                       return MediaPreview(
@@ -442,11 +446,12 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                       );
                                     }),
                                   );
+                                  await _videoController?.player.play();
+                                  _videoController?.player.setVolume(100);
                                 },
                                 child: LMPostMedia(
                                   attachments: postDetails!.attachments!,
                                   borderRadius: 16.0,
-                                  showLinkUrl: false,
                                   backgroundColor: LMThemeData.kSecondary100,
                                   documentIcon: const LMIcon(
                                     type: LMIconType.svg,
@@ -456,6 +461,11 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                     fit: BoxFit.cover,
                                     color: Colors.red,
                                   ),
+                                  initialiseVideoController: (VideoController
+                                      initialiseVideoController) {
+                                    _videoController =
+                                        initialiseVideoController;
+                                  },
                                 ),
                               ),
                             )

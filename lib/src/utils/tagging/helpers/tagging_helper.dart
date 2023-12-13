@@ -222,7 +222,8 @@ String getFirstValidLinkFromString(String text) {
       validLink = validLinks.first;
     }
     return validLink;
-  } catch (e) {
+  } on Exception catch (err) {
+    debugPrint(err.toString());
     return '';
   }
 }
