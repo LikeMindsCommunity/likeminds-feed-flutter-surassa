@@ -234,13 +234,16 @@ class _UniversalFeedScreenState extends State<UniversalFeedScreen> {
           onTap: () {
             _scrollToTop();
           },
-          child: const LMTextView(
-            text: "Feed",
-            textAlign: TextAlign.start,
-            textStyle: TextStyle(
-              color: Colors.black,
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
+          child: const Padding(
+            padding: EdgeInsets.only(left: 4.0),
+            child: LMTextView(
+              text: "Feed",
+              textAlign: TextAlign.start,
+              textStyle: TextStyle(
+                color: Colors.black,
+                fontSize: 27,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ),
