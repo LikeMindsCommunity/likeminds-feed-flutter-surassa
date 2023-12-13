@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
@@ -177,7 +178,7 @@ class PostMediaPicker {
         onUploadedMedia(false);
         return null;
       }
-    } catch (e) {
+    } on Exception catch (e) {
       toast(
         'An error occurred',
         duration: Toast.LENGTH_LONG,

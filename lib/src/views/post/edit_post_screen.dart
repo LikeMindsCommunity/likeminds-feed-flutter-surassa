@@ -83,7 +83,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
         documentUrl: attachments![index].attachmentMeta.url,
         onTap: () {
           Uri fileUrl = Uri.parse(attachments![index].attachmentMeta.url!);
-          launchUrl(fileUrl, mode: LaunchMode.platformDefault);
+          launchUrl(fileUrl);
         },
       ),
     );
@@ -234,7 +234,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
             child: Scaffold(
               resizeToAvoidBottomInset: false,
               backgroundColor: LMThemeData.kWhiteColor,
-              body: FutureBuilder(
+              body: FutureBuilder<GetPostResponse>(
                   future: postFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -338,7 +338,6 @@ class _EditPostScreenState extends State<EditPostScreen> {
             vertical: 6.0,
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(

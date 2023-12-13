@@ -738,7 +738,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
                           const Text('Posting')
                         ],
                       ),
-                      StreamBuilder(
+                      StreamBuilder<num>(
                           initialData: 0,
                           stream: state.progress,
                           builder: (context, snapshot) {

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,9 +24,7 @@ import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:overlay_support/overlay_support.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:video_player/video_player.dart';
 
 class NewPostScreen extends StatefulWidget {
   final String? populatePostText;
@@ -977,12 +974,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                   'type': 'file'
                                                 },
                                               ));
-                                          bool isAllowed = await PostMediaPicker
-                                              .handlePermissions(context, 3);
-                                          if (!isAllowed) {
-                                            onUploadedDocument(false);
-                                            return;
-                                          }
+
                                           List<MediaModel>? pickedMediaFiles =
                                               await PostMediaPicker
                                                   .pickDocuments(
