@@ -26,6 +26,7 @@ class SSPostWidget extends StatefulWidget {
   final Function() onTap;
   final Function()? onCommentButtonTap;
   final Function(bool isDeleted) refresh;
+  final Widget? activityHeader;
 
   const SSPostWidget({
     Key? key,
@@ -36,6 +37,7 @@ class SSPostWidget extends StatefulWidget {
     required this.refresh,
     required this.isFeed,
     this.onCommentButtonTap,
+    this.activityHeader,
   }) : super(key: key);
 
   @override
@@ -151,29 +153,31 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                 children: [
                   ValueListenableBuilder(
                     valueListenable: rebuildPostWidget,
-                    builder: (context, _, __) => isPinned!
-                        ? const Column(
-                            children: [
-                              Row(
+                    builder: (context, _, __) => widget.activityHeader != null
+                        ? widget.activityHeader!
+                        : isPinned!
+                            ? const Column(
                                 children: [
-                                  LMIcon(
-                                    type: LMIconType.svg,
-                                    assetPath: kAssetPinIcon,
-                                    color: LMThemeData.primary500,
-                                    size: 20,
+                                  Row(
+                                    children: [
+                                      LMIcon(
+                                        type: LMIconType.svg,
+                                        assetPath: kAssetPinIcon,
+                                        color: LMThemeData.primary500,
+                                        size: 20,
+                                      ),
+                                      LMThemeData.kHorizontalPaddingMedium,
+                                      LMTextView(
+                                        text: "Pinned Post",
+                                        textStyle: TextStyle(
+                                            color: LMThemeData.primary500),
+                                      )
+                                    ],
                                   ),
-                                  LMThemeData.kHorizontalPaddingMedium,
-                                  LMTextView(
-                                    text: "Pinned Post",
-                                    textStyle: TextStyle(
-                                        color: LMThemeData.primary500),
-                                  )
+                                  LMThemeData.kVerticalPaddingMedium,
                                 ],
-                              ),
-                              LMThemeData.kVerticalPaddingMedium,
-                            ],
-                          )
-                        : const SizedBox(),
+                              )
+                            : const SizedBox(),
                   ),
                   ValueListenableBuilder(
                       valueListenable: rebuildPostWidget,
@@ -452,7 +456,7 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                 child: LMPostMedia(
                                   attachments: postDetails!.attachments!,
                                   borderRadius: 16.0,
-                                  backgroundColor: LMThemeData.kSecondary100,
+                                  backgroundColor: LMThemeData.kGrey1Color,
                                   documentIcon: const LMIcon(
                                     type: LMIconType.svg,
                                     assetPath: kAssetDocPDFIcon,
@@ -466,6 +470,8 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                     _videoController =
                                         initialiseVideoController;
                                   },
+                                  boxFit: BoxFit.contain,
+                                  
                                 ),
                               ),
                             )

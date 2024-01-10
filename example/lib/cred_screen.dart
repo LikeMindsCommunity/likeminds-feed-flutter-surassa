@@ -8,6 +8,7 @@ import 'package:likeminds_feed_ss_sample/bloc_observer/routing_bloc_listener.dar
 import 'package:likeminds_feed_ss_sample/likeminds_callback.dart';
 import 'package:likeminds_feed_ss_sample/main.dart';
 import 'package:likeminds_feed_ss_sample/network_handling.dart';
+import 'package:likeminds_feed_ss_sample/screens/root_screen.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:uni_links/uni_links.dart';
 
@@ -283,7 +284,9 @@ class _CredScreenState extends State<CredScreen> {
                   // }
                   MaterialPageRoute route = MaterialPageRoute(
                     // INIT - Get the LMFeed instance and pass the credentials (if any)
-                    builder: (context) => lmFeed!,
+                    builder: (context) => TabApp(
+                      feedWidget: lmFeed!,
+                    ),
                   );
                   Navigator.of(context).pushReplacement(route);
                 },
