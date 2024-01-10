@@ -45,7 +45,13 @@ class _MediaPreviewState extends State<MediaPreview> {
     post = widget.post;
     user = widget.user;
     position = widget.position;
+    _filterPostAttachments();
     super.initState();
+  }
+
+  _filterPostAttachments() {
+    postAttachments.removeWhere((element) =>
+        !(element.attachmentType == 1 || element.attachmentType == 2));
   }
 
   @override
@@ -127,27 +133,31 @@ class _MediaPreviewState extends State<MediaPreview> {
                         videoUrl: postAttachments[index].attachmentMeta.url,
                         showControls: true,
                       );
+                    } else if (postAttachments[index].attachmentType == 1) {
+                      return Container(
+                        color: Colors.black,
+                        width: MediaQuery.of(context).size.width,
+                        child: Center(
+                          child: ExtendedImage.network(
+                            postAttachments[index].attachmentMeta.url!,
+                            fit: BoxFit.contain,
+                            mode: ExtendedImageMode.gesture,
+                            initGestureConfigHandler: (state) {
+                              return GestureConfig(
+                                hitTestBehavior: HitTestBehavior.opaque,
+                                minScale: 0.9,
+                                animationMinScale: 0.7,
+                                maxScale: 3.0,
+                                animationMaxScale: 3.5,
+                                inPageView: true,
+                              );
+                            },
+                          ),
+                        ),
+                      );
+                    } else {
+                      return const SizedBox.shrink();
                     }
-
-                    return Container(
-                      color: Colors.black,
-                      width: MediaQuery.of(context).size.width,
-                      child: ExtendedImage.network(
-                        postAttachments[index].attachmentMeta.url!,
-                        fit: BoxFit.contain,
-                        mode: ExtendedImageMode.gesture,
-                        initGestureConfigHandler: (state) {
-                          return GestureConfig(
-                            hitTestBehavior: HitTestBehavior.opaque,
-                            minScale: 0.9,
-                            animationMinScale: 0.7,
-                            maxScale: 3.0,
-                            animationMaxScale: 3.5,
-                            inPageView: true,
-                          );
-                        },
-                      ),
-                    );
                   }),
             ),
             ValueListenableBuilder(
