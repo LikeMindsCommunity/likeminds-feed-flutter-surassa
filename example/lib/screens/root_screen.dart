@@ -3,11 +3,9 @@ import 'package:likeminds_feed_ss_sample/screens/activity_screen.dart';
 
 class TabApp extends StatefulWidget {
   final Widget feedWidget;
-  final String uuid;
   const TabApp({
     super.key,
     required this.feedWidget,
-    required this.uuid,
   });
 
   @override
@@ -38,8 +36,8 @@ class _TabAppState extends State<TabApp> with TickerProviderStateMixin {
             setState(() {});
           },
           elevation: 10,
-          indicatorColor: Color(0xFF3B82F6),
-          backgroundColor: Color(0xFF3B82F6).withOpacity(0.1),
+          indicatorColor: const Color(0xFF3B82F6),
+          backgroundColor: const Color(0xFF3B82F6).withOpacity(0.1),
           destinations: const [
             NavigationDestination(
               icon: Icon(
@@ -69,8 +67,7 @@ class _TabAppState extends State<TabApp> with TickerProviderStateMixin {
             HomeScreen(
               feedWidget: widget.feedWidget,
             ), // First tab content
-             ActivityScreen(
-              uuid: widget.uuid,
+             const ActivityScreen(
             ), // Second tab content
           ],
         ),

@@ -286,7 +286,6 @@ class _CredScreenState extends State<CredScreen> {
                     // INIT - Get the LMFeed instance and pass the credentials (if any)
                     builder: (context) => TabApp(
                       feedWidget: lmFeed!,
-                      uuid: _userIdController.text,
                     ),
                   );
                   Navigator.of(context).pushReplacement(route);

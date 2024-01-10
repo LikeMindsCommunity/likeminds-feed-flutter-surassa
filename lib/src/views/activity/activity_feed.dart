@@ -5,6 +5,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/add_comment_reply/add_comment_reply_bloc.dart';
 import 'package:likeminds_feed_ss_fl/src/blocs/comment/toggle_like_comment/toggle_like_comment_bloc.dart';
+import 'package:likeminds_feed_ss_fl/src/utils/activity/activity_utils.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/post/post_action_id.dart';
@@ -30,9 +31,17 @@ class _SSActivityFeedScreenState extends State<SSActivityFeedScreen> {
 
   late final AddCommentReplyBloc _addCommentReplyBloc;
   late final ToggleLikeCommentBloc _toggleLikeCommentBloc;
+  String? userName;
 
   @override
   void initState() {
+    if (widget.uuid ==
+        UserLocalPreference.instance
+            .fetchUserData()
+            .sdkClientInfo!
+            .userUniqueId) {
+      userName = 'You';
+    }
     _addCommentReplyBloc = AddCommentReplyBloc();
     _toggleLikeCommentBloc = ToggleLikeCommentBloc();
     _pagingController.addPageRequestListener((pageKey) {
@@ -64,19 +73,15 @@ class _SSActivityFeedScreenState extends State<SSActivityFeedScreen> {
     }
   }
 
-  String getUserName(String actionBy) {
-    if (widget.uuid ==
-        _userActivityResponse!.users![actionBy]!.sdkClientInfo!.userUniqueId) {
-      return 'You';
-    } else {
-      return _userActivityResponse!.users![actionBy]!.name;
-    }
+  String setUserName(
+      GetUserActivityResponse activityResponse, String actionBy) {
+    return userName = activityResponse.users![actionBy]!.name;
   }
 
-  String getActivityTextWithoutName(String activityText, String actionBy) {
-    final String name = getUserName(actionBy);
-    return activityText.replaceFirst(name, '');
+  String getActivityTextWithoutName(String activityText) {
+    return activityText.replaceFirst(userName!, '');
   }
+
 
   @override
   void dispose() {
@@ -156,30 +161,7 @@ class _SSActivityFeedScreenState extends State<SSActivityFeedScreen> {
                 ),
               );
             }, itemBuilder: (context, item, index) {
-              //todo: change this
-              final PostViewData post = item.action == 7
-                  ? PostViewData.fromPost(
-                      post: item.activityEntityData.postData!)
-                  : (PostViewDataBuilder()
-                        ..id(item.activityEntityData.id)
-                        ..isEdited(item.activityEntityData.isEdited!)
-                        ..text(item.activityEntityData.text)
-                        ..attachments(item.activityEntityData.attachments!)
-                        ..communityId(item.activityEntityData.communityId)
-                        ..isPinned(item.activityEntityData.isPinned!)
-                        ..topics(item.activityEntityData.topics!)
-                        ..userId(item.activityEntityData.userId!)
-                        ..likeCount(item.activityEntityData.likesCount!)
-                        ..commentCount(item.activityEntityData.commentsCount!)
-                        ..isSaved(item.activityEntityData.isSaved!)
-                        ..isLiked(item.activityEntityData.isLiked!)
-                        ..menuItems(item.activityEntityData.menuItems!)
-                        ..createdAt(DateTime.fromMillisecondsSinceEpoch(
-                            item.activityEntityData.createdAt))
-                        ..updatedAt(DateTime.fromMillisecondsSinceEpoch(
-                            item.activityEntityData.updatedAt!)))
-                      .build();
-
+              final PostViewData post = postViewDataFromActivity(item);
               final user = _userActivityResponse!
                   .users![item.activityEntityData.userId]!;
               return Column(
@@ -195,8 +177,13 @@ class _SSActivityFeedScreenState extends State<SSActivityFeedScreen> {
                           children: [
                             RichText(
                               text: TextSpan(
-                                text:
-                                    '${getUserName(_userActivityResponse!.activities!.elementAt(index).actionBy.first)}',
+                                text: userName ??
+                                    setUserName(
+                                        _userActivityResponse!,
+                                        _userActivityResponse!.activities!
+                                            .elementAt(index)
+                                            .actionBy
+                                            .first),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 14,
@@ -204,8 +191,9 @@ class _SSActivityFeedScreenState extends State<SSActivityFeedScreen> {
                                 ),
                                 children: <TextSpan>[
                                   TextSpan(
-                                    text:
-                                        '${getActivityTextWithoutName(_userActivityResponse!.activities!.elementAt(index).activityText, _userActivityResponse!.activities!.elementAt(index).actionBy.first)}',
+                                    text: getActivityTextWithoutName(
+                                      item.activityText,
+                                    ),
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w400,
                                       fontSize: 14,
@@ -215,7 +203,7 @@ class _SSActivityFeedScreenState extends State<SSActivityFeedScreen> {
                                 ],
                               ),
                             ),
-                           LMThemeData.kVerticalPaddingMedium,
+                            LMThemeData.kVerticalPaddingMedium,
                             const Divider(
                               color: LMThemeData.onSurface,
                               thickness: 1,
