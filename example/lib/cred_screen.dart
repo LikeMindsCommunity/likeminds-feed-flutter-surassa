@@ -289,8 +289,6 @@ class _CredScreenState extends State<CredScreen> {
                       uuid: _userIdController.text,
                     ),
                   );
-                  debugPrint(
-                      "---------------${lmFeed!.userId!}-------------------");
                   Navigator.of(context).pushReplacement(route);
                 },
                 child: Container(
