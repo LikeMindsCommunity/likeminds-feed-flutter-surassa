@@ -31,17 +31,9 @@ class _SSActivityFeedScreenState extends State<SSActivityFeedScreen> {
 
   late final AddCommentReplyBloc _addCommentReplyBloc;
   late final ToggleLikeCommentBloc _toggleLikeCommentBloc;
-  String? userName;
 
   @override
   void initState() {
-    if (widget.uuid ==
-        UserLocalPreference.instance
-            .fetchUserData()
-            .sdkClientInfo!
-            .userUniqueId) {
-      userName = 'You';
-    }
     _addCommentReplyBloc = AddCommentReplyBloc();
     _toggleLikeCommentBloc = ToggleLikeCommentBloc();
     _pagingController.addPageRequestListener((pageKey) {
@@ -72,16 +64,6 @@ class _SSActivityFeedScreenState extends State<SSActivityFeedScreen> {
       _pagingController.error = error;
     }
   }
-
-  String setUserName(
-      GetUserActivityResponse activityResponse, String actionBy) {
-    return userName = activityResponse.users![actionBy]!.name;
-  }
-
-  String getActivityTextWithoutName(String activityText) {
-    return activityText.replaceFirst(userName!, '');
-  }
-
 
   @override
   void dispose() {
@@ -161,7 +143,8 @@ class _SSActivityFeedScreenState extends State<SSActivityFeedScreen> {
                 ),
               );
             }, itemBuilder: (context, item, index) {
-              final PostViewData post = postViewDataFromActivity(item);
+              final PostViewData post =
+                  ActivityUtils.postViewDataFromActivity(item);
               final user = _userActivityResponse!
                   .users![item.activityEntityData.userId]!;
               return Column(
@@ -177,30 +160,11 @@ class _SSActivityFeedScreenState extends State<SSActivityFeedScreen> {
                           children: [
                             RichText(
                               text: TextSpan(
-                                text: userName ??
-                                    setUserName(
-                                        _userActivityResponse!,
-                                        _userActivityResponse!.activities!
-                                            .elementAt(index)
-                                            .actionBy
-                                            .first),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                  color: LMThemeData.kGrey1Color,
-                                ),
-                                children: <TextSpan>[
-                                  TextSpan(
-                                    text: getActivityTextWithoutName(
-                                      item.activityText,
-                                    ),
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 14,
-                                      color: LMThemeData.kGrey1Color,
-                                    ),
-                                  ),
-                                ],
+                                children: ActivityUtils.extractNotificationTags(
+                                    _userActivityResponse!.activities!
+                                        .elementAt(index)
+                                        .activityText,
+                                    widget.uuid),
                               ),
                             ),
                             LMThemeData.kVerticalPaddingMedium,

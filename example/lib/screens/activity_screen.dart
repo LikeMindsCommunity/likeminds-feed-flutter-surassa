@@ -29,7 +29,9 @@ class _ActivityScreenState extends State<ActivityScreen> {
         title: const Text('My Activity'),
         // backgroundColor: ColorTheme.backgroundColor,
       ),
-      body: SSActivityWidget(uuid: userId),
+      body: SSActivityWidget(
+        uuid: userId,
+      ),
     );
   }
 }
