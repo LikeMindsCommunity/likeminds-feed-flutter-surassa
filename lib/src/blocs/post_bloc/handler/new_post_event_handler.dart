@@ -2,7 +2,7 @@ part of '../post_bloc.dart';
 
 newPostEventHandler(CreateNewPost event, Emitter<LMPostState> emit) async {
   try {
-    List<MediaModel>? postMedia = event.postMedia;
+    List<AttachmentPostViewData>? postMedia = event.postMedia;
     List<Attachment> attachments = [];
     int index = 0;
 

@@ -50,7 +50,7 @@ packages:
     source: hosted
     version: "2.11.0"
   bloc:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: bloc
       sha256: "3820f15f502372d979121de1f6b97bfcf1630ebff8fe1d52fb2b0bfa49be5b49"
@@ -73,6 +73,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.1"
+  build_cli_annotations:
+    dependency: transitive
+    description:
+      name: build_cli_annotations
+      sha256: b59d2769769efd6c9ff6d4c4cede0be115a566afc591705c2040b707534b1172
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   build_config:
     dependency: transitive
     description:
@@ -153,6 +161,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
+  cancellation_token:
+    dependency: transitive
+    description:
+      name: cancellation_token
+      sha256: ad95acf9d4b2f3563e25dc937f63587e46a70ce534e910b65d10e115490f1027
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.1"
   carousel_slider:
     dependency: transitive
     description:
@@ -293,10 +309,10 @@ packages:
     dependency: "direct main"
     description:
       name: device_info_plus
-      sha256: f52ab3b76b36ede4d135aab80194df8925b553686f0fa12226b4e2d658e45903
+      sha256: "0042cb3b2a76413ea5f8a2b40cec2a33e01d0c937e91f0f7c211fde4f7739ba6"
       url: "https://pub.dev"
     source: hosted
-    version: "8.2.2"
+    version: "9.1.1"
   device_info_plus_platform_interface:
     dependency: transitive
     description:
@@ -313,6 +329,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.2.1+1"
+  dotenv:
+    dependency: transitive
+    description:
+      name: dotenv
+      sha256: "379e64b6fc82d3df29461d349a1796ecd2c436c480d4653f3af6872eccbc90e1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.2.0"
   envied:
     dependency: "direct main"
     description:
@@ -322,7 +346,7 @@ packages:
     source: hosted
     version: "0.3.0+3"
   equatable:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: equatable
       sha256: c2b87cb7756efdf69892005af546c56c0b5037f54d2a88269b4f347a505e3ca2
@@ -333,10 +357,10 @@ packages:
     dependency: "direct main"
     description:
       name: extended_image
-      sha256: b4d72a27851751cfadaf048936d42939db7cd66c08fdcfe651eeaa1179714ee6
+      sha256: d1b122d6f5cf5596ea61d703d116d89e2ece7e324db414cfeed12967b72b7aef
       url: "https://pub.dev"
     source: hosted
-    version: "8.1.1"
+    version: "8.1.0"
   extended_image_library:
     dependency: transitive
     description:
@@ -810,18 +834,31 @@ packages:
   likeminds_feed:
     dependency: "direct main"
     description:
-      name: likeminds_feed
-      sha256: e47b77e3eadfc475cd62e9bc1ea9c76fb64b5a3dc9cdb548782b06423f7c8e28
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.6.3"
+      path: "../LikeMinds-Flutter-Feed-SDK"
+      relative: true
+    source: path
+    version: "1.6.7"
+  likeminds_feed_flutter_core:
+    dependency: "direct main"
+    description:
+      path: "../likeminds_feed_flutter/packages/integration"
+      relative: true
+    source: path
+    version: "1.0.0"
+  likeminds_feed_flutter_ui:
+    dependency: "direct main"
+    description:
+      path: "../likeminds_feed_flutter/packages/ui"
+      relative: true
+    source: path
+    version: "1.0.0"
   likeminds_feed_ui_fl:
     dependency: "direct main"
     description:
       path: "../LikeMinds-Flutter-Feed-UI"
       relative: true
     source: path
-    version: "1.3.5"
+    version: "1.3.13"
   lints:
     dependency: transitive
     description:
@@ -855,7 +892,7 @@ packages:
     source: hosted
     version: "0.5.0"
   media_kit:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: media_kit
       sha256: "3289062540e3b8b9746e5c50d95bd78a9289826b7227e253dff806d002b9e67a"
@@ -895,7 +932,7 @@ packages:
     source: hosted
     version: "1.1.4"
   media_kit_libs_video:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: media_kit_libs_video
       sha256: "3688e0c31482074578652bf038ce6301a5d21e1eda6b54fc3117ffeb4bdba067"
@@ -919,7 +956,7 @@ packages:
     source: hosted
     version: "1.0.8"
   media_kit_video:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: media_kit_video
       sha256: c048d11a19e379aebbe810647636e3fc6d18374637e2ae12def4ff8a4b99a882
@@ -982,6 +1019,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.2"
+  objectid:
+    dependency: transitive
+    description:
+      name: objectid
+      sha256: fd4a0b9fe07df25c446948b786e7ab2f363b2f461afa78632cab179d7613b9b3
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
   octo_image:
     dependency: transitive
     description:
@@ -1214,6 +1259,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.1"
+  realm:
+    dependency: transitive
+    description:
+      name: realm
+      sha256: "8c4e09609fabef5ea60b7ef90b08a6867700c3b30c135b7d241ab1938bb76761"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.6.0"
+  realm_common:
+    dependency: transitive
+    description:
+      name: realm_common
+      sha256: "9be97e4ceea9309fadeaae274d53aea9017a21b20c4b4c7be72e4a338c343f1b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.6.0"
+  realm_generator:
+    dependency: transitive
+    description:
+      name: realm_generator
+      sha256: e339b0f0aaee8ca1df29a2cc69fd9b7b3b6cc8dcfa1d95515ae2fc858bdd4362
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.6.0"
   responsive_sizer:
     dependency: transitive
     description:
@@ -1238,6 +1307,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.2"
+  sane_uuid:
+    dependency: transitive
+    description:
+      name: sane_uuid
+      sha256: "5e83f796a7d19d38d3ba3a940642998fdd8c4a4049be135ed25404e37f76a18c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0-alpha.5"
   screen_brightness:
     dependency: transitive
     description:
@@ -1515,6 +1592,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.0"
+  tar:
+    dependency: transitive
+    description:
+      name: tar
+      sha256: "1680219f82dfa81c8d0e76e849b7b34ea969c721f55a8ebd294a9a95e740dd42"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.3"
   term_glyph:
     dependency: transitive
     description:
@@ -1731,6 +1816,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.16"
+  visibility_aware_state:
+    dependency: transitive
+    description:
+      name: visibility_aware_state
+      sha256: "9c30877fa4909b38c56b71dade2f5dde380199b1417cc07e10628ca042611822"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.5"
   visibility_detector:
     dependency: transitive
     description:
@@ -1811,6 +1904,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.4"
+  win32_registry:
+    dependency: transitive
+    description:
+      name: win32_registry
+      sha256: "1c52f994bdccb77103a6231ad4ea331a244dbcef5d1f37d8462f713143b0bfae"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   xdg_directories:
     dependency: transitive
     description:

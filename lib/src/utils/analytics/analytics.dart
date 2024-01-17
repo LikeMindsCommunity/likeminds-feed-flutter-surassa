@@ -83,7 +83,7 @@ class AnalyticsKeys {
 // Creates a map of properties for the post creation completed event
 // This event is fired when the user clicks on the post button
 
-void sendPostCreationCompletedEvent(List<MediaModel> postMedia,
+void sendPostCreationCompletedEvent(List<AttachmentPostViewData> postMedia,
     List<UserTag> usersTagged, List<TopicUI> topics) {
   Map<String, String> propertiesMap = {};
 
@@ -97,7 +97,7 @@ void sendPostCreationCompletedEvent(List<MediaModel> postMedia,
       int imageCount = 0;
       int videoCount = 0;
       int documentCount = 0;
-      for (MediaModel media in postMedia) {
+      for (AttachmentPostViewData media in postMedia) {
         if (media.mediaType == MediaType.image) {
           imageCount++;
         } else if (media.mediaType == MediaType.video) {
