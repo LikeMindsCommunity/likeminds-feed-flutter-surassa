@@ -34,39 +34,36 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
     ],
   ),
   topicStyle: LMFeedPostTopicStyle(
-    activeChipStyle: LMFeedTopicChipStyle(
+    padding: EdgeInsets.zero,
+    margin: EdgeInsets.zero,
+    activeChipStyle: LMFeedTopicChipStyle.active().copyWith(
       backgroundColor: primary500.withOpacity(0.1),
       textStyle: const TextStyle(color: kPrimaryColor),
       borderRadius: BorderRadius.circular(43.0),
       padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
     ),
-    inactiveChipStyle: LMFeedTopicChipStyle(
+    inactiveChipStyle: LMFeedTopicChipStyle.inActive().copyWith(
       textStyle: const TextStyle(color: onSurface500),
       showBorder: true,
       borderWidth: 1.0,
+      borderColor: kSecondaryColor700,
       borderRadius: BorderRadius.circular(43.0),
       padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
     ),
   ),
-  contentStyle: const LMFeedPostContentStyle(
-    padding: EdgeInsets.symmetric(vertical: 8.0),
-    textStyle: TextStyle(
-      color: LikeMindsTheme.greyColor,
-      fontSize: 16,
-      fontFamily: 'Roboto',
-      fontWeight: FontWeight.w400,
+  contentStyle: LMFeedPostContentStyle.basic().copyWith(
+    padding: const EdgeInsets.symmetric(
+      vertical: 8.0,
     ),
   ),
-  mediaStyle: const LMFeedPostMediaStyle(
-    carouselStyle: LMFeedPostCarouselStyle(),
-    documentStyle: LMFeedPostDocumentStyle(),
-    imageStyle: LMFeedPostImageStyle(
-      borderRadius: 16.0,
+  mediaStyle: LMFeedPostMediaStyle(
+    carouselStyle: LMFeedPostCarouselStyle(
+      carouselBorderRadius: BorderRadius.circular(16.0),
     ),
-    linkStyle: LMFeedPostLinkPreviewStyle(),
-    videoStyle: LMFeedPostVideoStyle(
-      borderRadius: 16.0,
-    ),
+    documentStyle: const LMFeedPostDocumentStyle(),
+    imageStyle: const LMFeedPostImageStyle(),
+    linkStyle: const LMFeedPostLinkPreviewStyle(),
+    videoStyle: const LMFeedPostVideoStyle(),
   ),
   footerStyle: LMFeedPostFooterStyle.basic().copyWith(
     padding: EdgeInsets.zero,
@@ -93,16 +90,18 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
           color: Colors.transparent,
         ),
       ),
+      padding: EdgeInsets.zero,
     ),
     commentButtonStyle: LMFeedButtonStyle.comment().copyWith(
       icon: LMFeedIcon(
         type: LMFeedIconType.svg,
         assetPath: kAssetCommentIcon,
         style: LMFeedIconStyle.basic().copyWith(
-          size: 20,
+          size: 16,
           boxPadding: 6,
         ),
       ),
+      padding: EdgeInsets.zero,
     ),
     shareButtonStyle: LMFeedButtonStyle.share().copyWith(
       showText: true,
@@ -110,13 +109,15 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
         type: LMFeedIconType.svg,
         assetPath: kAssetShareIcon,
         style: LMFeedIconStyle.basic().copyWith(
-          size: 20,
+          size: 15,
           boxPadding: 6,
         ),
       ),
+      padding: EdgeInsets.zero,
     ),
   ),
-  headerStyle: LMFeedPostHeaderStyle.basic(),
+  headerStyle: LMFeedPostHeaderStyle.basic()
+      .copyWith(padding: const EdgeInsets.only(bottom: 16.0)),
   commentStyle: LMFeedCommentStyle.basic().copyWith(
     showProfilePicture: true,
   ),

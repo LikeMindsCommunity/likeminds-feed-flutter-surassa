@@ -17,7 +17,6 @@ class _TabAppState extends State<TabApp> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     tabController = TabController(length: 2, vsync: this);
     tabController.addListener(() {
@@ -37,7 +36,7 @@ class _TabAppState extends State<TabApp> with TickerProviderStateMixin {
           },
           elevation: 10,
           indicatorColor: const Color(0xFF3B82F6),
-          backgroundColor: const Color(0xFF3B82F6).withOpacity(0.1),
+          backgroundColor: Colors.white,
           destinations: const [
             NavigationDestination(
               icon: Icon(
@@ -67,8 +66,7 @@ class _TabAppState extends State<TabApp> with TickerProviderStateMixin {
             HomeScreen(
               feedWidget: widget.feedWidget,
             ), // First tab content
-             const ActivityScreen(
-            ), // Second tab content
+            const ActivityScreen(), // Second tab content
           ],
         ),
       ),
