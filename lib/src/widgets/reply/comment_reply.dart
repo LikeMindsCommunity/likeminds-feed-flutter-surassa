@@ -16,7 +16,7 @@ import 'package:timeago/timeago.dart' as timeago;
 
 class CommentReplyWidget extends StatefulWidget {
   final String postId;
-  final Reply reply;
+  final Comment reply;
   final User user;
   final Function() refresh;
 
@@ -41,11 +41,11 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
   ValueNotifier<bool> rebuildLikeButton = ValueNotifier(false);
   ValueNotifier<bool> rebuildReplyList = ValueNotifier(false);
   ValueNotifier<bool> rebuildReplyButton = ValueNotifier(false);
-  List<CommentReply> replies = [];
+  List<Comment> replies = [];
   Map<String, User> users = {};
   List<Widget> repliesW = [];
 
-  Reply? reply;
+  Comment? reply;
   late final User user;
   late final String postId;
   Function()? refresh;
@@ -72,7 +72,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
   int page = 1;
 
   List<Widget> mapRepliesToWidget(
-      List<CommentReply> replies, Map<String, User> users) {
+      List<Comment> replies, Map<String, User> users) {
     ToggleLikeCommentBloc toggleLikeCommentBloc =
         BlocProvider.of<ToggleLikeCommentBloc>(context);
     replies = replies.map((e) {
@@ -103,7 +103,7 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
             ),
             subtitleText: LMTextView(
               text:
-                  "@${user.name.toLowerCase().split(' ').join()} · ${timeago.format(element.createdAt)}",
+                  "@${user.name.toLowerCase().split(' ').join()} · ${timeago.format(DateTime.fromMillisecondsSinceEpoch(element.createdAt))}",
               textStyle: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
@@ -178,12 +178,13 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                     ),
                   );
                   setReplyState(() {
-                    if (element.isLiked) {
-                      element.likesCount -= 1;
-                    } else {
-                      element.likesCount += 1;
-                    }
-                    element.isLiked = !element.isLiked;
+                    // TODO: change with likeviewdata model
+                    // if (element.isLiked) {
+                    //   element.likesCount -= 1;
+                    // } else {
+                    //   element.likesCount += 1;
+                    // }
+                    // element.isLiked = !element.isLiked;
                   });
                 },
                 icon: const LMIcon(
@@ -244,7 +245,9 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                     child: SizedBox(
                       height: 20,
                       width: 20,
-                      child: LMLoader(color: LMThemeData.kPrimaryColor, ),
+                      child: LMLoader(
+                        color: LMThemeData.kPrimaryColor,
+                      ),
                     ),
                   ),
                 );
@@ -263,11 +266,11 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
               }
 
               if (state is CommentRepliesLoaded) {
-                replies = state.commentDetails.postReplies!.replies;
+                replies = state.commentDetails.postReplies!.replies ?? [];
                 users = state.commentDetails.users!;
                 users.putIfAbsent(user.userUniqueId, () => user);
               } else if (state is PaginatedCommentRepliesLoading) {
-                replies = state.prevCommentDetails.postReplies!.replies;
+                replies = state.prevCommentDetails.postReplies!.replies ?? [];
                 users = state.prevCommentDetails.users!;
                 users.putIfAbsent(user.userUniqueId, () => user);
               }
@@ -303,8 +306,8 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                                 child: LMTextView(
                                   text: 'View more replies',
                                   textStyle: TextStyle(
-                                    color:
-                                      LMThemeData.suraasaTheme.colorScheme.primary,
+                                    color: LMThemeData
+                                        .suraasaTheme.colorScheme.primary,
                                     fontSize: 14,
                                   ),
                                 ),
@@ -431,8 +434,9 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                     int index = replies
                         .indexWhere((element) => element.id == state.replyId);
                     if (index != -1) {
+                      //TODO: changwe with reply view data model
                       replies.removeAt(index);
-                      reply!.repliesCount -= 1;
+                      // reply!.repliesCount -= 1;
                       replyCount = reply!.repliesCount;
                       rebuildReplyButton.value = !rebuildReplyButton.value;
 
@@ -486,7 +490,6 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
                     padding: const EdgeInsets.only(
                       left: 48,
                       top: 8,
-                      bottom: 0,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -500,11 +503,11 @@ class _CommentReplyWidgetState extends State<CommentReplyWidget> {
             return Container();
           }),
           listener: (context, state) {
-            List<CommentReply> replies = [];
+            List<Comment> replies = [];
             if (state is CommentRepliesLoaded) {
-              replies = state.commentDetails.postReplies!.replies;
+              replies = state.commentDetails.postReplies!.replies ?? [];
             } else if (state is PaginatedCommentRepliesLoading) {
-              replies = state.prevCommentDetails.postReplies!.replies;
+              replies = state.prevCommentDetails.postReplies!.replies ?? [];
             }
             replyCount = replies.length;
             rebuildReplyButton.value = !rebuildReplyButton.value;

@@ -1,8 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
+import 'package:likeminds_feed_flutter_core/likeminds_feed_core.dart';
+import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart'
+    hide LMNotificationHandler;
 import 'package:likeminds_feed_ss_sample/cred_screen.dart';
 import 'package:likeminds_feed_ss_sample/credentials/credentials.dart';
 import 'package:likeminds_feed_ss_sample/firebase_options.dart';
@@ -36,6 +37,10 @@ void main() async {
     apiKey: debug ? CredsDev.apiKey : CredsProd.apiKey,
     lmCallBack: LikeMindsCallback(),
     navigatorKey: rootNavigatorKey,
+  );
+
+  LMFeedCore.instance.initialize(
+    // lmFeedClient: lmFeedClient,
   );
   runApp(const MyApp());
 }

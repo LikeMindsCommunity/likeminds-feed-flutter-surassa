@@ -39,7 +39,7 @@ class _LikesScreenState extends State<LikesScreen> {
   final PagingController<int, Like> _pagingControllerLikes =
       PagingController(firstPageKey: 1);
 
-  final PagingController<int, CommentLike> _pagingControllerCommentLikes =
+  final PagingController<int, Like> _pagingControllerCommentLikes =
       PagingController(firstPageKey: 1);
 
   void _addPaginationListener() {
@@ -221,7 +221,7 @@ class _LikesScreenState extends State<LikesScreen> {
           child: PagedListView(
             padding: EdgeInsets.zero,
             pagingController: _pagingControllerCommentLikes,
-            builderDelegate: PagedChildBuilderDelegate<CommentLike>(
+            builderDelegate: PagedChildBuilderDelegate<Like>(
               noMoreItemsIndicatorBuilder: (context) => const SizedBox(
                 height: 20,
               ),
@@ -230,7 +230,6 @@ class _LikesScreenState extends State<LikesScreen> {
                 body: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       Text("No likes to show",
                           style: TextStyle(
@@ -280,7 +279,6 @@ class _LikesScreenState extends State<LikesScreen> {
                   body: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Text("No likes to show",
                             style: TextStyle(
@@ -348,7 +346,7 @@ class LikesTile extends StatelessWidget {
                   ),
                 ),
                 subText: LMTextView(
-                  text: "@${user!.name.toLowerCase().split(" ").join("")}",
+                  text: "@${user!.name.toLowerCase().split(" ").join()}",
                   textStyle: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w400,

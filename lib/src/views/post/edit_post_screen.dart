@@ -102,7 +102,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
         linkModel = AttachmentPostViewData(
           mediaType: MediaType.link,
           link: previewLink,
-          ogTags: AttachmentMetaOgTags(
+          ogTags: OgTags(
             description: responseTags!.description,
             image: responseTags.image,
             title: responseTags.title,
@@ -148,7 +148,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
           attachmentType: 4,
           attachmentMeta: AttachmentMeta(
             url: linkModel?.link,
-            ogTags: AttachmentMetaOgTags(
+            ogTags: OgTags(
               description: linkModel?.ogTags?.description,
               image: linkModel?.ogTags?.image,
               title: linkModel?.ogTags?.title,

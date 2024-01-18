@@ -23,6 +23,7 @@ export 'src/utils/local_preference/user_local_preference.dart';
 export 'src/blocs/bloc.dart';
 export 'src/utils/deep_link/deep_link_handler.dart';
 export 'src/widgets/widgets.dart';
+export 'src/revamp/theme/theme.dart';
 
 /// Flutter environment manager v0.0.1
 const prodFlag = !bool.fromEnvironment('DEBUG');
@@ -122,8 +123,7 @@ class _LMFeedState extends State<LMFeed> {
   void callSetupFunctions(InitiateUserResponse response) {
     locator<LMFeedBloc>().getCommunityConfigurations();
     memberState = locator<LMFeedBloc>().getMemberState();
-    LMNotificationHandler.instance
-        .registerDevice(response.initiateUser!.user.id);
+    LMNotificationHandler.instance.registerDevice(response.user!.id);
   }
 
   void callInitiateUser() {
@@ -219,7 +219,7 @@ class _LMFeedState extends State<LMFeed> {
                 if (snapshot.hasData) {
                   InitiateUserResponse response = snapshot.data;
                   if (response.success) {
-                    user = response.initiateUser?.user;
+                    user = response.user!;
 
                     return FutureBuilder(
                       future: memberState,

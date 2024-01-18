@@ -35,13 +35,14 @@ class CommentRepliesBloc
       required Emitter<CommentRepliesState> emit}) async {
     // if (!hasReachedMax(state, forLoadMore)) {
     Map<String, User> users = {};
-    List<CommentReply> comments = [];
+    List<Comment> comments = [];
     if (state is CommentRepliesLoaded &&
         forLoadMore &&
         commentDetailRequest.commentId ==
             (state as CommentRepliesLoaded).commentId) {
       comments =
-          (state as CommentRepliesLoaded).commentDetails.postReplies!.replies;
+          (state as CommentRepliesLoaded).commentDetails.postReplies!.replies ??
+              [];
       users = (state as CommentRepliesLoaded).commentDetails.users!;
       emit(PaginatedCommentRepliesLoading(
           commentId: commentDetailRequest.commentId,
@@ -55,12 +56,15 @@ class CommentRepliesBloc
     if (!response.success) {
       emit(const CommentRepliesError(message: "An error occurred"));
     } else {
-      response.postReplies!.replies.insertAll(0, comments);
+      response.postReplies!.replies?.insertAll(0, comments);
       response.users!.addAll(users);
-      emit(CommentRepliesLoaded(
+      emit(
+        CommentRepliesLoaded(
           commentDetails: response,
           commentId: commentDetailRequest.commentId,
-          hasReachedMax: response.postReplies!.replies.isEmpty));
+          hasReachedMax: response.postReplies?.replies?.isEmpty ?? true,
+        ),
+      );
     }
   }
 }

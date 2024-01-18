@@ -48,7 +48,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   ValueNotifier<bool> rebuildReplyWidget = ValueNotifier(false);
   bool right = true;
   PostDetailResponse? postDetailResponse;
-  final PagingController<int, Reply> _pagingController =
+  final PagingController<int, Comment> _pagingController =
       PagingController(firstPageKey: 1);
   PostViewData? postData;
   User currentUser = UserLocalPreference.instance.fetchUserData();
@@ -202,7 +202,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   }
 
   void addCommentToList(AddCommentSuccess addCommentSuccess) {
-    List<Reply>? commentItemList = _pagingController.itemList;
+    List<Comment>? commentItemList = _pagingController.itemList;
     commentItemList ??= [];
     if (commentItemList.length >= 10) {
       commentItemList.removeAt(9);
@@ -222,7 +222,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   }
 
   void updateCommentInList(EditCommentSuccess editCommentSuccess) {
-    List<Reply>? commentItemList = _pagingController.itemList;
+    List<Comment>? commentItemList = _pagingController.itemList;
     commentItemList ??= [];
     int index = commentItemList.indexWhere((element) =>
         element.id == editCommentSuccess.editCommentResponse.reply!.id);
@@ -231,7 +231,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   }
 
   addReplyToList(AddCommentReplySuccess addCommentReplySuccess) {
-    List<Reply>? commentItemList = _pagingController.itemList;
+    List<Comment>? commentItemList = _pagingController.itemList;
     if (addCommentReplySuccess.addCommentResponse.reply!.parentComment !=
         null) {
       int index = commentItemList!.indexWhere((element) =>
@@ -242,15 +242,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         currentUser.id.toString(): currentUser,
       });
       if (index != -1) {
-        commentItemList[index].repliesCount =
-            commentItemList[index].repliesCount + 1;
         rebuildPostWidget.value = !rebuildPostWidget.value;
       }
     }
   }
 
   void removeCommentFromList(String commentId) {
-    List<Reply>? commentItemList = _pagingController.itemList;
+    List<Comment>? commentItemList = _pagingController.itemList;
     int index =
         commentItemList!.indexWhere((element) => element.id == commentId);
     if (index != -1) {
@@ -761,12 +759,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                 listener: (context, state) {
                   if (state is AllCommentsLoaded) {
                     _page++;
-                    if (state.postDetails.postReplies!.replies.length < 10) {
-                      _pagingController.appendLastPage(
-                          state.postDetails.postReplies!.replies);
+                    if (state.postDetails.post!.replies!.length < 10) {
+                      _pagingController
+                          .appendLastPage(state.postDetails.post!.replies!);
                     } else {
                       _pagingController.appendPage(
-                          state.postDetails.postReplies!.replies, _page);
+                          state.postDetails.post!.replies!, _page);
                     }
                   }
                 },
@@ -836,8 +834,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                 user:
                                                     postDetailResponse!.users![
                                                         postDetailResponse!
-                                                            .postReplies!
-                                                            .userId]!,
+                                                            .post!.userId]!,
                                                 onTap: () {},
                                                 isFeed: false,
                                                 onCommentButtonTap: () {
@@ -863,7 +860,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                       : PagedSliverList(
                                           pagingController: _pagingController,
                                           builderDelegate:
-                                              PagedChildBuilderDelegate<Reply>(
+                                              PagedChildBuilderDelegate<
+                                                  Comment>(
                                             noMoreItemsIndicatorBuilder:
                                                 (context) =>
                                                     const SizedBox(height: 75),
@@ -1028,7 +1026,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                         subtitleText:
                                                             LMTextView(
                                                           text:
-                                                              "@${postDetailResponse!.users![item.userId]!.name.toLowerCase().split(' ').join()} · ${timeago.format(item.createdAt)}",
+                                                              "@${postDetailResponse!.users![item.userId]!.name.toLowerCase().split(' ').join()} · ${timeago.format(DateTime.fromMicrosecondsSinceEpoch(item.createdAt))}",
                                                           textStyle:
                                                               const TextStyle(
                                                             fontSize: 12,
@@ -1086,15 +1084,17 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                   () {
                                                                 if (item
                                                                     .isLiked) {
-                                                                  item.likesCount -=
-                                                                      1;
+                                                                  // TODO: Change wtih new like count
+                                                                  // item.likesCount -=
+                                                                  //     1;
                                                                 } else {
-                                                                  item.likesCount +=
-                                                                      1;
+                                                                  // TODO: Change wtih new like count
+                                                                  // item.likesCount +=
+                                                                  //     1;
                                                                 }
-                                                                item.isLiked =
-                                                                    !item
-                                                                        .isLiked;
+                                                                // item.isLiked =
+                                                                //     !item
+                                                                //         .isLiked;
                                                               });
                                                             },
                                                             icon: const LMIcon(
@@ -1124,7 +1124,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                 text:
                                                                     const LMTextView(
                                                                         text:
-                                                                            "Reply",
+                                                                            "Comment",
                                                                         textStyle:
                                                                             TextStyle(
                                                                           fontSize:
@@ -1172,7 +1172,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                                       text:
                                                                           LMTextView(
                                                                         text:
-                                                                            "${item.repliesCount} ${item.repliesCount > 1 ? 'Replies' : 'Reply'}",
+                                                                            "${item.repliesCount} ${item.repliesCount > 1 ? 'Replies' : 'Comment'}",
                                                                         textStyle:
                                                                             const TextStyle(
                                                                           color:

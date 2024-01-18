@@ -41,9 +41,12 @@ class AllCommentsBloc extends Bloc<AllCommentsEvent, AllCommentsState> {
       emit(const AllCommentsError(message: "An error occurred"));
     } else {
       response.users!.addAll(users!);
-      emit(AllCommentsLoaded(
+      emit(
+        AllCommentsLoaded(
           postDetails: response,
-          hasReachedMax: response.postReplies!.replies.isEmpty));
+          hasReachedMax: response.post?.replies?.isEmpty ?? true,
+        ),
+      );
     }
   }
 }

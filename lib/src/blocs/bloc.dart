@@ -32,7 +32,7 @@ class LMFeedBloc {
     InitiateUserResponse response =
         await locator<LMFeedClient>().initiateUser(request);
     if (response.success) {
-      UserLocalPreference.instance.storeUserData(response.initiateUser!.user);
+      UserLocalPreference.instance.storeUserData(response.user!);
     }
     return response;
   }

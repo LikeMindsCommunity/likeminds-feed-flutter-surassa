@@ -275,19 +275,21 @@ class _SSActivityFeedScreenState extends State<SSActivityFeedScreen> {
                                   );
                                 }
                               },
-                              comment: Reply(
+                              comment: Comment(
                                 userId: commentData.userId!,
                                 text: commentData.text,
                                 level: 0,
                                 likesCount: commentData.likesCount!,
                                 repliesCount: commentData.replies!.length,
                                 menuItems: commentData.menuItems!,
-                                createdAt: DateTime.fromMillisecondsSinceEpoch(
-                                    commentData.createdAt),
-                                updatedAt: DateTime.fromMillisecondsSinceEpoch(
-                                    commentData.updatedAt!),
+                                createdAt: commentData.createdAt,
+                                updatedAt: commentData.updatedAt!,
                                 isLiked: commentData.isLiked!,
                                 id: commentData.id,
+                                replies: commentData.replies!,
+                                isEdited: commentData.isEdited!,
+                                parentComment: null,
+                                uuid: commentData.uuid!,
                               ),
                               user: user,
                               profilePicture: LMProfilePicture(
@@ -402,7 +404,7 @@ class _SSActivityFeedScreenState extends State<SSActivityFeedScreen> {
                                             onTap: () {},
                                             text: LMTextView(
                                               text:
-                                                  "${commentData.replies!.length} ${commentData.replies!.length > 1 ? 'Replies' : 'Reply'}",
+                                                  "${commentData.replies!.length} ${commentData.replies!.length > 1 ? 'Replies' : 'Comment'}",
                                               textStyle: const TextStyle(
                                                 color:
                                                     LMThemeData.kPrimaryColor,

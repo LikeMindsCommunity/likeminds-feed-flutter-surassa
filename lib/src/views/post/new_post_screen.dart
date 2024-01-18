@@ -299,7 +299,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
         linkModel = AttachmentPostViewData(
           mediaType: MediaType.link,
           link: previewLink,
-          ogTags: AttachmentMetaOgTags(
+          ogTags: OgTags(
             description: responseTags!.description,
             image: responseTags.image,
             title: responseTags.title,
