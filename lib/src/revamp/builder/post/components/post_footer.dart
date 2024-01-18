@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed_flutter_core/likeminds_feed_core.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
-import 'package:likeminds_feed_ui_fl/likeminds_feed_ui_fl.dart';
 
 Widget suraasaPostFooterBuilder(BuildContext context,
     LMFeedPostFooter footerWidget, LMPostViewData postViewData) {
@@ -10,8 +9,16 @@ Widget suraasaPostFooterBuilder(BuildContext context,
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          LMFeedText(text: '${postViewData.likeCount} likes'),
-          LMFeedText(text: '${postViewData.commentCount} comments'),
+          LMFeedText(
+            text: LMFeedPostUtils.getLikeCountTextWithCount(
+              postViewData.likeCount,
+            ),
+          ),
+          LMFeedText(
+            text: LMFeedPostUtils.getCommentCountTextWithCount(
+              postViewData.commentCount,
+            ),
+          ),
         ],
       ),
       LMThemeData.kVerticalPaddingMedium,
