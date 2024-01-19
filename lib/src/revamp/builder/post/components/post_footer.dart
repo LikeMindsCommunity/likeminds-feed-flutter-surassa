@@ -15,9 +15,10 @@ Widget suraasaPostFooterBuilder(BuildContext context,
             ),
           ),
           LMFeedText(
-            text: LMFeedPostUtils.getCommentCountTextWithCount(
+            text:
+                '${postViewData.commentCount} ${LMFeedPostUtils.getCommentCountText(
               postViewData.commentCount,
-            ),
+            )}',
           ),
         ],
       ),
