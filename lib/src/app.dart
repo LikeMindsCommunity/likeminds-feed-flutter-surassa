@@ -58,9 +58,12 @@ class _LMFeedSuraasaState extends State<LMFeedSuraasa> {
                   future: memberState,
                   builder: (context, snapshot) {
                     if (snapshot.hasData && snapshot.data!.success) {
-                      return const LMFeedScreen(
-                        postBuilder: suraasaPostBuilder,
-                        config: LMFeedScreenConfig(
+                      return LMFeedScreen(
+                        postBuilder: (context, postWidget, postViewData) =>
+                            suraasaPostWidgetBuilder(
+                                context, postWidget, postViewData,
+                                isFeed: true),
+                        config: const LMFeedScreenConfig(
                           topicSelectionWidgetType:
                               LMFeedTopicSelectionWidgetType
                                   .showTopicSelectionBottomSheet,

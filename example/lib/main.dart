@@ -39,8 +39,9 @@ void main() async {
     navigatorKey: rootNavigatorKey,
   );
 
-  LMFeedCore.instance.initialize(
+  await LMFeedCore.instance.initialize(
     // lmFeedClient: lmFeedClient,
+    domain: "https://www.suraasa.com",
   );
   runApp(const MyApp());
 }

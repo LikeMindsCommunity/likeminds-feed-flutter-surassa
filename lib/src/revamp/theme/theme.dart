@@ -21,7 +21,7 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
   primaryColor: kPrimaryColor,
   secondaryColor: primary500,
   backgroundColor: kBackgroundColor,
-  container: kBackgroundColor,
+  container: Colors.white,
   onContainer: onSurface900,
   postStyle: LMFeedPostStyle(
     padding: const EdgeInsets.all(
@@ -151,6 +151,7 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
     ),
   ),
   headerStyle: LMFeedPostHeaderStyle.basic().copyWith(
+    showPinnedIcon: false,
     padding: const EdgeInsets.only(
       bottom: 16.0,
     ),
@@ -164,6 +165,7 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
     actionsPadding: const EdgeInsets.only(
       left: 44.0,
     ),
+    subtitlePadding: const EdgeInsets.only(top: 4),
     likeButtonStyle: LMFeedButtonStyle.like(
       primaryColor: primary500,
     ).copyWith(
@@ -172,7 +174,7 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
         type: LMFeedIconType.svg,
         assetPath: kAssetLikeIcon,
         style: LMFeedIconStyle.basic().copyWith(
-          size: 20,
+          size: 18,
           boxPadding: 6,
         ),
       ),
@@ -202,6 +204,7 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
   ),
   replyStyle: LMFeedCommentStyle.basic(isReply: true).copyWith(
     showProfilePicture: true,
+    showTimestamp: false,
     profilePicturePadding: const EdgeInsets.only(
       right: 8.0,
     ),
@@ -216,7 +219,7 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
         type: LMFeedIconType.svg,
         assetPath: kAssetLikeIcon,
         style: LMFeedIconStyle.basic().copyWith(
-          size: 20,
+          size: 18,
           boxPadding: 6,
         ),
       ),
