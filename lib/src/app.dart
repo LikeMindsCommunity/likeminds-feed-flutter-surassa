@@ -1,6 +1,5 @@
 // import 'package:dotenv/dotenv.dart';
 import 'package:flutter/material.dart';
-import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_flutter_core/likeminds_feed_core.dart';
 import 'package:likeminds_feed_ss_fl/src/revamp/builder/post/post_builder.dart';
 
@@ -61,12 +60,16 @@ class _LMFeedSuraasaState extends State<LMFeedSuraasa> {
                       return LMFeedScreen(
                         postBuilder: (context, postWidget, postViewData) =>
                             suraasaPostWidgetBuilder(
-                                context, postWidget, postViewData,
-                                isFeed: true),
+                          context,
+                          postWidget,
+                          postViewData,
+                          isFeed: true,
+                        ),
                         config: const LMFeedScreenConfig(
                           topicSelectionWidgetType:
                               LMFeedTopicSelectionWidgetType
                                   .showTopicSelectionBottomSheet,
+                          showCustomWidget: true,
                         ),
                       );
                     } else if (snapshot.connectionState ==
