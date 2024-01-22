@@ -11,20 +11,24 @@ Widget suraasaPostWidgetBuilder(
   return postWidget.copyWith(
     onPostTap: (context, post) {
       if (isFeed) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => LMFeedPostDetailScreen(
-              postId: post.id,
-              postBuilder: suraasaPostWidgetBuilder,
-              commentBuilder: suraasaCommentWidgetBuilder,
-            ),
-          ),
-        );
+        navigateToLMPostDetailsScreen(context, post);
       }
     },
     headerBuilder: suraasaPostHeaderBuilder,
     topicBuilder: suraasaPostTopicChipBuilder,
     footerBuilder: suraasaPostFooterBuilder,
+  );
+}
+
+void navigateToLMPostDetailsScreen(BuildContext context, LMPostViewData post) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => LMFeedPostDetailScreen(
+        postId: post.id,
+        postBuilder: suraasaPostWidgetBuilder,
+        commentBuilder: suraasaCommentWidgetBuilder,
+      ),
+    ),
   );
 }
