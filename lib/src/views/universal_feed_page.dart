@@ -528,7 +528,7 @@ class _FeedRoomViewState extends State<FeedRoomView> {
   final ValueNotifier postSomethingNotifier = ValueNotifier(false);
   bool right = true;
 
-  Widget getLoaderThumbnail(MediaModel? media) {
+  Widget getLoaderThumbnail(AttachmentPostViewData? media) {
     if (media != null) {
       if (media.mediaType == MediaType.image) {
         return Container(

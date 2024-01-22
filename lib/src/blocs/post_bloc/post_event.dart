@@ -6,7 +6,7 @@ abstract class LMPostEvents extends Equatable {
 }
 
 class CreateNewPost extends LMPostEvents {
-  final List<MediaModel>? postMedia;
+  final List<AttachmentPostViewData>? postMedia;
   final String postText;
   final User user;
   final List<TopicUI> selectedTopics;

@@ -13,7 +13,7 @@ class ActivityUtils {
     final Iterable<RegExpMatch> matches =
         RegExp(notificationTagRoute).allMatches(string);
     for (final match in matches) {
-       String tag = match.group(1)!;
+      String tag = match.group(1)!;
       final String mid = match.group(2)!;
       final String id = match.group(3)!;
       if (id == currentUserId) {
@@ -99,7 +99,11 @@ class ActivityUtils {
               ..createdAt(DateTime.fromMillisecondsSinceEpoch(
                   activity.activityEntityData.createdAt))
               ..updatedAt(DateTime.fromMillisecondsSinceEpoch(
-                  activity.activityEntityData.updatedAt!)))
+                  activity.activityEntityData.updatedAt!))
+              ..isRepost(false)
+              ..isRepostedByUser(false)
+              ..repostCount(0)
+              ..isDeleted(false))
             .build();
   }
 }
