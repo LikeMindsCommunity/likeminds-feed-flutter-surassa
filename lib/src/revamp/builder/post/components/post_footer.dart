@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed_flutter_core/likeminds_feed_core.dart';
+import 'package:likeminds_feed_ss_fl/src/revamp/builder/post/post_builder.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 
 Widget suraasaPostFooterBuilder(BuildContext context,
@@ -31,7 +32,8 @@ Widget suraasaPostFooterBuilder(BuildContext context,
           return suraasaLikeButtonBuilder(context, likeButton);
         },
         commentButtonBuilder: (commentButton) {
-          return suraasaCommentButtonBuilder(context, commentButton);
+          return suraasaCommentButtonBuilder(
+              context, commentButton, postViewData);
         },
       ),
     ],
@@ -44,9 +46,13 @@ Widget suraasaLikeButtonBuilder(BuildContext context, LMFeedButton button) {
   );
 }
 
-Widget suraasaCommentButtonBuilder(BuildContext context, LMFeedButton button) {
+Widget suraasaCommentButtonBuilder(
+    BuildContext context, LMFeedButton button, LMPostViewData postViewData) {
   return button.copyWith(
     text: button.text?.copyWith(text: 'Comment') ??
         const LMFeedText(text: 'Comment'),
+    onTap: () {
+      navigateToLMPostDetailsScreen(context, postViewData);
+    },
   );
 }
