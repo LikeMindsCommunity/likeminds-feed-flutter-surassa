@@ -50,7 +50,7 @@ dependencies:
     path: ../LikeMinds-Flutter-Feed-UI
 
   likeminds_feed:
-    1.6.6
+    1.6.7
     # path: ../LikeMinds-Flutter-Feed-SDK
 
 dependency_override:
