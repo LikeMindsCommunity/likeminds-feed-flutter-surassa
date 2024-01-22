@@ -28,7 +28,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class NewPostScreen extends StatefulWidget {
   final String? populatePostText;
-  final List<MediaModel>? populatePostMedia;
+  final List<AttachmentPostViewData>? populatePostMedia;
 
   const NewPostScreen({
     super.key,
@@ -54,7 +54,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
   LMPostBloc? lmPostBloc;
   late final User user;
 
-  List<MediaModel> postMedia = [];
+  List<AttachmentPostViewData> postMedia = [];
   List<UserTag> userTags = [];
   String? result;
 
@@ -64,7 +64,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
   bool isUploading = false;
 
   String previewLink = '';
-  MediaModel? linkModel;
+  AttachmentPostViewData? linkModel;
   bool showLinkPreview =
       true; // if set to false link preview should not be displayed
   Timer? _debounce;
@@ -97,7 +97,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
   */
   void removeAttachmenetAtIndex(int index) {
     if (postMedia.isNotEmpty) {
-      MediaModel mediaToBeRemoved = postMedia[index];
+      AttachmentPostViewData mediaToBeRemoved = postMedia[index];
       if (mediaToBeRemoved.mediaType == MediaType.document) {
         int docCount = 0;
         for (var element in postMedia) {
@@ -150,9 +150,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
 
   // this function initiliases postMedia list
   // with photos/videos picked by the user
-  void setPickedMediaFiles(List<MediaModel> pickedMediaFiles) {
+  void setPickedMediaFiles(List<AttachmentPostViewData> pickedMediaFiles) {
     if (postMedia.isEmpty) {
-      postMedia = <MediaModel>[...pickedMediaFiles];
+      postMedia = <AttachmentPostViewData>[...pickedMediaFiles];
     } else {
       postMedia.addAll(pickedMediaFiles);
     }
@@ -296,7 +296,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
           await locator<LMFeedClient>().decodeUrl(request);
       if (response.success == true) {
         OgTags? responseTags = response.ogTags;
-        linkModel = MediaModel(
+        linkModel = AttachmentPostViewData(
           mediaType: MediaType.link,
           link: previewLink,
           ogTags: AttachmentMetaOgTags(
@@ -668,8 +668,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                       ? ClipRRect(
                                                           borderRadius:
                                                               const BorderRadius
-                                                                      .all(
-                                                                  Radius
+                                                                  .all(Radius
                                                                       .circular(
                                                                           12)),
                                                           child: Container(
@@ -702,8 +701,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                       : ClipRRect(
                                                           borderRadius:
                                                               const BorderRadius
-                                                                      .all(
-                                                                  Radius
+                                                                  .all(Radius
                                                                       .circular(
                                                                           12)),
                                                           child: Container(
@@ -930,7 +928,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                             onUploadedMedia(false);
                                             return;
                                           }
-                                          List<MediaModel>? pickedMediaFiles =
+                                          List<AttachmentPostViewData>?
+                                              pickedMediaFiles =
                                               await PostMediaPicker.pickVideos(
                                                   postMedia.length,
                                                   onUploadedMedia);
@@ -977,7 +976,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                 },
                                               ));
 
-                                          List<MediaModel>? pickedMediaFiles =
+                                          List<AttachmentPostViewData>?
+                                              pickedMediaFiles =
                                               await PostMediaPicker
                                                   .pickDocuments(
                                                       postMedia.length);
@@ -1061,9 +1061,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
           }
         }
         List<File> pickedFiles = list.files.map((e) => File(e.path!)).toList();
-        List<MediaModel> mediaFiles = pickedFiles
-            .map((e) =>
-                MediaModel(mediaFile: File(e.path), mediaType: MediaType.image))
+        List<AttachmentPostViewData> mediaFiles = pickedFiles
+            .map((e) => AttachmentPostViewData(
+                mediaFile: File(e.path), mediaType: MediaType.image))
             .toList();
         setPickedMediaFiles(mediaFiles);
         onUploadedMedia(true);

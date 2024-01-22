@@ -11,7 +11,7 @@ class LMPostInitiate extends LMPostState {}
 
 class NewPostUploading extends LMPostState {
   final Stream<double> progress;
-  final MediaModel? thumbnailMedia;
+  final AttachmentPostViewData? thumbnailMedia;
 
   const NewPostUploading({required this.progress, this.thumbnailMedia});
 }

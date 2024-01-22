@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:likeminds_feed/likeminds_feed.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 
-import 'package:likeminds_feed_ss_fl/src/services/navigation_service.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 import 'package:likeminds_feed_ss_fl/src/views/post_detail_screen.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -16,8 +15,8 @@ import 'package:overlay_support/overlay_support.dart';
 /// It routes the notification to the appropriate screen
 /// Since this is a singleton class, it is initialized on the client side
 class LMNotificationHandler {
-  late final String deviceId;
-  late final String fcmToken;
+  String? deviceId;
+  String? fcmToken;
   int? memberId;
 
   static LMNotificationHandler? _instance;
@@ -44,10 +43,13 @@ class LMNotificationHandler {
   /// It initializes the [memberId] which is used to route the notification
   /// If the registration is successful, it prints success message
   void registerDevice(int memberId) async {
+    if (fcmToken == null || deviceId == null) {
+      return;
+    }
     RegisterDeviceRequest request = (RegisterDeviceRequestBuilder()
-          ..token(fcmToken)
+          ..token(fcmToken!)
           ..memberId(memberId)
-          ..deviceId(deviceId))
+          ..deviceId(deviceId!))
         .build();
     this.memberId = memberId;
     final response = await locator<LMFeedClient>().registerDevice(request);
