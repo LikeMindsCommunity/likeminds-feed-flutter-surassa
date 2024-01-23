@@ -21,7 +21,6 @@ export 'src/utils/notifications/notification_handler.dart';
 export 'src/utils/share/share_post.dart';
 export 'src/utils/local_preference/user_local_preference.dart';
 export 'src/blocs/bloc.dart';
-export 'src/utils/deep_link/deep_link_handler.dart';
 export 'src/widgets/widgets.dart';
 export 'src/revamp/theme/theme.dart';
 export 'src/revamp/builder/builder.dart';

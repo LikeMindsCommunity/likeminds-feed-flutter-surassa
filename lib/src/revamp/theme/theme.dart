@@ -5,17 +5,18 @@ import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
 const Color kPrimaryColor = Color.fromRGBO(59, 130, 246, 1);
 const Color primary500 = Color(0xFF4666F6);
 const Color interactive100 = Color.fromRGBO(219, 234, 254, 1);
-const Color kHeadingBlackColor = Color(0xFF0F172A);
+const Color kHeadingBlackColor = Color.fromRGBO(15, 23, 42, 1);
 const Color kPrimaryColorLight = Color(0xFFDBEAFE);
 const Color kSecondary100 = Color(0xFFF1F5F9);
-const Color kSecondaryColor700 = Color(0xFF334155);
-const Color kSecondaryColorLight = Color(0xFFEDF0FE);
-const Color onSurface = Color(0xFFE2E8F0);
+const Color kSecondaryColor700 = Color.fromRGBO(51, 65, 85, 1);
+const Color kSecondaryColorLight = Color.fromRGBO(237, 240, 254, 1);
+const Color onSurface = Color.fromRGBO(226, 232, 240, 1);
 const Color onSurface500 = Color.fromRGBO(100, 116, 139, 1);
 const Color onSurface400 = Color.fromRGBO(148, 163, 184, 1);
 const Color onSurface700 = Color.fromRGBO(51, 65, 85, 1);
 const Color onSurface900 = Color.fromRGBO(15, 23, 42, 1);
 const Color kBackgroundColor = Color.fromRGBO(245, 245, 245, 1);
+const Color textColor = Color.fromRGBO(30, 41, 59, 1);
 
 LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
   primaryColor: kPrimaryColor,
@@ -57,6 +58,13 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
   contentStyle: LMFeedPostContentStyle.basic().copyWith(
     padding: const EdgeInsets.symmetric(
       vertical: 8.0,
+    ),
+    textStyle: const TextStyle(
+      color: textColor,
+      fontSize: 16,
+      fontFamily: 'Inter',
+      fontWeight: FontWeight.w400,
+      height: 0.08,
     ),
   ),
   mediaStyle: LMFeedPostMediaStyle(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed_flutter_core/likeminds_feed_core.dart';
+import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_fl/src/revamp/builder/post/post_builder.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 
@@ -26,6 +27,7 @@ Widget suraasaPostFooterBuilder(BuildContext context,
       LMThemeData.kVerticalPaddingMedium,
       const Divider(
         height: 1,
+        color: onSurface,
       ),
       footerWidget.copyWith(
         likeButtonBuilder: (likeButton) {
