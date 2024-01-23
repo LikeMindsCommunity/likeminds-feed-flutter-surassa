@@ -273,7 +273,7 @@ class _CredScreenState extends State<CredScreen> {
               ),
               const SizedBox(height: 36),
               GestureDetector(
-                onTap: () {
+                onTap: () async {
                   String userId = _userIdController.text;
                   String userName = _usernameController.text;
 
@@ -281,15 +281,10 @@ class _CredScreenState extends State<CredScreen> {
                     return;
                   }
 
-                  // if (_userIdController.text.isNotEmpty) {
-                  //   UserLocalPreference.instance
-                  //       .storeUserId(_userIdController.text);
-                  // } else {
-                  //   UserLocalPreference.instance.storeUserId(SharePost.userId);
-                  // }
                   MaterialPageRoute route = MaterialPageRoute(
                     // INIT - Get the LMFeed instance and pass the credentials (if any)
                     builder: (context) => TabApp(
+                      uuid: userId,
                       feedWidget: LMFeedSuraasa(
                         userId: userId,
                         userName: userName,

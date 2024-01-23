@@ -70,8 +70,8 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
     imageStyle: const LMFeedPostImageStyle(),
     linkStyle: LMFeedPostLinkPreviewStyle.basic().copyWith(
       showLinkUrl: false,
-      height: 238,
-      imageHeight: 178,
+      height: 195,
+      imageHeight: 137,
       backgroundColor: kSecondary100,
       margin: const EdgeInsets.only(bottom: 16.0),
       padding: const EdgeInsets.all(12.0),
@@ -279,6 +279,32 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
       left: 64,
     ),
     mediaStyle: LMFeedComposeMediaStyle.basic().copyWith(
+      linkStyle: LMFeedPostLinkPreviewStyle.basic().copyWith(
+        showLinkUrl: false,
+        height: 193,
+        imageHeight: 139,
+        backgroundColor: kSecondary100,
+        margin: const EdgeInsets.only(bottom: 16.0, left: 64),
+        padding: const EdgeInsets.all(12.0),
+        titleStyle: const LMFeedTextStyle(
+          maxLines: 1,
+          textStyle: TextStyle(
+            color: onSurface900,
+            fontSize: 14,
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w600,
+            height: 0.09,
+          ),
+        ),
+        subtitleStyle: const LMFeedTextStyle(
+          maxLines: 1,
+          textStyle: TextStyle(
+            color: onSurface900,
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ),
       imageStyle: LMFeedPostImageStyle.basic().copyWith(
         height: 144,
         width: 144,

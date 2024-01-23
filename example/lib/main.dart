@@ -41,8 +41,15 @@ void main() async {
 
   await LMFeedCore.instance.initialize(
     // lmFeedClient: lmFeedClient,
+    apiKey: "6b51af13-ce28-444b-a571-53a3fb125444",
     domain: "https://www.suraasa.com",
+    config: LMFeedConfig(
+      composeConfig: const LMFeedComposeScreenConfig(
+        topicRequiredToCreatePost: true,
+      ),
+    ),
   );
+
   runApp(const MyApp());
 }
 

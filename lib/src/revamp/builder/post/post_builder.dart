@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed_flutter_core/likeminds_feed_core.dart';
 import 'package:likeminds_feed_ss_fl/src/revamp/builder/comment/comment_builder.dart';
+import 'package:likeminds_feed_ss_fl/src/revamp/builder/components/post_detail_app_bar.dart';
 import 'package:likeminds_feed_ss_fl/src/revamp/builder/post/components/post_footer.dart';
 import 'package:likeminds_feed_ss_fl/src/revamp/builder/post/components/post_header.dart';
 import 'package:likeminds_feed_ss_fl/src/revamp/builder/post/components/post_topic.dart';
@@ -28,6 +29,7 @@ void navigateToLMPostDetailsScreen(BuildContext context, LMPostViewData post) {
         postId: post.id,
         postBuilder: suraasaPostWidgetBuilder,
         commentBuilder: suraasaCommentWidgetBuilder,
+        appBarBuilder: suraasaPostDetailScreenAppBarBuilder,
       ),
     ),
   );

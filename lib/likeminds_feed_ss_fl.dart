@@ -24,6 +24,7 @@ export 'src/blocs/bloc.dart';
 export 'src/utils/deep_link/deep_link_handler.dart';
 export 'src/widgets/widgets.dart';
 export 'src/revamp/theme/theme.dart';
+export 'src/revamp/builder/builder.dart';
 
 /// Flutter environment manager v0.0.1
 const prodFlag = !bool.fromEnvironment('DEBUG');
