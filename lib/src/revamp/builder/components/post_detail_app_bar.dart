@@ -17,6 +17,7 @@ PreferredSizeWidget suraasaPostDetailScreenAppBarBuilder(
     ),
     style: appBar.style?.copyWith(
       centerTitle: Platform.isAndroid ? false : true,
+      height: 50,
     ),
   );
 }
