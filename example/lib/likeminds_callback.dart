@@ -10,7 +10,7 @@ class LikeMindsCallback implements LMSDKCallback {
   /// [propertiesMap] is the map of properties associated with the event
   @override
   void eventFiredCallback(String eventKey, Map<String, dynamic> propertiesMap) {
-    debugPrint("Main event fired callback in UI: $eventKey");
+    debugPrint("Main event fired callback in example: $eventKey");
     propertiesMap.forEach((key, value) {
       debugPrint("Key: $key, Value: $value");
     });

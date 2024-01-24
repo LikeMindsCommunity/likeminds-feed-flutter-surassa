@@ -23,12 +23,12 @@ Future<void> _setupLocator(LMSDKCallback? callback, String apiKey,
 
   MediaService mediaService = MediaService(prodFlag);
 
-  LMAnalytics.get().initialize();
-
   LMFeedClient lmFeedClient = (LMFeedClientBuilder()
         ..apiKey(apiKey)
         ..sdkCallback(callback))
       .build();
+
+  LMAnalytics.get().initialize();
 
   if (!locator.isRegistered<LMFeedClient>()) {
     locator.registerSingleton(lmFeedClient);
