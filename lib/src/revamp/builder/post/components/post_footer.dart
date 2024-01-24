@@ -78,5 +78,8 @@ Widget suraasaCommentButtonBuilder(
     onTap: () {
       navigateToLMPostDetailsScreen(context: context, postViewData.id);
     },
+    onTextTap: () {
+      navigateToLMPostDetailsScreen(context: context, postViewData.id);
+    },
   );
 }
