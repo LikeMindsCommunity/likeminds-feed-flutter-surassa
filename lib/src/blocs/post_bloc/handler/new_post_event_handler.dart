@@ -28,7 +28,7 @@ newPostEventHandler(CreateNewPost event, Emitter<LMPostState> emit) async {
               attachmentType: 4,
               attachmentMeta: AttachmentMeta(
                   url: media.ogTags!.url,
-                  ogTags: AttachmentMetaOgTags(
+                  ogTags: OgTags(
                     description: media.ogTags!.description,
                     image: media.ogTags!.image,
                     title: media.ogTags!.title,
@@ -98,7 +98,7 @@ newPostEventHandler(CreateNewPost event, Emitter<LMPostState> emit) async {
     } else {
       emit(NewPostError(message: response.errorMessage!));
     }
-  } catch (err) {
+  } on Exception catch (err) {
     emit(const NewPostError(message: 'An error occurred'));
     debugPrint(err.toString());
   }

@@ -108,11 +108,12 @@ class AddCommentReplyBloc
             );
             emit(CommentDeleteError());
           }
-        } catch (err) {
+        } on Exception catch (err, stacktrace) {
           toast(
             'An error occcurred while deleting comment',
             duration: Toast.LENGTH_LONG,
           );
+          LMFeedLogger.instance.handleException(err, stacktrace);
           emit(CommentDeleteError());
         }
       },

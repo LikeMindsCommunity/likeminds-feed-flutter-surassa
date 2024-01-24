@@ -188,8 +188,6 @@ class _TopicBottomSheetState extends State<TopicBottomSheet> {
                               child: SingleChildScrollView(
                                 controller: controller,
                                 child: Wrap(
-                                  crossAxisAlignment: WrapCrossAlignment.start,
-                                  alignment: WrapAlignment.start,
                                   children: topicsPagingController.itemList
                                           ?.map((e) {
                                         bool isTopicSelected =
@@ -229,7 +227,6 @@ class _TopicBottomSheetState extends State<TopicBottomSheet> {
                                               backgroundColor: isTopicSelected
                                                   ? theme.colorScheme.secondary
                                                   : LMThemeData.kWhiteColor,
-                                              onDeleted: null,
                                               clipBehavior: Clip.hardEdge,
                                               materialTapTargetSize:
                                                   MaterialTapTargetSize
@@ -238,9 +235,8 @@ class _TopicBottomSheetState extends State<TopicBottomSheet> {
                                                   side: isTopicSelected
                                                       ? BorderSide.none
                                                       : const BorderSide(
-                                                          color:
-                                                              LMThemeData.appSecondaryBlack,
-                                                          width: 1.0,
+                                                          color: LMThemeData
+                                                              .appSecondaryBlack,
                                                         ),
                                                   borderRadius:
                                                       BorderRadius.circular(

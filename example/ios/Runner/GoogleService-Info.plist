@@ -2,22 +2,18 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CLIENT_ID</key>
-	<string>317419981427-e7pvjo4et7sfek380beg3dckrb067kv4.apps.googleusercontent.com</string>
-	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.317419981427-e7pvjo4et7sfek380beg3dckrb067kv4</string>
 	<key>API_KEY</key>
-	<string>AIzaSyAVmbe-8jgnO2MUnFotMdp2tmDVnwTZqfE</string>
+	<string>AIzaSyA1FpuiQNAdaZJ-xzxx3SLucERBhWLskvA</string>
 	<key>GCM_SENDER_ID</key>
-	<string>317419981427</string>
+	<string>556581208807</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.likeminds.feed-ss-sample</string>
+	<string>com.likeminds.feed.suraasa</string>
 	<key>PROJECT_ID</key>
-	<string>likeminds-sdk-app</string>
+	<string>lm-flutter</string>
 	<key>STORAGE_BUCKET</key>
-	<string>likeminds-sdk-app.appspot.com</string>
+	<string>lm-flutter.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:317419981427:ios:8bd786c38ad27dded2f806</string>
+	<string>1:556581208807:ios:471df4b3fe3b8a30141842</string>
 </dict>
 </plist>

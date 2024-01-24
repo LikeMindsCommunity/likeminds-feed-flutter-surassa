@@ -62,8 +62,12 @@ class _SSActivityWidgetState extends State<SSActivityWidget> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   final activityResponse = snapshot.data;
-                  return activityResponse!.activities!.isEmpty
-                      ? SizedBox.shrink()
+                  final showActivities = activityResponse != null &&
+                      activityResponse.success &&
+                      activityResponse.activities != null &&
+                      activityResponse.activities!.isNotEmpty;
+                  return !showActivities
+                      ? const SizedBox.shrink()
                       : Column(
                           children: [
                             ListView.builder(
@@ -140,7 +144,7 @@ class _SSActivityWidgetState extends State<SSActivityWidget> {
                                           ),
                                           child: ExpandableText(postData.text,
                                               expandText: 'Read More',
-                                              maxLines: 2, onTagTap: (tag) {
+                                              onTagTap: (tag) {
                                             debugPrint(tag);
                                           }, onLinkTap: () {
                                             Navigator.push(

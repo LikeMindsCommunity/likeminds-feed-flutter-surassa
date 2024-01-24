@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:likeminds_feed_flutter_core/likeminds_feed_core.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:flutter/material.dart';
+import 'package:likeminds_feed_ss_fl/src/app.dart';
 import 'package:likeminds_feed_ss_sample/bloc_observer/analytics_bloc_listener.dart';
 import 'package:likeminds_feed_ss_sample/bloc_observer/profile_bloc_listener.dart';
 import 'package:likeminds_feed_ss_sample/bloc_observer/routing_bloc_listener.dart';
@@ -28,45 +30,48 @@ class MyApp extends StatelessWidget {
         textColor: Colors.white,
         alignment: Alignment.bottomCenter,
       ),
-      child: MaterialApp(
-        title: 'Integration App for UI + SDK package',
-        debugShowCheckedModeBanner: debug ? true : false,
-        navigatorKey: rootNavigatorKey,
-        scaffoldMessengerKey: rootScaffoldMessengerKey,
-        theme: ThemeData(
-          useMaterial3: true,
-          primaryColor: Colors.deepPurple,
-          inputDecorationTheme: InputDecorationTheme(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            outlineBorder: const BorderSide(
-              color: Colors.deepPurple,
-              width: 2,
-            ),
-            activeIndicatorBorder: const BorderSide(
-              color: Colors.deepPurple,
-              width: 2,
-            ),
-            focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.deepPurple,
+      child: LMFeedTheme(
+        theme: suraasaTheme,
+        child: MaterialApp(
+          title: 'Integration App for UI + SDK package',
+          debugShowCheckedModeBanner: debug ? true : false,
+          navigatorKey: rootNavigatorKey,
+          scaffoldMessengerKey: rootScaffoldMessengerKey,
+          theme: ThemeData(
+            useMaterial3: false,
+            primaryColor: Colors.deepPurple,
+            inputDecorationTheme: InputDecorationTheme(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              outlineBorder: const BorderSide(
+                color: Colors.white,
                 width: 2,
               ),
-            ),
-            enabledBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.deepPurple,
+              activeIndicatorBorder: const BorderSide(
+                color: Colors.white,
                 width: 2,
+              ),
+              focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.white,
+                  width: 2,
+                ),
+              ),
+              enabledBorder: const OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.white,
+                  width: 2,
+                ),
               ),
             ),
           ),
-        ),
-        home: LMBlocListener(
-          analyticsListener: analyticsBlocListener,
-          profileListener: profileBlocListener,
-          routingListener: routingBlocListener,
-          child: const CredScreen(),
+          home: LMBlocListener(
+            analyticsListener: analyticsBlocListener,
+            profileListener: profileBlocListener,
+            routingListener: routingBlocListener,
+            child: const CredScreen(),
+          ),
         ),
       ),
     );
@@ -92,7 +97,6 @@ class _CredScreenState extends State<CredScreen> {
     super.initState();
     NetworkConnectivity networkConnectivity = NetworkConnectivity.instance;
     networkConnectivity.initialise();
-    // userId = UserLocalPreference.instance.fetchUserId();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       initUniLinks(context);
     });
@@ -107,95 +111,113 @@ class _CredScreenState extends State<CredScreen> {
   }
 
   Future initUniLinks(BuildContext context) async {
-    if (!initialURILinkHandled) {
-      // Get the initial deep link if the app was launched with one
-      final initialLink = await getInitialLink();
+    // Get the initial deep link if the app was launched with one
+    final initialLink = await getInitialLink();
 
-      // Handle the deep link
-      if (initialLink != null) {
-        initialURILinkHandled = true;
-        // You can extract any parameters from the initialLink object here
-        // and use them to navigate to a specific screen in your app
-        debugPrint('Received initial deep link: $initialLink');
+    // Handle the deep link
+    if (initialLink != null) {
+      initialURILinkHandled = true;
+      // You can extract any parameters from the initialLink object here
+      // and use them to navigate to a specific screen in your app
+      debugPrint('Received initial deep link: $initialLink');
 
-        // TODO: add api key to the DeepLinkRequest
-        // TODO: add user id and user name of logged in user
-        final uriLink = Uri.parse(initialLink);
-        if (uriLink.isAbsolute) {
-          final deepLinkRequestBuilder = LMFeedDeepLinkRequestBuilder()
-            ..userId(userId ?? "Test-User-Id")
-            ..userName("Test User");
-          if (uriLink.path == '/community/post') {
-            List secondPathSegment = initialLink.split('post_id=');
-            if (secondPathSegment.length > 1 && secondPathSegment[1] != null) {
-              String postId = secondPathSegment[1];
-              LMFeedDeepLinkHandler().parseDeepLink(
-                  (deepLinkRequestBuilder
-                        ..path(LMFeedDeepLinkPath.OPEN_POST)
-                        ..data({
-                          "post_id": postId,
-                        }))
-                      .build(),
-                  rootNavigatorKey);
-            }
-          } else if (uriLink.path == '/community/post/create') {
-            LMFeedDeepLinkHandler().parseDeepLink(
-                (deepLinkRequestBuilder..path(LMFeedDeepLinkPath.CREATE_POST))
-                    .build(),
-                rootNavigatorKey);
-          }
-        }
-      }
+      // TODO: add api key to the DeepLinkRequest
+      // TODO: add user id and user name of logged in user
+      final uriLink = Uri.parse(initialLink);
+      if (uriLink.isAbsolute) {
+        final deepLinkRequestBuilder = LMFeedDeepLinkRequestBuilder()
+          ..userId(userId ?? "Test-User-Id")
+          ..userName("Test User");
+        if (uriLink.path == '/community/post') {
+          List secondPathSegment = initialLink.split('post_id=');
+          if (secondPathSegment.length > 1 && secondPathSegment[1] != null) {
+            String postId = secondPathSegment[1];
 
-      // Subscribe to link changes
-      _streamSubscription = linkStream.listen((String? link) async {
-        if (link != null) {
-          initialURILinkHandled = true;
-          // Handle the deep link
-          // You can extract any parameters from the uri object here
-          // and use them to navigate to a specific screen in your app
-          debugPrint('Received deep link: $link');
-          // TODO: add api key to the DeepLinkRequest
-          // TODO: add user id and user name of logged in user
+            // Call initiate user if not called already
+            // It is recommened to call initiate user with your login flow
+            // so that navigation works seemlessly
+            InitiateUserResponse response = await LMFeedCore.instance
+                .initiateUser((InitiateUserRequestBuilder()
+                      ..userId(userId ?? "Test-User-Id")
+                      ..userName("Test User"))
+                    .build());
 
-          final uriLink = Uri.parse(link);
-          if (uriLink.isAbsolute) {
-            final deepLinkRequestBuilder = LMFeedDeepLinkRequestBuilder()
-              ..userId(userId ?? "Test-User-Id")
-              ..userName("Test User");
-
-            if (uriLink.path == '/community/post') {
-              List secondPathSegment = link.split('post_id=');
-              if (secondPathSegment.length > 1 &&
-                  secondPathSegment[1] != null) {
-                String postId = secondPathSegment[1];
-                LMFeedDeepLinkHandler().parseDeepLink(
-                    (deepLinkRequestBuilder
-                          ..path(LMFeedDeepLinkPath.OPEN_POST)
-                          ..data({
-                            "post_id": postId,
-                          }))
-                        .build(),
-                    rootNavigatorKey);
-              }
-            } else if (uriLink.path == '/community/post/create') {
-              LMFeedDeepLinkHandler().parseDeepLink(
-                (deepLinkRequestBuilder..path(LMFeedDeepLinkPath.CREATE_POST))
-                    .build(),
-                rootNavigatorKey,
+            if (response.success) {
+              // Replace the below code
+              // if you wanna navigate to your screen
+              // Either navigatorKey or context must be provided
+              // for the navigation to work
+              // if both are null an exception will be thrown
+              navigateToLMPostDetailsScreen(
+                postId,
+                navigatorKey: rootNavigatorKey,
               );
             }
           }
+        } else if (uriLink.path == '/community/post/create') {
+          rootNavigatorKey.currentState!.pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const LMFeedComposeScreen(),
+            ),
+          );
         }
-      }, onError: (err) {
-        // Handle exception by warning the user their action did not succeed
-        toast('An error occurred');
-      });
+      }
     }
+
+    // Subscribe to link changes
+    LMFeedCore.deepLinkStream = linkStream.listen((String? link) async {
+      if (link != null) {
+        initialURILinkHandled = true;
+        // Handle the deep link
+        // You can extract any parameters from the uri object here
+        // and use them to navigate to a specific screen in your app
+        debugPrint('Received deep link: $link');
+        // TODO: add api key to the DeepLinkRequest
+        // TODO: add user id and user name of logged in user
+
+        final uriLink = Uri.parse(link);
+        if (uriLink.isAbsolute) {
+          if (uriLink.path == '/community/post') {
+            List secondPathSegment = link.split('post_id=');
+            if (secondPathSegment.length > 1 && secondPathSegment[1] != null) {
+              String postId = secondPathSegment[1];
+
+              InitiateUserResponse response = await LMFeedCore.instance
+                  .initiateUser((InitiateUserRequestBuilder()
+                        ..userId(userId ?? "Test-User-Id")
+                        ..userName("Test User"))
+                      .build());
+
+              if (response.success) {
+                // Replace the below code
+                // if you wanna navigate to your screen
+                // Either navigatorKey or context must be provided
+                // for the navigation to work
+                // if both are null an exception will be thrown
+                navigateToLMPostDetailsScreen(
+                  postId,
+                  navigatorKey: rootNavigatorKey,
+                );
+              }
+            }
+          } else if (uriLink.path == '/community/post/create') {
+            rootNavigatorKey.currentState!.push(
+              MaterialPageRoute(
+                builder: (context) => const LMFeedComposeScreen(),
+              ),
+            );
+          }
+        }
+      }
+    }, onError: (err) {
+      // Handle exception by warning the user their action did not succeed
+      toast('An error occurred');
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    LMFeedThemeData feedTheme = LMFeedTheme.of(context);
     // return lmFeed;
     userId = null; // UserLocalPreference.instance.fetchUserId();
     // If the local prefs have user id stored
@@ -210,7 +232,7 @@ class _CredScreenState extends State<CredScreen> {
       );
     } else {
       return Scaffold(
-        backgroundColor: const Color.fromARGB(255, 6, 92, 193),
+        backgroundColor: feedTheme.primaryColor,
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18.0),
           child: Column(
@@ -238,14 +260,11 @@ class _CredScreenState extends State<CredScreen> {
                 cursorColor: Colors.white,
                 style: const TextStyle(color: Colors.white),
                 controller: _usernameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   fillColor: Colors.white,
                   focusColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
                   labelText: 'Username',
-                  labelStyle: const TextStyle(
+                  labelStyle: TextStyle(
                     color: Colors.white,
                   ),
                 ),
@@ -255,40 +274,36 @@ class _CredScreenState extends State<CredScreen> {
                 cursorColor: Colors.white,
                 controller: _userIdController,
                 style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    focusColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    labelText: 'User ID',
-                    labelStyle: const TextStyle(
-                      color: Colors.white,
-                    )),
+                decoration: const InputDecoration(
+                  fillColor: Colors.white,
+                  focusColor: Colors.white,
+                  labelText: 'User ID',
+                  labelStyle: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
               ),
               const SizedBox(height: 36),
               GestureDetector(
-                onTap: () {
-                  lmFeed = LMFeed.instance(
-                    userId: _userIdController.text,
-                    userName: _usernameController.text,
-                    callback: LikeMindsCallback(),
-                    apiKey: "",
-                  );
+                onTap: () async {
+                  String userId = _userIdController.text;
+                  String userName = _usernameController.text;
 
-                  // if (_userIdController.text.isNotEmpty) {
-                  //   UserLocalPreference.instance
-                  //       .storeUserId(_userIdController.text);
-                  // } else {
-                  //   UserLocalPreference.instance.storeUserId(SharePost.userId);
-                  // }
+                  if (userId.isEmpty && userName.isEmpty) {
+                    return;
+                  }
+
                   MaterialPageRoute route = MaterialPageRoute(
                     // INIT - Get the LMFeed instance and pass the credentials (if any)
                     builder: (context) => TabApp(
-                      feedWidget: lmFeed!,
+                      uuid: userId,
+                      feedWidget: LMFeedSuraasa(
+                        userId: userId,
+                        userName: userName,
+                      ),
                     ),
                   );
-                  Navigator.of(context).pushReplacement(route);
+                  Navigator.of(context).push(route);
                 },
                 child: Container(
                   width: 200,

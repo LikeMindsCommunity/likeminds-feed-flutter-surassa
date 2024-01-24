@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
+import 'package:likeminds_feed_flutter_core/likeminds_feed_core.dart';
 
 class LMBlocListener extends StatefulWidget {
   final Widget child;
-  Function(BuildContext, LMAnalyticsState) analyticsListener;
-  Function(BuildContext, LMRoutingState) routingListener;
-  Function(BuildContext, LMProfileState) profileListener;
+  Function(BuildContext, LMFeedAnalyticsState) analyticsListener;
+  Function(BuildContext, LMFeedRoutingState) routingListener;
+  Function(BuildContext, LMFeedProfileState) profileListener;
 
   LMBlocListener({
     super.key,
@@ -24,25 +24,23 @@ class _LMBlocListenerState extends State<LMBlocListener> {
   @override
   void initState() {
     super.initState();
-    Bloc.observer = SimpleBlocObserver();
   }
 
   @override
   Widget build(BuildContext context) {
-    LMFeedBloc lmFeedBloc = locator<LMFeedBloc>();
     return MultiBlocListener(
       listeners: [
         BlocListener(
           listener: widget.profileListener,
-          bloc: lmFeedBloc.lmProfileBloc,
+          bloc: LMFeedProfileBloc.instance,
         ),
         BlocListener(
           listener: widget.analyticsListener,
-          bloc: locator<LMFeedBloc>().lmAnalyticsBloc,
+          bloc: LMFeedAnalyticsBloc.instance,
         ),
         BlocListener(
           listener: widget.routingListener,
-          bloc: lmFeedBloc.lmRoutingBloc,
+          bloc: LMFeedRoutingBloc.instance,
         ),
       ],
       child: widget.child,

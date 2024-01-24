@@ -49,12 +49,17 @@ dependencies:
   likeminds_feed_ui_fl:
     path: ../LikeMinds-Flutter-Feed-UI
 
+  likeminds_feed_flutter_core:
+    1.0.0
+    # path: ../likeminds_feed_flutter/packages/integration
+
   likeminds_feed:
-    1.6.7
+    1.7.0
     # path: ../LikeMinds-Flutter-Feed-SDK
 
 dependency_override:
   sliver_tools: 0.2.12
+  extended_text_field: ^12.1.0
 
 dev_dependencies:
   flutter_test:

@@ -471,7 +471,6 @@ class _SSPostWidgetState extends State<SSPostWidget> {
                                         initialiseVideoController;
                                   },
                                   boxFit: BoxFit.contain,
-                                  
                                 ),
                               ),
                             )
