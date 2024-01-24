@@ -4,3 +4,5 @@ dependency_overrides:
     path: ../likeminds_feed_flutter/packages/integration
   likeminds_feed_flutter_ui:
     path: ../likeminds_feed_flutter/packages/ui
+  likeminds_feed:
+    path: ../LikeMinds-Flutter-Feed-SDK
