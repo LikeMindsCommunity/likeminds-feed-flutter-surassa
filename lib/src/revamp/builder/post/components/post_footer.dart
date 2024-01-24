@@ -4,7 +4,8 @@ import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 
 Widget suraasaPostFooterBuilder(BuildContext context,
-    LMFeedPostFooter footerWidget, LMPostViewData postViewData) {
+    LMFeedPostFooter footerWidget, LMPostViewData postViewData,
+    {bool isFeed = false}) {
   return Column(
     children: [
       Row(
@@ -25,7 +26,10 @@ Widget suraasaPostFooterBuilder(BuildContext context,
           ),
           GestureDetector(
             onTap: () {
-              footerWidget.commentButton?.onTextTap?.call();
+              if (isFeed) {
+                navigateToLMPostDetailsScreen(postViewData.id,
+                    context: context);
+              }
             },
             child: Container(
               color: Colors.transparent,

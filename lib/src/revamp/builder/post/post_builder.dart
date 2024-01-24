@@ -19,7 +19,8 @@ Widget suraasaPostWidgetBuilder(
         activityHeader ?? suraasaPinPostActivityHeader(postData.isPinned),
     headerBuilder: suraasaPostHeaderBuilder,
     topicBuilder: suraasaPostTopicChipBuilder,
-    footerBuilder: suraasaPostFooterBuilder,
+    footerBuilder: (context, footer, postViewData) =>
+        suraasaPostFooterBuilder(context, footer, postViewData, isFeed: isFeed),
   );
 }
 
