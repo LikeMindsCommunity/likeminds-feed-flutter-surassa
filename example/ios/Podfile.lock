@@ -78,6 +78,8 @@ PODS:
   - Flutter (1.0.0)
   - flutter_keyboard_visibility (0.0.1):
     - Flutter
+  - flutter_notification_channel (0.0.1):
+    - Flutter
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
@@ -166,6 +168,7 @@ DEPENDENCIES:
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - Flutter (from `Flutter`)
   - flutter_keyboard_visibility (from `.symlinks/plugins/flutter_keyboard_visibility/ios`)
+  - flutter_notification_channel (from `.symlinks/plugins/flutter_notification_channel/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - media_kit_libs_ios_video (from `.symlinks/plugins/media_kit_libs_ios_video/ios`)
   - media_kit_native_event_loop (from `.symlinks/plugins/media_kit_native_event_loop/ios`)
@@ -222,6 +225,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_keyboard_visibility:
     :path: ".symlinks/plugins/flutter_keyboard_visibility/ios"
+  flutter_notification_channel:
+    :path: ".symlinks/plugins/flutter_notification_channel/ios"
   image_picker_ios:
     :path: ".symlinks/plugins/image_picker_ios/ios"
   media_kit_libs_ios_video:
@@ -279,6 +284,7 @@ SPEC CHECKSUMS:
   FirebaseMessaging: 8a3b9a8b98ce72a42d22e69865cf662e38d2d6f5
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_keyboard_visibility: 0339d06371254c3eb25eeb90ba8d17dca8f9c069
+  flutter_notification_channel: 42a4f4938a3654cca62aa2a51aba0021dbfcac88
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
@@ -302,11 +308,11 @@ SPEC CHECKSUMS:
   sqflite: 31f7eba61e3074736dff8807a9b41581e4f7f15a
   SwiftyGif: 93a1cc87bf3a51916001cf8f3d63835fb64c819f
   uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
-  url_launcher_ios: 08a3dfac5fb39e8759aeb0abbd5d9480f30fc8b4
+  url_launcher_ios: bbd758c6e7f9fd7b5b1d4cde34d2b95fcce5e812
   video_player_avfoundation: 81e49bb3d9fb63dccf9fa0f6d877dc3ddbeac126
   volume_controller: 531ddf792994285c9b17f9d8a7e4dcdd29b3eae9
   wakelock_plus: 8b09852c8876491e4b6d179e17dfe2a0b5f60d47
 
 PODFILE CHECKSUM: 3d6a1672d37080ac6924810f08089dfc858ff5c8
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.14.3

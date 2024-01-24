@@ -1,4 +1,4 @@
-package com.example.likeminds_feed_ss_sample
+package com.likeminds.feed.suraasa
 
 import io.flutter.embedding.android.FlutterActivity
 

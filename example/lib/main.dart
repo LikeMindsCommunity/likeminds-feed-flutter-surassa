@@ -23,7 +23,7 @@ const debug = bool.fromEnvironment('DEBUG');
 Future<void> _handleNotification(RemoteMessage message) async {
   debugPrint("--- Notification received in LEVEL 1 ---");
   await LMNotificationHandler.instance
-      .handleNotification(message, true, rootNavigatorKey);
+      .handleNotification(message, false, rootNavigatorKey);
 }
 
 void main() async {
@@ -73,8 +73,9 @@ Future<void> setupNotifications() async {
   // Register device with LM, and listen for notifications
   LMNotificationHandler.instance.init(deviceId: devId, fcmToken: fcmToken);
   FirebaseMessaging.onBackgroundMessage(_handleNotification);
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    _handleNotification(message);
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+    await LMNotificationHandler.instance
+        .handleNotification(message, true, rootNavigatorKey);
   });
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
     debugPrint("---The app is opened from a notification---");
