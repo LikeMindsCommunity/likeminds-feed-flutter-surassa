@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
           navigatorKey: rootNavigatorKey,
           scaffoldMessengerKey: rootScaffoldMessengerKey,
           theme: ThemeData(
-            useMaterial3: true,
+            useMaterial3: false,
             primaryColor: Colors.deepPurple,
             inputDecorationTheme: InputDecorationTheme(
               border: OutlineInputBorder(
