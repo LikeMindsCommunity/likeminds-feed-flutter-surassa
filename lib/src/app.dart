@@ -48,6 +48,7 @@ class _LMFeedSuraasaState extends State<LMFeedSuraasa> {
 
   @override
   Widget build(BuildContext context) {
+    LMFeedThemeData feedTheme = LMFeedTheme.of(context);
     return Scaffold(
       body: FutureBuilder<InitiateUserResponse>(
           future: initiateUser,
@@ -58,6 +59,14 @@ class _LMFeedSuraasaState extends State<LMFeedSuraasa> {
                   builder: (context, snapshot) {
                     if (snapshot.hasData && snapshot.data!.success) {
                       return LMFeedScreen(
+                        topicBarBuilder: (topicBar) {
+                          return topicBar.copyWith(
+                            style: topicBar.style?.copyWith(
+                              height: 60,
+                              backgroundColor: feedTheme.backgroundColor,
+                            ),
+                          );
+                        },
                         postBuilder: (context, postWidget, postViewData) =>
                             suraasaPostWidgetBuilder(
                           context,
@@ -74,9 +83,7 @@ class _LMFeedSuraasaState extends State<LMFeedSuraasa> {
                       );
                     } else if (snapshot.connectionState ==
                         ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator.adaptive(),
-                      );
+                      return const LMFeedLoader();
                     } else {
                       return const Center(
                         child: Text("An error occurred"),
@@ -84,12 +91,10 @@ class _LMFeedSuraasaState extends State<LMFeedSuraasa> {
                     }
                   });
             } else if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator.adaptive(),
-              );
+              return const LMFeedLoader();
             } else {
               return const Center(
-                child: Text("Nothing"),
+                child: Text("Please check your internet connection"),
               );
             }
           }),

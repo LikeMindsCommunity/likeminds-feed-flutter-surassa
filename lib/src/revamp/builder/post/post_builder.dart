@@ -8,13 +8,15 @@ import 'package:likeminds_feed_ss_fl/src/revamp/builder/post/components/post_top
 
 Widget suraasaPostWidgetBuilder(
     BuildContext context, LMFeedPostWidget postWidget, LMPostViewData postData,
-    {bool isFeed = false}) {
+    {bool isFeed = false, Widget? activityHeader}) {
   return postWidget.copyWith(
     onPostTap: (context, post) {
       if (isFeed) {
         navigateToLMPostDetailsScreen(context: context, post.id);
       }
     },
+    activityHeader:
+        activityHeader ?? suraasaPinPostActivityHeader(postData.isPinned),
     headerBuilder: suraasaPostHeaderBuilder,
     topicBuilder: suraasaPostTopicChipBuilder,
     footerBuilder: suraasaPostFooterBuilder,

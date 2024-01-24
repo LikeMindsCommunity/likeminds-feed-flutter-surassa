@@ -74,7 +74,13 @@ class _TabAppState extends State<TabApp> with TickerProviderStateMixin {
           ), // First tab content
           LMFeedActivityScreen(
             uuid: widget.uuid,
-            postBuilder: suraasaPostWidgetBuilder,
+            postBuilder: (context, postWidget, postData) =>
+                suraasaPostWidgetBuilder(
+              context,
+              postWidget,
+              postData,
+              isFeed: true,
+            ),
             commentBuilder: suraasaCommentWidgetBuilder,
           ), // Second tab content
         ],

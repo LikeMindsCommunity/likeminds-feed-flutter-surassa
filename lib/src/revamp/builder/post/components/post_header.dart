@@ -7,40 +7,41 @@ import 'package:timeago/timeago.dart' as timeago;
 
 Widget suraasaPostHeaderBuilder(BuildContext context, LMFeedPostHeader header,
     LMPostViewData postViewData) {
-  return Column(
-    children: <Widget>[
-      if (postViewData.isPinned)
-        Column(
-          children: [
-            Row(
-              children: <Widget>[
-                LMFeedIcon(
-                  type: LMFeedIconType.svg,
-                  assetPath: kAssetPinIcon,
-                  style: LMFeedIconStyle.basic().copyWith(size: 18),
-                ),
-                LMThemeData.kHorizontalPaddingMedium,
-                const LMFeedText(
-                  text: "Pinned Post",
-                  style: LMFeedTextStyle(
-                    textStyle: TextStyle(
-                      color: kPrimaryColor,
-                      fontSize: 14,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                )
-              ],
+  return header.copyWith(
+    subText: LMFeedText(
+      text: "@${header.user.name.toLowerCase().split(' ').join()} ",
+    ),
+  );
+}
+
+Widget? suraasaPinPostActivityHeader(bool isPinned) {
+  if (isPinned) {
+    return Column(
+      children: [
+        Row(
+          children: <Widget>[
+            LMFeedIcon(
+              type: LMFeedIconType.svg,
+              assetPath: kAssetPinIcon,
+              style: LMFeedIconStyle.basic().copyWith(size: 18),
             ),
-            LikeMindsTheme.kVerticalPaddingLarge,
+            LMThemeData.kHorizontalPaddingMedium,
+            const LMFeedText(
+              text: "Pinned Post",
+              style: LMFeedTextStyle(
+                textStyle: TextStyle(
+                  color: kPrimaryColor,
+                  fontSize: 14,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            )
           ],
         ),
-      header.copyWith(
-        subText: LMFeedText(
-          text: "@${header.user.name.toLowerCase().split(' ').join()} ",
-        ),
-      )
-    ],
-  );
+        LikeMindsTheme.kVerticalPaddingLarge,
+      ],
+    );
+  }
+  return null;
 }

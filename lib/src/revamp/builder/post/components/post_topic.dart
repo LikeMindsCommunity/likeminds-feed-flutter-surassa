@@ -9,7 +9,7 @@ Widget suraasaPostTopicChipBuilder(BuildContext context,
       padding: EdgeInsets.zero,
       activeChipStyle: LMFeedTopicChipStyle.active().copyWith(
         backgroundColor: interactive100,
-        textStyle: const TextStyle(color: kPrimaryColor),
+        textStyle: const TextStyle(color: kPrimaryColor, fontFamily: 'Inter'),
         borderRadius: BorderRadius.circular(43.0),
         padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
       ),

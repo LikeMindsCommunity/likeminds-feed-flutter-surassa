@@ -12,6 +12,7 @@ PreferredSizeWidget suraasaPostDetailScreenAppBarBuilder(
         textStyle: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.w700,
+          fontFamily: 'Inter',
         ),
       ),
     ),

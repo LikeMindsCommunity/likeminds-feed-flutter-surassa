@@ -8,12 +8,13 @@ Widget suraasaCommentWidgetBuilder(BuildContext context,
   return commentWidget.copyWith(
     subtitleText: LMFeedText(
       text:
-          "@${commentWidget.user.name.toLowerCase().split(' ').join()} · ${timeago.format(commentWidget.comment.createdAt)}",
+          '''@${commentWidget.user.name.toLowerCase().split(' ').join()} · ${timeago.format(commentWidget.comment.createdAt)}''',
       style: const LMFeedTextStyle(
         textStyle: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w400,
           color: kSecondaryColor700,
+          fontFamily: 'Inter',
         ),
       ),
     ),
