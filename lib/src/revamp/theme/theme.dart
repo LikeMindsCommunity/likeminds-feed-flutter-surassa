@@ -76,7 +76,36 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
         bottom: 16.0,
       ),
     ),
-    documentStyle: LMFeedPostDocumentStyle.basic(),
+    documentStyle: const LMFeedPostDocumentStyle(
+      height: 90,
+      titleStyle: LMFeedTextStyle(
+        maxLines: 1,
+        textStyle: TextStyle(
+          color: onSurface900,
+          fontSize: 13,
+          fontFamily: 'Inter',
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      subtitleStyle: LMFeedTextStyle(
+        maxLines: 1,
+        textStyle: TextStyle(
+          color: onSurface700,
+          fontSize: 12,
+          fontFamily: 'Inter',
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+      documentIcon: LMFeedIcon(
+        type: LMFeedIconType.svg,
+        assetPath: kAssetDocPDFIcon,
+        style: LMFeedIconStyle(
+          boxPadding: 0,
+          size: 36,
+          color: Colors.red,
+        ),
+      ),
+    ),
     imageStyle: const LMFeedPostImageStyle(),
     linkStyle: LMFeedPostLinkPreviewStyle.basic().copyWith(
       showLinkUrl: false,
@@ -291,12 +320,42 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
       left: 64,
     ),
     mediaStyle: LMFeedComposeMediaStyle.basic().copyWith(
+      documentStyle: const LMFeedPostDocumentStyle(
+        titleStyle: LMFeedTextStyle(
+          maxLines: 1,
+          textStyle: TextStyle(
+            color: onSurface900,
+            fontSize: 13,
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        subtitleStyle: LMFeedTextStyle(
+          maxLines: 1,
+          textStyle: TextStyle(
+            color: onSurface700,
+            fontSize: 12,
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+        height: 90,
+        documentIcon: LMFeedIcon(
+          type: LMFeedIconType.svg,
+          assetPath: kAssetDocPDFIcon,
+          style: LMFeedIconStyle(
+            boxPadding: 0,
+            size: 36,
+            color: Colors.red,
+          ),
+        ),
+      ),
       linkStyle: LMFeedPostLinkPreviewStyle.basic().copyWith(
         showLinkUrl: false,
-        height: 193,
-        imageHeight: 139,
+        height: 217,
+        imageHeight: 138,
         backgroundColor: kSecondary100,
-        margin: const EdgeInsets.only(bottom: 16.0, left: 64),
+        margin: EdgeInsets.zero,
         padding: const EdgeInsets.all(12.0),
         titleStyle: const LMFeedTextStyle(
           maxLines: 1,
