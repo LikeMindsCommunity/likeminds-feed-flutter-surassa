@@ -132,26 +132,40 @@ class _CredScreenState extends State<CredScreen> {
           List secondPathSegment = initialLink.split('post_id=');
           if (secondPathSegment.length > 1 && secondPathSegment[1] != null) {
             String postId = secondPathSegment[1];
-            LMFeedDeepLinkHandler().parseDeepLink(
-                (deepLinkRequestBuilder
-                      ..path(LMFeedDeepLinkPath.OPEN_POST)
-                      ..data({
-                        "post_id": postId,
-                      }))
-                    .build(),
-                rootNavigatorKey);
+
+            // Call initiate user if not called already
+            // It is recommened to call initiate user with your login flow
+            // so that navigation works seemlessly
+            InitiateUserResponse response = await LMFeedCore.instance
+                .initiateUser((InitiateUserRequestBuilder()
+                      ..userId(userId ?? "Test-User-Id")
+                      ..userName("Test User"))
+                    .build());
+
+            if (response.success) {
+              // Replace the below code
+              // if you wanna navigate to your screen
+              // Either navigatorKey or context must be provided
+              // for the navigation to work
+              // if both are null an exception will be thrown
+              navigateToLMPostDetailsScreen(
+                postId,
+                navigatorKey: rootNavigatorKey,
+              );
+            }
           }
         } else if (uriLink.path == '/community/post/create') {
-          LMFeedDeepLinkHandler().parseDeepLink(
-              (deepLinkRequestBuilder..path(LMFeedDeepLinkPath.CREATE_POST))
-                  .build(),
-              rootNavigatorKey);
+          rootNavigatorKey.currentState!.pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const LMFeedComposeScreen(),
+            ),
+          );
         }
       }
     }
 
     // Subscribe to link changes
-    _streamSubscription = linkStream.listen((String? link) async {
+    LMFeedCore.deepLinkStream = linkStream.listen((String? link) async {
       if (link != null) {
         initialURILinkHandled = true;
         // Handle the deep link
@@ -163,28 +177,34 @@ class _CredScreenState extends State<CredScreen> {
 
         final uriLink = Uri.parse(link);
         if (uriLink.isAbsolute) {
-          final deepLinkRequestBuilder = LMFeedDeepLinkRequestBuilder()
-            ..userId(userId ?? "Test-User-Id")
-            ..userName("Test User");
-
           if (uriLink.path == '/community/post') {
             List secondPathSegment = link.split('post_id=');
             if (secondPathSegment.length > 1 && secondPathSegment[1] != null) {
               String postId = secondPathSegment[1];
-              LMFeedDeepLinkHandler().parseDeepLink(
-                  (deepLinkRequestBuilder
-                        ..path(LMFeedDeepLinkPath.OPEN_POST)
-                        ..data({
-                          "post_id": postId,
-                        }))
-                      .build(),
-                  rootNavigatorKey);
+
+              InitiateUserResponse response = await LMFeedCore.instance
+                  .initiateUser((InitiateUserRequestBuilder()
+                        ..userId(userId ?? "Test-User-Id")
+                        ..userName("Test User"))
+                      .build());
+
+              if (response.success) {
+                // Replace the below code
+                // if you wanna navigate to your screen
+                // Either navigatorKey or context must be provided
+                // for the navigation to work
+                // if both are null an exception will be thrown
+                navigateToLMPostDetailsScreen(
+                  postId,
+                  navigatorKey: rootNavigatorKey,
+                );
+              }
             }
           } else if (uriLink.path == '/community/post/create') {
-            LMFeedDeepLinkHandler().parseDeepLink(
-              (deepLinkRequestBuilder..path(LMFeedDeepLinkPath.CREATE_POST))
-                  .build(),
-              rootNavigatorKey,
+            rootNavigatorKey.currentState!.push(
+              MaterialPageRoute(
+                builder: (context) => const LMFeedComposeScreen(),
+              ),
             );
           }
         }

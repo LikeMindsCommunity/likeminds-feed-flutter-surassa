@@ -37,6 +37,9 @@ Widget suraasaPostFooterBuilder(BuildContext context,
           return suraasaCommentButtonBuilder(
               context, commentButton, postViewData);
         },
+        postFooterStyle: footerWidget.postFooterStyle?.copyWith(
+          showSaveButton: false,
+        ),
       ),
     ],
   );
@@ -54,7 +57,7 @@ Widget suraasaCommentButtonBuilder(
     text: button.text?.copyWith(text: 'Comment') ??
         const LMFeedText(text: 'Comment'),
     onTap: () {
-      navigateToLMPostDetailsScreen(context, postViewData);
+      navigateToLMPostDetailsScreen(context: context, postViewData.id);
     },
   );
 }

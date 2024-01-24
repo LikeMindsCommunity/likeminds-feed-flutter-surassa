@@ -12,7 +12,7 @@ Widget suraasaPostWidgetBuilder(
   return postWidget.copyWith(
     onPostTap: (context, post) {
       if (isFeed) {
-        navigateToLMPostDetailsScreen(context, post);
+        navigateToLMPostDetailsScreen(context: context, post.id);
       }
     },
     headerBuilder: suraasaPostHeaderBuilder,
@@ -21,16 +21,27 @@ Widget suraasaPostWidgetBuilder(
   );
 }
 
-void navigateToLMPostDetailsScreen(BuildContext context, LMPostViewData post) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => LMFeedPostDetailScreen(
-        postId: post.id,
-        postBuilder: suraasaPostWidgetBuilder,
-        commentBuilder: suraasaCommentWidgetBuilder,
-        appBarBuilder: suraasaPostDetailScreenAppBarBuilder,
-      ),
+void navigateToLMPostDetailsScreen(
+  String postId, {
+  GlobalKey<NavigatorState>? navigatorKey,
+  BuildContext? context,
+}) {
+  if (context == null && navigatorKey == null) {
+    throw Exception('''
+Either context or navigator key must be
+         provided to navigate to PostDetailScreen''');
+  }
+  MaterialPageRoute route = MaterialPageRoute(
+    builder: (context) => LMFeedPostDetailScreen(
+      postId: postId,
+      postBuilder: suraasaPostWidgetBuilder,
+      commentBuilder: suraasaCommentWidgetBuilder,
+      appBarBuilder: suraasaPostDetailScreenAppBarBuilder,
     ),
   );
+  if (navigatorKey != null) {
+    navigatorKey.currentState!.push(route);
+  } else {
+    Navigator.push(context!, route);
+  }
 }
