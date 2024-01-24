@@ -2,12 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:likeminds_feed_flutter_core/likeminds_feed_core.dart';
-import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart'
-    hide LMNotificationHandler;
 import 'package:likeminds_feed_ss_sample/cred_screen.dart';
-import 'package:likeminds_feed_ss_sample/credentials/credentials.dart';
 import 'package:likeminds_feed_ss_sample/firebase_options.dart';
-import 'package:likeminds_feed_ss_sample/likeminds_callback.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -33,11 +29,6 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
   await setupNotifications();
-  await LMFeed.setupFeed(
-    apiKey: debug ? CredsDev.apiKey : CredsProd.apiKey,
-    lmCallBack: LikeMindsCallback(),
-    navigatorKey: rootNavigatorKey,
-  );
 
   await LMFeedCore.instance.initialize(
     // lmFeedClient: lmFeedClient,
