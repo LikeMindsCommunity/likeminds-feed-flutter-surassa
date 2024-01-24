@@ -62,7 +62,7 @@ dependencies:
 
 dependency_override:
   sliver_tools: 0.2.12
-  extended_text_field: ^13.0.1
+  extended_text_field: ^12.1.0
 
 dev_dependencies:
   flutter_test:
