@@ -45,22 +45,22 @@ class MyApp extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               outlineBorder: const BorderSide(
-                color: Colors.deepPurple,
+                color: Colors.white,
                 width: 2,
               ),
               activeIndicatorBorder: const BorderSide(
-                color: Colors.deepPurple,
+                color: Colors.white,
                 width: 2,
               ),
               focusedBorder: const OutlineInputBorder(
                 borderSide: BorderSide(
-                  color: Colors.deepPurple,
+                  color: Colors.white,
                   width: 2,
                 ),
               ),
               enabledBorder: const OutlineInputBorder(
                 borderSide: BorderSide(
-                  color: Colors.deepPurple,
+                  color: Colors.white,
                   width: 2,
                 ),
               ),
@@ -217,6 +217,7 @@ class _CredScreenState extends State<CredScreen> {
 
   @override
   Widget build(BuildContext context) {
+    LMFeedThemeData feedTheme = LMFeedTheme.of(context);
     // return lmFeed;
     userId = null; // UserLocalPreference.instance.fetchUserId();
     // If the local prefs have user id stored
@@ -231,7 +232,7 @@ class _CredScreenState extends State<CredScreen> {
       );
     } else {
       return Scaffold(
-        backgroundColor: const Color.fromARGB(255, 6, 92, 193),
+        backgroundColor: feedTheme.primaryColor,
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18.0),
           child: Column(
@@ -259,14 +260,11 @@ class _CredScreenState extends State<CredScreen> {
                 cursorColor: Colors.white,
                 style: const TextStyle(color: Colors.white),
                 controller: _usernameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   fillColor: Colors.white,
                   focusColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
                   labelText: 'Username',
-                  labelStyle: const TextStyle(
+                  labelStyle: TextStyle(
                     color: Colors.white,
                   ),
                 ),
@@ -276,16 +274,14 @@ class _CredScreenState extends State<CredScreen> {
                 cursorColor: Colors.white,
                 controller: _userIdController,
                 style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    focusColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    labelText: 'User ID',
-                    labelStyle: const TextStyle(
-                      color: Colors.white,
-                    )),
+                decoration: const InputDecoration(
+                  fillColor: Colors.white,
+                  focusColor: Colors.white,
+                  labelText: 'User ID',
+                  labelStyle: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
               ),
               const SizedBox(height: 36),
               GestureDetector(

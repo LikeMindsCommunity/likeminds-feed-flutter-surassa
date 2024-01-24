@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed_flutter_core/likeminds_feed_core.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
-import 'package:likeminds_feed_ss_fl/src/revamp/builder/post/post_builder.dart';
 import 'package:likeminds_feed_ss_fl/src/utils/constants/ui_constants.dart';
 
 Widget suraasaPostFooterBuilder(BuildContext context,
@@ -11,17 +10,33 @@ Widget suraasaPostFooterBuilder(BuildContext context,
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          LMFeedText(
-            text: LMFeedPostUtils.getLikeCountTextWithCount(
-              postViewData.likeCount,
+          GestureDetector(
+            onTap: () {
+              footerWidget.likeButton?.onTextTap?.call();
+            },
+            child: Container(
+              color: Colors.transparent,
+              child: LMFeedText(
+                text: LMFeedPostUtils.getLikeCountTextWithCount(
+                  postViewData.likeCount,
+                ),
+              ),
             ),
           ),
-          LMFeedText(
-            text:
-                '${postViewData.commentCount} ${LMFeedPostUtils.getCommentCountText(
-              postViewData.commentCount,
-            )}',
-          ),
+          GestureDetector(
+            onTap: () {
+              footerWidget.commentButton?.onTextTap?.call();
+            },
+            child: Container(
+              color: Colors.transparent,
+              child: LMFeedText(
+                text:
+                    '${postViewData.commentCount} ${LMFeedPostUtils.getCommentCountText(
+                  postViewData.commentCount,
+                )}',
+              ),
+            ),
+          )
         ],
       ),
       LMThemeData.kVerticalPaddingMedium,

@@ -76,7 +76,7 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
         bottom: 16.0,
       ),
     ),
-    documentStyle: const LMFeedPostDocumentStyle(),
+    documentStyle: LMFeedPostDocumentStyle.basic(),
     imageStyle: const LMFeedPostImageStyle(),
     linkStyle: LMFeedPostLinkPreviewStyle.basic().copyWith(
       showLinkUrl: false,
