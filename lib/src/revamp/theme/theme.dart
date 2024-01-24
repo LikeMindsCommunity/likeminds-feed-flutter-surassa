@@ -6,8 +6,8 @@ const Color kPrimaryColor = Color.fromRGBO(59, 130, 246, 1);
 const Color primary500 = Color(0xFF4666F6);
 const Color interactive100 = Color.fromRGBO(219, 234, 254, 1);
 const Color kHeadingBlackColor = Color.fromRGBO(15, 23, 42, 1);
-const Color kPrimaryColorLight = Color(0xFFDBEAFE);
-const Color kSecondary100 = Color(0xFFF1F5F9);
+const Color kPrimaryColorLight = Color.fromRGBO(219, 234, 254, 1);
+const Color kSecondary100 = Color.fromRGBO(241, 245, 249, 1);
 const Color kSecondaryColor700 = Color.fromRGBO(51, 65, 85, 1);
 const Color kSecondaryColorLight = Color.fromRGBO(237, 240, 254, 1);
 const Color onSurface = Color.fromRGBO(226, 232, 240, 1);
@@ -105,6 +105,8 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
           color: Colors.red,
         ),
       ),
+      borderColor: kSecondary100,
+      backgroundColor: kSecondary100,
     ),
     imageStyle: const LMFeedPostImageStyle(),
     linkStyle: LMFeedPostLinkPreviewStyle.basic().copyWith(
@@ -349,6 +351,8 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
             color: Colors.red,
           ),
         ),
+        borderColor: kSecondary100,
+        backgroundColor: kSecondary100,
       ),
       linkStyle: LMFeedPostLinkPreviewStyle.basic().copyWith(
         showLinkUrl: false,
