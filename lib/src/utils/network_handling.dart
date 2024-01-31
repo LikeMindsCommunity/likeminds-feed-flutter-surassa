@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 
 class NetworkConnectivity {
   NetworkConnectivity._();
@@ -24,7 +23,7 @@ class NetworkConnectivity {
       }
       if (result == ConnectivityResult.mobile ||
           result == ConnectivityResult.wifi) {
-        rootScaffoldMessengerKey.currentState?.clearSnackBars();
+        //   rootScaffoldMessengerKey.currentState?.clearSnackBars();
       }
     });
   }
@@ -42,7 +41,6 @@ SnackBar confirmationToast(
     behavior: SnackBarBehavior.floating,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
     content: Align(
-      alignment: Alignment.center,
       child: Text(
         content,
         textAlign: TextAlign.left,

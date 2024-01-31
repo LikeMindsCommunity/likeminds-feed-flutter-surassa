@@ -1,13 +1,7 @@
 import 'dart:async';
 
-import 'package:likeminds_feed_flutter_core/likeminds_feed_core.dart';
-import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:flutter/material.dart';
-import 'package:likeminds_feed_ss_fl/src/app.dart';
-import 'package:likeminds_feed_ss_sample/bloc_observer/analytics_bloc_listener.dart';
-import 'package:likeminds_feed_ss_sample/bloc_observer/profile_bloc_listener.dart';
-import 'package:likeminds_feed_ss_sample/bloc_observer/routing_bloc_listener.dart';
-import 'package:likeminds_feed_ss_sample/likeminds_callback.dart';
+import 'package:likeminds_feed_ss_fl/app.dart';
 import 'package:likeminds_feed_ss_sample/main.dart';
 import 'package:likeminds_feed_ss_sample/network_handling.dart';
 import 'package:likeminds_feed_ss_sample/screens/root_screen.dart';
@@ -66,12 +60,14 @@ class MyApp extends StatelessWidget {
               ),
             ),
           ),
-          home: LMBlocListener(
-            analyticsListener: analyticsBlocListener,
-            profileListener: profileBlocListener,
-            routingListener: routingBlocListener,
-            child: const CredScreen(),
-          ),
+          home:
+              //  LMBlocListener(
+              //   analyticsListener: analyticsBlocListener,
+              //   profileListener: profileBlocListener,
+              //   routingListener: routingBlocListener,
+              //child:
+              const CredScreen(),
+          //),
         ),
       ),
     );
@@ -89,14 +85,11 @@ class _CredScreenState extends State<CredScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _userIdController = TextEditingController();
   StreamSubscription? _streamSubscription;
-  LMFeed? lmFeed;
   String? userId;
 
   @override
   void initState() {
     super.initState();
-    NetworkConnectivity networkConnectivity = NetworkConnectivity.instance;
-    networkConnectivity.initialise();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       initUniLinks(context);
     });
@@ -218,116 +211,103 @@ class _CredScreenState extends State<CredScreen> {
   @override
   Widget build(BuildContext context) {
     LMFeedThemeData feedTheme = LMFeedTheme.of(context);
-    // return lmFeed;
-    userId = null; // UserLocalPreference.instance.fetchUserId();
-    // If the local prefs have user id stored
-    // Login using that user Id
-    // otherwise show the cred screen for login
-    if (userId != null && userId!.isNotEmpty) {
-      return lmFeed = LMFeed.instance(
-        userId: userId,
-        userName: 'Test User',
-        callback: LikeMindsCallback(),
-        apiKey: "",
-      );
-    } else {
-      return Scaffold(
-        backgroundColor: feedTheme.primaryColor,
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 72),
-              const Text(
-                "LikeMinds Feed\nSample App",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 64),
-              const Text(
-                "Enter your credentials",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                ),
-              ),
-              const SizedBox(height: 18),
-              TextField(
-                cursorColor: Colors.white,
-                style: const TextStyle(color: Colors.white),
-                controller: _usernameController,
-                decoration: const InputDecoration(
-                  fillColor: Colors.white,
-                  focusColor: Colors.white,
-                  labelText: 'Username',
-                  labelStyle: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                cursorColor: Colors.white,
-                controller: _userIdController,
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
-                  fillColor: Colors.white,
-                  focusColor: Colors.white,
-                  labelText: 'User ID',
-                  labelStyle: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 36),
-              GestureDetector(
-                onTap: () async {
-                  String userId = _userIdController.text;
-                  String userName = _usernameController.text;
 
-                  if (userId.isEmpty && userName.isEmpty) {
-                    return;
-                  }
+    return Scaffold(
+      backgroundColor: feedTheme.primaryColor,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          children: [
+            const SizedBox(height: 72),
+            const Text(
+              "LikeMinds Feed\nSample App",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 64),
+            const Text(
+              "Enter your credentials",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+              ),
+            ),
+            const SizedBox(height: 18),
+            TextField(
+              cursorColor: Colors.white,
+              style: const TextStyle(color: Colors.white),
+              controller: _usernameController,
+              decoration: const InputDecoration(
+                fillColor: Colors.white,
+                focusColor: Colors.white,
+                labelText: 'Username',
+                labelStyle: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              cursorColor: Colors.white,
+              controller: _userIdController,
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                fillColor: Colors.white,
+                focusColor: Colors.white,
+                labelText: 'User ID',
+                labelStyle: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            const SizedBox(height: 36),
+            GestureDetector(
+              onTap: () async {
+                String userId = _userIdController.text;
+                String userName = _usernameController.text;
 
-                  MaterialPageRoute route = MaterialPageRoute(
-                    // INIT - Get the LMFeed instance and pass the credentials (if any)
-                    builder: (context) => TabApp(
-                      uuid: userId,
-                      feedWidget: LMFeedSuraasa(
-                        userId: userId,
-                        userName: userName,
-                      ),
+                if (userId.isEmpty && userName.isEmpty) {
+                  return;
+                }
+
+                MaterialPageRoute route = MaterialPageRoute(
+                  // INIT - Get the LMFeed instance and pass the credentials (if any)
+                  builder: (context) => TabApp(
+                    uuid: userId,
+                    feedWidget: LMFeedSuraasa(
+                      userId: userId,
+                      userName: userName,
                     ),
-                  );
-                  Navigator.of(context).push(route);
-                },
-                child: Container(
-                  width: 200,
-                  height: 42,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Center(child: Text("Submit")),
-                ),
-              ),
-              const SizedBox(height: 72),
-              const Text(
-                "If no credentials are provided, the app will run with the default credentials of Bot user in your community",
-                textAlign: TextAlign.center,
-                style: TextStyle(
+                );
+                Navigator.of(context).push(route);
+              },
+              child: Container(
+                width: 200,
+                height: 42,
+                decoration: BoxDecoration(
                   color: Colors.white,
-                  fontSize: 12,
+                  borderRadius: BorderRadius.circular(12),
                 ),
+                child: const Center(child: Text("Submit")),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 72),
+            const Text(
+              "If no credentials are provided, the app will run with the default credentials of Bot user in your community",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+              ),
+            ),
+          ],
         ),
-      );
-    }
+      ),
+    );
   }
 }

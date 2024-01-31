@@ -46,9 +46,6 @@ dependencies:
   flutter_typeahead_mm:
     path: lib/packages/flutter_typeahead-4.3.7
 
-  likeminds_feed_ui_fl:
-    path: ../LikeMinds-Flutter-Feed-UI
-
   likeminds_feed_flutter_core:
     1.0.0
     # path: ../likeminds_feed_flutter/packages/integration

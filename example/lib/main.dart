@@ -1,12 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:likeminds_feed_flutter_core/likeminds_feed_core.dart';
 import 'package:likeminds_feed_ss_sample/cred_screen.dart';
 import 'package:likeminds_feed_ss_sample/firebase_options.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+
+import 'package:likeminds_feed_ss_fl/app.dart';
 
 bool initialURILinkHandled = false;
 const debug = bool.fromEnvironment('DEBUG');
@@ -40,6 +41,8 @@ void main() async {
       ),
     ),
   );
+
+  LMFeedTimeAgo.instance.setDefaultTimeFormat(SuraasaCustomTimeStamps());
 
   runApp(const MyApp());
 }

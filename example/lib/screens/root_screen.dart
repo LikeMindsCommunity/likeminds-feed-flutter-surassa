@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:likeminds_feed_flutter_core/likeminds_feed_core.dart';
-import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
+import 'package:likeminds_feed_ss_fl/app.dart';
 
 class TabApp extends StatefulWidget {
   final Widget feedWidget;
