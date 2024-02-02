@@ -1,15 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
-import 'package:likeminds_feed_ss_sample/cred_screen.dart';
-import 'package:likeminds_feed_ss_sample/credentials/credentials.dart';
+import 'package:likeminds_feed_ss_sample/screens/cred_screen.dart';
 import 'package:likeminds_feed_ss_sample/firebase_options.dart';
-import 'package:likeminds_feed_ss_sample/likeminds_callback.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+
+import 'package:likeminds_feed_ss_fl/app.dart';
 
 bool initialURILinkHandled = false;
 const debug = bool.fromEnvironment('DEBUG');
@@ -22,7 +20,7 @@ const debug = bool.fromEnvironment('DEBUG');
 Future<void> _handleNotification(RemoteMessage message) async {
   debugPrint("--- Notification received in LEVEL 1 ---");
   await LMNotificationHandler.instance
-      .handleNotification(message, true, rootNavigatorKey);
+      .handleNotification(message, false, rootNavigatorKey);
 }
 
 void main() async {
@@ -32,11 +30,20 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
   await setupNotifications();
-  await LMFeed.setupFeed(
-    apiKey: debug ? CredsDev.apiKey : CredsProd.apiKey,
-    lmCallBack: LikeMindsCallback(),
-    navigatorKey: rootNavigatorKey,
+
+  await LMFeedCore.instance.initialize(
+    // lmFeedClient: lmFeedClient,
+
+    domain: "suraasalearn://www.suraasa.com/community/",
+    config: LMFeedConfig(
+      composeConfig: const LMFeedComposeScreenConfig(
+        topicRequiredToCreatePost: true,
+      ),
+    ),
   );
+
+  LMFeedTimeAgo.instance.setDefaultTimeFormat(SuraasaCustomTimeStamps());
+
   runApp(const MyApp());
 }
 
@@ -60,8 +67,9 @@ Future<void> setupNotifications() async {
   // Register device with LM, and listen for notifications
   LMNotificationHandler.instance.init(deviceId: devId, fcmToken: fcmToken);
   FirebaseMessaging.onBackgroundMessage(_handleNotification);
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    _handleNotification(message);
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+    await LMNotificationHandler.instance
+        .handleNotification(message, true, rootNavigatorKey);
   });
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
     debugPrint("---The app is opened from a notification---");

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:likeminds_feed_ss_sample/cred_screen.dart';
+import 'package:likeminds_feed_ss_sample/screens/cred_screen.dart';
 
 class NetworkConnectivity {
   NetworkConnectivity._();

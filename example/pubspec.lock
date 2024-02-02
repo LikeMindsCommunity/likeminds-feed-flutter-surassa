@@ -336,7 +336,15 @@ packages:
       sha256: "797e1e341c3dd2f69f2dad42564a6feff3bfb87187d05abb93b9609e6f1645c3"
       url: "https://pub.dev"
     source: hosted
-    version: "5.4.0"
+    version: "5.2.1+1"
+  dotenv:
+    dependency: transitive
+    description:
+      name: dotenv
+      sha256: "379e64b6fc82d3df29461d349a1796ecd2c436c480d4653f3af6872eccbc90e1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.2.0"
   envied:
     dependency: transitive
     description:
@@ -504,6 +512,14 @@ packages:
       sha256: "25517a4deb0c03aa0f32fd12db525856438902d9c16536311e76cdc57b31d7d1"
       url: "https://pub.dev"
     source: hosted
+    version: "3.5.3"
+  fixnum:
+    dependency: transitive
+    description:
+      name: fixnum
+      sha256: "25517a4deb0c03aa0f32fd12db525856438902d9c16536311e76cdc57b31d7d1"
+      url: "https://pub.dev"
+    source: hosted
     version: "1.1.0"
   flutter:
     dependency: "direct main"
@@ -598,6 +614,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0+18-dev.1"
+  flutter_notification_channel:
+    dependency: transitive
+    description:
+      name: flutter_notification_channel
+      sha256: "85f02dceefce1dd05838b639dee3d64ab8721df4882eee7a29ecb277f00ab087"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -840,13 +864,26 @@ packages:
     source: hosted
     version: "1.3.0"
   likeminds_feed:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: likeminds_feed
-      sha256: a5172948da380259a7e7648c4ba545b983deecf3e4d995faee8156833acf40c5
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.6.6"
+      path: "../../LikeMinds-Flutter-Feed-SDK"
+      relative: true
+    source: path
+    version: "1.7.0"
+  likeminds_feed_flutter_core:
+    dependency: "direct main"
+    description:
+      path: "../../likeminds_feed_flutter/packages/integration"
+      relative: true
+    source: path
+    version: "1.0.0"
+  likeminds_feed_flutter_ui:
+    dependency: "direct overridden"
+    description:
+      path: "../../likeminds_feed_flutter/packages/ui"
+      relative: true
+    source: path
+    version: "1.0.0"
   likeminds_feed_ss_fl:
     dependency: "direct main"
     description:
@@ -860,7 +897,7 @@ packages:
       path: "../../LikeMinds-Flutter-Feed-UI"
       relative: true
     source: path
-    version: "1.3.12"
+    version: "1.3.13"
   lints:
     dependency: transitive
     description:
@@ -878,7 +915,7 @@ packages:
     source: hosted
     version: "1.2.0"
   matcher:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       name: matcher
       sha256: "1803e76e6653768d64ed8ff2e1e67bea3ad4b923eb5c56a295c3e634bad5960e"
@@ -1483,7 +1520,7 @@ packages:
     source: sdk
     version: "0.0.99"
   sliver_tools:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       name: sliver_tools
       sha256: eae28220badfb9d0559207badcbbc9ad5331aac829a88cb0964d330d2a4636a6
@@ -1593,7 +1630,7 @@ packages:
       sha256: "539ef412b170d65ecdafd780f924e5be3f60032a1128df156adad6c5b373d558"
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.0+1"
+    version: "3.1.0"
   tar:
     dependency: transitive
     description:
@@ -1614,26 +1651,26 @@ packages:
     dependency: transitive
     description:
       name: test
-      sha256: "694c108e13c6b35b15fcb0f8f03eddf8373f93b044c9497b5e81ce09f7381bda"
+      sha256: "13b41f318e2a5751c3169137103b60c584297353d4b1761b66029bae6411fe46"
       url: "https://pub.dev"
     source: hosted
-    version: "1.25.1"
+    version: "1.24.3"
   test_api:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       name: test_api
-      sha256: daadc9baabec998b062c9091525aa95786508b1c48e9c30f1f891b8bf6ff2e64
+      sha256: "75760ffd7786fffdfb9597c35c5b27eaeec82be8edfb6d71d32651128ed7aab8"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.2"
+    version: "0.6.0"
   test_core:
     dependency: transitive
     description:
       name: test_core
-      sha256: "2bc4b4ecddd75309300d8096f781c0e3280ca1ef85beda558d33fcbedc2eead4"
+      sha256: "99806e9e6d95c7b059b7a0fc08f07fc53fabe54a829497f0d9676299f1e8637e"
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.0"
+    version: "0.5.3"
   timeago:
     dependency: transitive
     description:
@@ -1641,7 +1678,7 @@ packages:
       sha256: c44b80cbc6b44627c00d76960f2af571f6f50e5dbedef4d9215d455e4335165b
       url: "https://pub.dev"
     source: hosted
-    version: "3.6.0"
+    version: "3.5.0"
   timing:
     dependency: transitive
     description:
@@ -1702,10 +1739,10 @@ packages:
     dependency: transitive
     description:
       name: url_launcher
-      sha256: d25bb0ca00432a5e1ee40e69c36c85863addf7cc45e433769d61bed3fe81fd96
+      sha256: c512655380d241a337521703af62d2c122bf7b77a46ff7dd750092aa9433499c
       url: "https://pub.dev"
     source: hosted
-    version: "6.2.3"
+    version: "6.2.4"
   url_launcher_android:
     dependency: transitive
     description:
@@ -1742,10 +1779,10 @@ packages:
     dependency: transitive
     description:
       name: url_launcher_platform_interface
-      sha256: a932c3a8082e118f80a475ce692fde89dc20fddb24c57360b96bc56f7035de1f
+      sha256: "4aca1e060978e19b2998ee28503f40b5ba6226819c2b5e3e4d1821e8ccd92198"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.1"
+    version: "2.3.0"
   url_launcher_web:
     dependency: transitive
     description:
@@ -1849,6 +1886,14 @@ packages:
       sha256: "9c30877fa4909b38c56b71dade2f5dde380199b1417cc07e10628ca042611822"
       url: "https://pub.dev"
     source: hosted
+    version: "2.0.16"
+  visibility_aware_state:
+    dependency: transitive
+    description:
+      name: visibility_aware_state
+      sha256: "9c30877fa4909b38c56b71dade2f5dde380199b1417cc07e10628ca042611822"
+      url: "https://pub.dev"
+    source: hosted
     version: "1.0.5"
   visibility_detector:
     dependency: transitive
@@ -1929,15 +1974,15 @@ packages:
       sha256: b0f37db61ba2f2e9b7a78a1caece0052564d1bc70668156cf3a29d676fe4e574
       url: "https://pub.dev"
     source: hosted
-    version: "5.1.1"
+    version: "4.1.4"
   win32_registry:
     dependency: transitive
     description:
       name: win32_registry
-      sha256: "41fd8a189940d8696b1b810efb9abcf60827b6cbfab90b0c43e8439e3a39d85a"
+      sha256: "1c52f994bdccb77103a6231ad4ea331a244dbcef5d1f37d8462f713143b0bfae"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.2"
+    version: "1.1.0"
   xdg_directories:
     dependency: transitive
     description:
