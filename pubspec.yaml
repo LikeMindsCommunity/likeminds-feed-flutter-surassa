@@ -43,9 +43,6 @@ dependencies:
   media_kit_video: ^1.2.4 # For video rendering.
   media_kit_libs_video: ^1.0.4
 
-  flutter_typeahead_mm:
-    path: lib/packages/flutter_typeahead-4.3.7
-
   likeminds_feed_flutter_core: # 1.0.0
     path: ../likeminds_feed_flutter/packages/integration
   likeminds_feed: 1.7.0
