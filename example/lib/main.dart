@@ -33,7 +33,7 @@ void main() async {
 
   await LMFeedCore.instance.initialize(
     // lmFeedClient: lmFeedClient,
-    apiKey: "6b51af13-ce28-444b-a571-53a3fb125444",
+
     domain: "suraasalearn://www.suraasa.com/community/",
     config: LMFeedConfig(
       composeConfig: const LMFeedComposeScreenConfig(
