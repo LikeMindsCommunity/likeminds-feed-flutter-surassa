@@ -4,6 +4,7 @@ library likeminds_feed_ss_fl;
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed_flutter_core/likeminds_feed_core.dart';
 import 'package:likeminds_feed_ss_fl/src/builder/post/post_builder.dart';
+import 'package:likeminds_feed_ss_fl/src/utils/index.dart';
 
 export 'src/utils/index.dart';
 export 'src/builder/builder.dart';
@@ -13,11 +14,13 @@ export 'package:likeminds_feed_flutter_core/likeminds_feed_core.dart'
 class LMFeedSuraasa extends StatefulWidget {
   final String? userId;
   final String? userName;
+  final Function(BuildContext)? openChatCallback;
 
   const LMFeedSuraasa({
     super.key,
     this.userId,
     this.userName,
+    this.openChatCallback,
   });
 
   @override
@@ -31,6 +34,7 @@ class _LMFeedSuraasaState extends State<LMFeedSuraasa> {
   @override
   void initState() {
     super.initState();
+    LMFeedTimeAgo.instance.setDefaultTimeFormat(SuraasaCustomTimeStamps());
     // var env = DotEnv(includePlatformEnvironment: true)..load();
 
     InitiateUserRequestBuilder requestBuilder = InitiateUserRequestBuilder();
@@ -81,6 +85,30 @@ class _LMFeedSuraasaState extends State<LMFeedSuraasa> {
                           postViewData,
                           isFeed: true,
                         ),
+                        appBar: (context, appBar) {
+                          return appBar.copyWith(
+                              trailing: widget.openChatCallback != null
+                                  ? [
+                                      LMFeedButton(
+                                        onTap: () {
+                                          widget.openChatCallback!(context);
+                                        },
+                                        style: const LMFeedButtonStyle(
+                                          icon: LMFeedIcon(
+                                            type: LMFeedIconType.svg,
+                                            assetPath: kAssetChatIcon,
+                                            style: LMFeedIconStyle(
+                                              color: Colors.black,
+                                              size: 24,
+                                              boxPadding: 6,
+                                              boxSize: 36,
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    ]
+                                  : null);
+                        },
                         config: const LMFeedScreenConfig(
                           topicSelectionWidgetType:
                               LMFeedTopicSelectionWidgetType
