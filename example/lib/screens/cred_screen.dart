@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed_ss_fl/app.dart';
+import 'package:likeminds_feed_ss_sample/bloc_observer/analytics_bloc_listener.dart';
+import 'package:likeminds_feed_ss_sample/bloc_observer/profile_bloc_listener.dart';
+import 'package:likeminds_feed_ss_sample/bloc_observer/routing_bloc_listener.dart';
 import 'package:likeminds_feed_ss_sample/main.dart';
 import 'package:likeminds_feed_ss_sample/network_handling.dart';
 import 'package:likeminds_feed_ss_sample/screens/root_screen.dart';
@@ -60,14 +63,12 @@ class MyApp extends StatelessWidget {
               ),
             ),
           ),
-          home:
-              //  LMBlocListener(
-              //   analyticsListener: analyticsBlocListener,
-              //   profileListener: profileBlocListener,
-              //   routingListener: routingBlocListener,
-              //child:
-              const CredScreen(),
-          //),
+          home: const LMFeedBlocListener(
+            analyticsListener: analyticsBlocListener,
+            profileListener: profileBlocListener,
+            routingListener: routingBlocListener,
+            child: CredScreen(),
+          ),
         ),
       ),
     );
@@ -277,7 +278,18 @@ class _CredScreenState extends State<CredScreen> {
                 MaterialPageRoute route = MaterialPageRoute(
                   // INIT - Get the LMFeed instance and pass the credentials (if any)
                   builder: (context) => TabApp(
-                    uuid: userId,
+                    activityWidget: LMFeedActivityWidget(
+                      uuid: userId,
+                      postWidgetBuilder: (context, postWidget, postViewData) =>
+                          suraasaPostWidgetBuilder(
+                        context,
+                        postWidget,
+                        postViewData,
+                        isFeed: true,
+                      ),
+                      commentWidgetBuilder: suraasaCommentWidgetBuilder,
+                      appBarBuilder: suraasaPostDetailScreenAppBarBuilder,
+                    ),
                     feedWidget: LMFeedSuraasa(
                       userId: userId,
                       userName: userName,

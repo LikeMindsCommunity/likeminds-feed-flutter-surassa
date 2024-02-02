@@ -3,12 +3,12 @@ import 'package:likeminds_feed_ss_fl/app.dart';
 
 class TabApp extends StatefulWidget {
   final Widget feedWidget;
-  final String uuid;
+  final Widget activityWidget;
 
   const TabApp({
     super.key,
     required this.feedWidget,
-    required this.uuid,
+    required this.activityWidget,
   });
 
   @override
@@ -69,19 +69,11 @@ class _TabAppState extends State<TabApp> with TickerProviderStateMixin {
         controller: tabController,
         children: [
           HomeScreen(
-            feedWidget: widget.feedWidget,
+            childWidget: widget.feedWidget,
           ), // First tab content
-          LMFeedActivityScreen(
-            uuid: widget.uuid,
-            postBuilder: (context, postWidget, postData) =>
-                suraasaPostWidgetBuilder(
-              context,
-              postWidget,
-              postData,
-              isFeed: true,
-            ),
-            commentBuilder: suraasaCommentWidgetBuilder,
-          ), // Second tab content
+          HomeScreen(
+            childWidget: widget.activityWidget,
+          )
         ],
       ),
     );
@@ -89,15 +81,15 @@ class _TabAppState extends State<TabApp> with TickerProviderStateMixin {
 }
 
 class HomeScreen extends StatelessWidget {
-  final Widget feedWidget;
+  final Widget childWidget;
 
   const HomeScreen({
     super.key,
-    required this.feedWidget,
+    required this.childWidget,
   });
 
   @override
   Widget build(BuildContext context) {
-    return feedWidget;
+    return childWidget;
   }
 }

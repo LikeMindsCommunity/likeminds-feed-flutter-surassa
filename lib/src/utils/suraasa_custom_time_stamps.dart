@@ -18,11 +18,11 @@ class SuraasaCustomTimeStamps implements LMFeedTimeAgoMessages {
   @override
   String minutes(int minutes, DateTime dateTime) => '${minutes}m';
   @override
-  String aboutAnHour(DateTime dateTime) => '~1h';
+  String aboutAnHour(DateTime dateTime) => '1h';
   @override
   String hours(int hours, DateTime dateTime) => '${hours}h';
   @override
-  String aDay(DateTime dateTime) => '~1d';
+  String aDay(DateTime dateTime) => '1d';
   @override
   String days(int days, DateTime dateTime) => '${days}d';
   @override

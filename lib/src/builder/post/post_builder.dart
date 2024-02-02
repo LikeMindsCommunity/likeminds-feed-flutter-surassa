@@ -5,6 +5,7 @@ import 'package:likeminds_feed_ss_fl/src/builder/components/post_detail_app_bar.
 import 'package:likeminds_feed_ss_fl/src/builder/post/components/post_footer.dart';
 import 'package:likeminds_feed_ss_fl/src/builder/post/components/post_header.dart';
 import 'package:likeminds_feed_ss_fl/src/builder/post/components/post_topic.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 
 Widget suraasaPostWidgetBuilder(
     BuildContext context, LMFeedPostWidget postWidget, LMPostViewData postData,
@@ -15,8 +16,9 @@ Widget suraasaPostWidgetBuilder(
         navigateToLMPostDetailsScreen(context: context, post.id);
       }
     },
-    activityHeader:
-        activityHeader ?? suraasaPinPostActivityHeader(postData.isPinned),
+    activityHeader: activityHeader ??
+        postWidget.activityHeader ??
+        suraasaPinPostActivityHeader(postData.isPinned),
     headerBuilder: suraasaPostHeaderBuilder,
     topicBuilder: suraasaPostTopicChipBuilder,
     footerBuilder: (context, footer, postViewData) =>
@@ -28,12 +30,20 @@ void navigateToLMPostDetailsScreen(
   String postId, {
   GlobalKey<NavigatorState>? navigatorKey,
   BuildContext? context,
-}) {
+}) async {
   if (context == null && navigatorKey == null) {
     throw Exception('''
 Either context or navigator key must be
          provided to navigate to PostDetailScreen''');
   }
+  String visiblePostId =
+      LMFeedVideoProvider.instance.currentVisiblePostId ?? postId;
+
+  VideoController? videoController =
+      LMFeedVideoProvider.instance.getVideoController(visiblePostId);
+
+  await videoController?.player.pause();
+
   MaterialPageRoute route = MaterialPageRoute(
     builder: (context) => LMFeedPostDetailScreen(
       postId: postId,
@@ -43,10 +53,12 @@ Either context or navigator key must be
     ),
   );
   if (navigatorKey != null) {
-    navigatorKey.currentState!.push(
+    await navigatorKey.currentState!.push(
       route,
     );
   } else {
-    Navigator.of(context!, rootNavigator: true).push(route);
+    await Navigator.of(context!, rootNavigator: true).push(route);
   }
+
+  await videoController?.player.play();
 }
