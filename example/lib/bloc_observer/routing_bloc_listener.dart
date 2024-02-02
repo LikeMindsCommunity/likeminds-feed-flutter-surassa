@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
-import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
+import 'package:likeminds_feed_flutter_core/likeminds_feed_core.dart';
 
-void routingBlocListener(BuildContext context, LMRoutingState state) {
-  if (state is OpenPostNotification) {
+void routingBlocListener(BuildContext context, LMFeedRoutingState state) {
+  if (state is LMFeedOpenPostNotificationState) {
     // TODO: Navigate to Post Details Screen;
-  } else if (state is OpenSharedPost) {
+  } else if (state is LMFeedOpenSharedPostState) {
     // TODO: Navigate to Post Details Screen;
-  } else if (state is ErrorPostNotification) {
+  } else if (state is LMFeedErrorPostNotificationState) {
     // TODO: Handle post notification error
-  } else if (state is ErrorSharedPost) {
+  } else if (state is LMFeedErrorSharedPostState) {
     // TODO: Handle share post error
   }
 }

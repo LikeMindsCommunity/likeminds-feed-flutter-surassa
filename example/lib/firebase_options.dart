@@ -50,21 +50,19 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCp2HimWufInSMnLc7ndFBEpeSDTj7Fxsw',
-    appId: '1:317419981427:android:d40f25139f5b51a1d2f806',
-    messagingSenderId: '317419981427',
-    projectId: 'likeminds-sdk-app',
-    storageBucket: 'likeminds-sdk-app.appspot.com',
+    apiKey: 'AIzaSyClYr5Yd1CNx8sS9hqMgG6nnVEg4B8pnH0',
+    appId: '1:556581208807:android:54c235d0a7ff4cf1141842',
+    messagingSenderId: '556581208807',
+    projectId: 'lm-flutter',
+    storageBucket: 'lm-flutter.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAVmbe-8jgnO2MUnFotMdp2tmDVnwTZqfE',
-    appId: '1:317419981427:ios:237be42bf46d966fd2f806',
-    messagingSenderId: '317419981427',
-    projectId: 'likeminds-sdk-app',
-    storageBucket: 'likeminds-sdk-app.appspot.com',
-    iosClientId:
-        '317419981427-g0kdob11etdsnql322ll5ksa6h4jj1db.apps.googleusercontent.com',
-    iosBundleId: 'com.likeminds.feed-ss-sample',
+    apiKey: 'AIzaSyA1FpuiQNAdaZJ-xzxx3SLucERBhWLskvA',
+    appId: '1:556581208807:ios:471df4b3fe3b8a30141842',
+    messagingSenderId: '556581208807',
+    projectId: 'lm-flutter',
+    storageBucket: 'lm-flutter.appspot.com',
+    iosBundleId: 'com.likeminds.feed.suraasa',
   );
 }

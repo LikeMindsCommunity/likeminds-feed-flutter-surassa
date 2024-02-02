@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:likeminds_feed_ss_sample/screens/activity_screen.dart';
+import 'package:likeminds_feed_ss_fl/app.dart';
 
 class TabApp extends StatefulWidget {
   final Widget feedWidget;
+  final Widget activityWidget;
+
   const TabApp({
     super.key,
     required this.feedWidget,
+    required this.activityWidget,
   });
 
   @override
@@ -17,7 +20,6 @@ class _TabAppState extends State<TabApp> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     tabController = TabController(length: 2, vsync: this);
     tabController.addListener(() {
@@ -27,65 +29,67 @@ class _TabAppState extends State<TabApp> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: tabController.index,
-          onDestinationSelected: (index) {
-            tabController.animateTo(index);
-            setState(() {});
-          },
-          elevation: 10,
-          indicatorColor: const Color(0xFF3B82F6),
-          backgroundColor: const Color(0xFF3B82F6).withOpacity(0.1),
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(
-                Icons.home,
-              ),
-              selectedIcon: Icon(
-                Icons.home,
-                color: Colors.white,
-              ),
-              label: 'Home',
+    LMFeedThemeData lmFeedThemeData = LMFeedTheme.of(context);
+    return Scaffold(
+      bottomNavigationBar: NavigationBar(
+        backgroundColor: lmFeedThemeData.container,
+        selectedIndex: tabController.index,
+        onDestinationSelected: (index) {
+          tabController.animateTo(index);
+          setState(() {});
+        },
+        elevation: 10,
+        indicatorColor: lmFeedThemeData.primaryColor,
+        destinations: [
+          NavigationDestination(
+            icon: Icon(
+              Icons.home,
+              color: lmFeedThemeData.onContainer,
             ),
-            NavigationDestination(
-              icon: Icon(
-                Icons.person_2_sharp,
-              ),
-              selectedIcon: Icon(
-                Icons.person_2_sharp,
-                color: Colors.white,
-              ),
-              label: 'Activity',
+            selectedIcon: Icon(
+              Icons.home,
+              color: lmFeedThemeData.onPrimary,
             ),
-          ],
-        ),
-        body: TabBarView(
-          controller: tabController,
-          children: [
-            HomeScreen(
-              feedWidget: widget.feedWidget,
-            ), // First tab content
-             const ActivityScreen(
-            ), // Second tab content
-          ],
-        ),
+            label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(
+              Icons.person_2_sharp,
+              color: lmFeedThemeData.onContainer,
+            ),
+            selectedIcon: Icon(
+              Icons.person_2_sharp,
+              color: lmFeedThemeData.onPrimary,
+            ),
+            label: 'Activity',
+          ),
+        ],
+      ),
+      body: TabBarView(
+        controller: tabController,
+        children: [
+          HomeScreen(
+            childWidget: widget.feedWidget,
+          ), // First tab content
+          HomeScreen(
+            childWidget: widget.activityWidget,
+          )
+        ],
       ),
     );
   }
 }
 
 class HomeScreen extends StatelessWidget {
-  final Widget feedWidget;
+  final Widget childWidget;
 
   const HomeScreen({
     super.key,
-    required this.feedWidget,
+    required this.childWidget,
   });
 
   @override
   Widget build(BuildContext context) {
-    return feedWidget;
+    return childWidget;
   }
 }
