@@ -12,37 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  get_it:
-  share_plus:
-  envied:
-  url_launcher:
-  shared_preferences:
-  simple_s3: 0.3.2
-  equatable:
-  bloc:
-  flutter_bloc:
-  firebase_core:
-  firebase_messaging:
-  overlay_support:
-  lazy_load_scrollview:
-  infinite_scroll_pagination:
-  device_info_plus: ^9.1.1
-  permission_handler:
-  image_picker:
-  file_picker:
-  video_player:
-  open_filex:
-  timeago:
-  collection:
-  connectivity_plus:
-  custom_pop_up_menu: ^1.2.4
-  flutter_no_internet_widget: ^1.0.0+18-dev.1
-  extended_image: ^8.1.0
-  http:
-  media_kit: ^1.1.10 # Primary package.
-  media_kit_video: ^1.2.4 # For video rendering.
-  media_kit_libs_video: ^1.0.4
-
+  connectivity_plus: ^5.0.2
   likeminds_feed_flutter_core: # 1.0.0
     path: ../likeminds_feed_flutter/packages/integration
   likeminds_feed: 1.7.0
@@ -53,8 +23,11 @@ dependency_override:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
-  build_runner: ^2.4.6
+  flutter_lints: ^3.0.0
+  build_runner: ^2.4.4
+  media_kit: ^1.1.10 # Primary package.
+  media_kit_video: ^1.2.4 # For video rendering.
+  media_kit_libs_video: ^1.0.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

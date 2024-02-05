@@ -7,7 +7,7 @@ import 'package:overlay_support/overlay_support.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
-import 'package:likeminds_feed_ss_fl/app.dart';
+import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 
 bool initialURILinkHandled = false;
 const debug = bool.fromEnvironment('DEBUG');

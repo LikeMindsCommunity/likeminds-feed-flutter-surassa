@@ -1,4 +1,4 @@
-import 'package:likeminds_feed_ss_fl/app.dart';
+import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:intl/intl.dart';
 
 /// English short Messages
