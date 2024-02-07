@@ -1,12 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:likeminds_feed_ss_fl/app.dart';
+import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_sample/bloc_observer/analytics_bloc_listener.dart';
 import 'package:likeminds_feed_ss_sample/bloc_observer/profile_bloc_listener.dart';
 import 'package:likeminds_feed_ss_sample/bloc_observer/routing_bloc_listener.dart';
 import 'package:likeminds_feed_ss_sample/main.dart';
-import 'package:likeminds_feed_ss_sample/network_handling.dart';
 import 'package:likeminds_feed_ss_sample/screens/activity_widget_screen.dart';
 import 'package:likeminds_feed_ss_sample/screens/root_screen.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -120,9 +119,6 @@ class _CredScreenState extends State<CredScreen> {
       // TODO: add user id and user name of logged in user
       final uriLink = Uri.parse(initialLink);
       if (uriLink.isAbsolute) {
-        final deepLinkRequestBuilder = LMFeedDeepLinkRequestBuilder()
-          ..userId(userId ?? "Test-User-Id")
-          ..userName("Test User");
         if (uriLink.path == '/community/post') {
           List secondPathSegment = initialLink.split('post_id=');
           if (secondPathSegment.length > 1 && secondPathSegment[1] != null) {
