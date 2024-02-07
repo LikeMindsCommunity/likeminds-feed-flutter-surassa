@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:likeminds_feed_ss_fl/app.dart';
+import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 
 Widget suraasaCommentWidgetBuilder(BuildContext context,
     LMFeedCommentWidget commentWidget, LMPostViewData postViewData) {

@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:likeminds_feed_flutter_core/likeminds_feed_core.dart';
-import 'package:likeminds_feed_ss_fl/app.dart';
-import 'package:likeminds_feed_ss_fl/src/utils/constants/assets_constants.dart';
-import 'package:likeminds_feed_ss_fl/src/utils/theme/theme.dart';
+import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 
 Widget suraasaPostHeaderBuilder(BuildContext context, LMFeedPostHeader header,
     LMPostViewData postViewData) {
