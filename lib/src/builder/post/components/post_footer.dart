@@ -56,6 +56,9 @@ Widget suraasaPostFooterBuilder(BuildContext context,
         },
         postFooterStyle: footerWidget.postFooterStyle?.copyWith(
           showSaveButton: false,
+          padding: footerWidget.postFooterStyle?.padding?.copyWith(
+            bottom: 0,
+          ),
         ),
       ),
     ],
@@ -65,6 +68,7 @@ Widget suraasaPostFooterBuilder(BuildContext context,
 Widget suraasaLikeButtonBuilder(BuildContext context, LMFeedButton button) {
   return button.copyWith(
     text: button.text?.copyWith(text: 'Like') ?? const LMFeedText(text: 'Like'),
+    onTextTap: button.onTap,
   );
 }
 

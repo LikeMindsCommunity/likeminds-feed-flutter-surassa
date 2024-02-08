@@ -15,7 +15,7 @@ const Color onSurface500 = Color.fromRGBO(100, 116, 139, 1);
 const Color onSurface400 = Color.fromRGBO(148, 163, 184, 1);
 const Color onSurface700 = Color.fromRGBO(51, 65, 85, 1);
 const Color onSurface900 = Color.fromRGBO(15, 23, 42, 1);
-const Color kBackgroundColor = Color.fromRGBO(245, 245, 245, 1);
+const Color kBackgroundColor = Color.fromRGBO(255, 255, 255, 1);
 const Color textColor = Color.fromRGBO(30, 41, 59, 1);
 
 LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
@@ -25,8 +25,11 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
   container: Colors.white,
   onContainer: onSurface900,
   postStyle: LMFeedPostStyle(
-    padding: const EdgeInsets.all(
-      16.0,
+    padding: const EdgeInsets.only(
+      top: 16.0,
+      left: 16.0,
+      right: 16.0,
+      bottom: 8.0,
     ),
     margin: const EdgeInsets.symmetric(vertical: 8.0),
     boxShadow: [
@@ -47,7 +50,7 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
         fontFamily: 'Inter',
       ),
       borderRadius: BorderRadius.circular(43.0),
-      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
     ),
     inactiveChipStyle: LMFeedTopicChipStyle.inActive().copyWith(
       textStyle: const TextStyle(color: onSurface700),
@@ -55,7 +58,7 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
       borderWidth: 1.0,
       borderColor: onSurface400,
       borderRadius: BorderRadius.circular(43.0),
-      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
     ),
   ),
   contentStyle: LMFeedPostContentStyle.basic().copyWith(
@@ -74,10 +77,15 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
       carouselBorderRadius: BorderRadius.circular(16.0),
       carouselPadding: const EdgeInsets.only(
         bottom: 16.0,
+        top: 8.0,
       ),
     ),
     documentStyle: const LMFeedPostDocumentStyle(
       height: 90,
+      padding: EdgeInsets.symmetric(
+        vertical: 8.0,
+        horizontal: 16.0,
+      ),
       titleStyle: LMFeedTextStyle(
         maxLines: 1,
         textStyle: TextStyle(
@@ -111,7 +119,7 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
     imageStyle: const LMFeedPostImageStyle(),
     linkStyle: LMFeedPostLinkPreviewStyle.basic().copyWith(
       showLinkUrl: false,
-      height: 195,
+      height: 205,
       imageHeight: 137,
       backgroundColor: kSecondary100,
       margin: const EdgeInsets.only(bottom: 16.0),
