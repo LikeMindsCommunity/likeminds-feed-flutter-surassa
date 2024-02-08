@@ -52,7 +52,8 @@ Widget suraasaPostFooterBuilder(BuildContext context,
         },
         commentButtonBuilder: (commentButton) {
           return suraasaCommentButtonBuilder(
-              context, commentButton, postViewData);
+              context, commentButton, postViewData,
+              isFeed: isFeed);
         },
         postFooterStyle: footerWidget.postFooterStyle?.copyWith(
           showSaveButton: false,
@@ -73,15 +74,24 @@ Widget suraasaLikeButtonBuilder(BuildContext context, LMFeedButton button) {
 }
 
 Widget suraasaCommentButtonBuilder(
-    BuildContext context, LMFeedButton button, LMPostViewData postViewData) {
+    BuildContext context, LMFeedButton button, LMPostViewData postViewData,
+    {bool isFeed = true}) {
   return button.copyWith(
     text: button.text?.copyWith(text: 'Comment') ??
         const LMFeedText(text: 'Comment'),
     onTap: () {
-      navigateToLMPostDetailsScreen(context: context, postViewData.id);
+      if (isFeed) {
+        navigateToLMPostDetailsScreen(context: context, postViewData.id);
+      } else {
+        button.onTap.call();
+      }
     },
     onTextTap: () {
-      navigateToLMPostDetailsScreen(context: context, postViewData.id);
+      if (isFeed) {
+        navigateToLMPostDetailsScreen(context: context, postViewData.id);
+      } else {
+        button.onTap.call();
+      }
     },
   );
 }

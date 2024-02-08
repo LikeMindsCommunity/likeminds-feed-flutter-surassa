@@ -50,7 +50,7 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
         fontFamily: 'Inter',
       ),
       borderRadius: BorderRadius.circular(43.0),
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
     ),
     inactiveChipStyle: LMFeedTopicChipStyle.inActive().copyWith(
       textStyle: const TextStyle(color: onSurface700),
@@ -58,7 +58,7 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
       borderWidth: 1.0,
       borderColor: onSurface400,
       borderRadius: BorderRadius.circular(43.0),
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
     ),
   ),
   contentStyle: LMFeedPostContentStyle.basic().copyWith(
@@ -119,8 +119,8 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
     imageStyle: const LMFeedPostImageStyle(),
     linkStyle: LMFeedPostLinkPreviewStyle.basic().copyWith(
       showLinkUrl: false,
-      height: 205,
-      imageHeight: 137,
+      height: 216,
+      imageHeight: 142,
       backgroundColor: kSecondary100,
       margin: const EdgeInsets.only(bottom: 16.0),
       padding: const EdgeInsets.all(12.0),
