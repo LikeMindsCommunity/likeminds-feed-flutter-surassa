@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
   }
 
   static FirebaseOptions android = FirebaseOptions(
-    apiKey: FBCreds.apiKey,
+    apiKey: FBCreds.apiKeyAN,
     appId: FBCreds.appIdAN,
     messagingSenderId: FBCreds.messagingSenderId,
     projectId: FBCreds.projectId,
@@ -59,7 +59,7 @@ class DefaultFirebaseOptions {
   );
 
   static FirebaseOptions ios = FirebaseOptions(
-    apiKey: FBCreds.apiKey,
+    apiKey: FBCreds.apiKeyIOS,
     appId: FBCreds.appIdIOS,
     messagingSenderId: FBCreds.messagingSenderId,
     projectId: FBCreds.projectId,

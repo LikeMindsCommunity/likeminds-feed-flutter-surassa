@@ -29,20 +29,16 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  await setupNotifications();
 
-  await LMFeedCore.instance.initialize(
-    // lmFeedClient: lmFeedClient,
+  try {
+    await setupNotifications();
+  } on Exception catch (e) {
+    debugPrint("Error in setupNotifications: $e");
+  }
 
+  await LMFeedSuraasa.setupFeed(
     domain: "suraasalearn://www.suraasa.com/community/",
-    config: LMFeedConfig(
-      composeConfig: const LMFeedComposeScreenConfig(
-        topicRequiredToCreatePost: true,
-      ),
-    ),
   );
-
-  LMFeedTimeAgo.instance.setDefaultTimeFormat(SuraasaCustomTimeStamps());
 
   runApp(const MyApp());
 }
