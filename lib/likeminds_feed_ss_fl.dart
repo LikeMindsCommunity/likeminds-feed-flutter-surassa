@@ -1,4 +1,3 @@
-// import 'package:dotenv/dotenv.dart';
 library likeminds_feed_ss_fl;
 
 import 'package:flutter/material.dart';
@@ -25,6 +24,23 @@ class LMFeedSuraasa extends StatefulWidget {
 
   @override
   State<LMFeedSuraasa> createState() => _LMFeedSuraasaState();
+
+  static Future<void> setupFeed(
+      {required String apiKey,
+      String? domain,
+      LMFeedClient? lmFeedClient}) async {
+    await LMFeedCore.instance.initialize(
+      apiKey: apiKey,
+      domain: domain,
+      lmFeedClient: lmFeedClient,
+      config: LMFeedConfig(
+        composeConfig: const LMFeedComposeScreenConfig(
+          topicRequiredToCreatePost: true,
+        ),
+      ),
+    );
+    LMFeedTimeAgo.instance.setDefaultTimeFormat(SuraasaCustomTimeStamps());
+  }
 }
 
 class _LMFeedSuraasaState extends State<LMFeedSuraasa> {
@@ -34,18 +50,12 @@ class _LMFeedSuraasaState extends State<LMFeedSuraasa> {
   @override
   void initState() {
     super.initState();
-    LMFeedTimeAgo.instance.setDefaultTimeFormat(SuraasaCustomTimeStamps());
-    // var env = DotEnv(includePlatformEnvironment: true)..load();
-
     InitiateUserRequestBuilder requestBuilder = InitiateUserRequestBuilder();
-
     if (widget.userId != null) {
       requestBuilder.userId(widget.userId!);
     }
 
-    if (widget.userName != null) {
-      requestBuilder.userName(widget.userName!);
-    }
+    requestBuilder.userName(widget.userName ?? "User Name");
 
     initiateUser = LMFeedCore.instance.initiateUser(requestBuilder.build())
       ..then(
@@ -62,77 +72,78 @@ class _LMFeedSuraasaState extends State<LMFeedSuraasa> {
     LMFeedThemeData feedTheme = LMFeedTheme.of(context);
     return Scaffold(
       body: FutureBuilder<InitiateUserResponse>(
-          future: initiateUser,
-          builder: (context, snapshot) {
-            if (snapshot.hasData && snapshot.data!.success) {
-              return FutureBuilder<MemberStateResponse>(
-                  future: memberState,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData && snapshot.data!.success) {
-                      return LMFeedScreen(
-                        topicBarBuilder: (topicBar) {
-                          return topicBar.copyWith(
-                            style: topicBar.style?.copyWith(
-                              height: 60,
-                              backgroundColor: feedTheme.backgroundColor,
-                            ),
-                          );
-                        },
-                        postBuilder: (context, postWidget, postViewData) =>
-                            suraasaPostWidgetBuilder(
-                          context,
-                          postWidget,
-                          postViewData,
-                          isFeed: true,
-                        ),
-                        appBar: (context, appBar) {
-                          return appBar.copyWith(
-                              trailing: widget.openChatCallback != null
-                                  ? [
-                                      LMFeedButton(
-                                        onTap: () {
-                                          widget.openChatCallback!(context);
-                                        },
-                                        style: const LMFeedButtonStyle(
-                                          icon: LMFeedIcon(
-                                            type: LMFeedIconType.svg,
-                                            assetPath: kAssetChatIcon,
-                                            style: LMFeedIconStyle(
-                                              color: Colors.black,
-                                              size: 24,
-                                              boxPadding: 6,
-                                              boxSize: 36,
-                                            ),
-                                          ),
+        future: initiateUser,
+        builder: (context, snapshot) {
+          if (snapshot.hasData && snapshot.data!.success) {
+            return FutureBuilder<MemberStateResponse>(
+                future: memberState,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData && snapshot.data!.success) {
+                    return LMFeedScreen(
+                      topicBarBuilder: (topicBar) {
+                        return topicBar.copyWith(
+                          style: topicBar.style?.copyWith(
+                            height: 60,
+                            backgroundColor: feedTheme.backgroundColor,
+                          ),
+                        );
+                      },
+                      postBuilder: (context, postWidget, postViewData) =>
+                          suraasaPostWidgetBuilder(
+                        context,
+                        postWidget,
+                        postViewData,
+                        isFeed: true,
+                      ),
+                      appBar: (context, appBar) {
+                        return appBar.copyWith(
+                          trailing: widget.openChatCallback != null
+                              ? [
+                                  LMFeedButton(
+                                    onTap: () {
+                                      widget.openChatCallback!(context);
+                                    },
+                                    style: const LMFeedButtonStyle(
+                                      icon: LMFeedIcon(
+                                        type: LMFeedIconType.svg,
+                                        assetPath: kAssetChatIcon,
+                                        style: LMFeedIconStyle(
+                                          color: Colors.black,
+                                          size: 24,
+                                          boxPadding: 6,
+                                          boxSize: 36,
                                         ),
-                                      )
-                                    ]
-                                  : null);
-                        },
-                        config: const LMFeedScreenConfig(
-                          topicSelectionWidgetType:
-                              LMFeedTopicSelectionWidgetType
-                                  .showTopicSelectionBottomSheet,
-                          showCustomWidget: true,
-                        ),
-                      );
-                    } else if (snapshot.connectionState ==
-                        ConnectionState.waiting) {
-                      return const LMFeedLoader();
-                    } else {
-                      return const Center(
-                        child: Text("An error occurred"),
-                      );
-                    }
-                  });
-            } else if (snapshot.connectionState == ConnectionState.waiting) {
-              return const LMFeedLoader();
-            } else {
-              return const Center(
-                child: Text("Please check your internet connection"),
-              );
-            }
-          }),
+                                      ),
+                                    ),
+                                  )
+                                ]
+                              : null,
+                        );
+                      },
+                      config: const LMFeedScreenConfig(
+                        topicSelectionWidgetType: LMFeedTopicSelectionWidgetType
+                            .showTopicSelectionBottomSheet,
+                        showCustomWidget: true,
+                      ),
+                    );
+                  } else if (snapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return const LMFeedLoader();
+                  } else {
+                    return const Center(
+                      child: Text("An error occurred"),
+                    );
+                  }
+                });
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            return const LMFeedLoader();
+          } else {
+            return const Center(
+              child: Text("Please check your internet connection"),
+            );
+          }
+        },
+      ),
     );
   }
 }

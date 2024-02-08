@@ -1,19 +1,19 @@
 name: likeminds_feed_ss_fl
 description: A new Flutter package project.
-version: 2.0.1
+version: 2.0.2
 publish_to: none
 homepage: "https://likeminds.community/"
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=3.10.0 <=3.16.9"
+  flutter: ">=3.10.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
   connectivity_plus: ^3.0.6
-  likeminds_feed_flutter_core: 1.0.2
+  likeminds_feed_flutter_core: 1.0.3
   likeminds_feed: 1.7.1
 
   media_kit: ^1.1.10 # Primary package.

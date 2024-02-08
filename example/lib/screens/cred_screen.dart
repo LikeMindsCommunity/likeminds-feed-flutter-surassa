@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:likeminds_feed_ss_fl/likeminds_feed_ss_fl.dart';
 import 'package:likeminds_feed_ss_sample/bloc_observer/analytics_bloc_listener.dart';
 import 'package:likeminds_feed_ss_sample/bloc_observer/profile_bloc_listener.dart';
-import 'package:likeminds_feed_ss_sample/bloc_observer/routing_bloc_listener.dart';
 import 'package:likeminds_feed_ss_sample/main.dart';
 import 'package:likeminds_feed_ss_sample/screens/activity_widget_screen.dart';
 import 'package:likeminds_feed_ss_sample/screens/root_screen.dart';
@@ -66,7 +65,6 @@ class MyApp extends StatelessWidget {
           home: const LMFeedBlocListener(
             analyticsListener: analyticsBlocListener,
             profileListener: profileBlocListener,
-            routingListener: routingBlocListener,
             child: CredScreen(),
           ),
         ),
