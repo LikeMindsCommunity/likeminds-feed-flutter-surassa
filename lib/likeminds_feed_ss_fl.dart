@@ -118,6 +118,22 @@ class _LMFeedSuraasaState extends State<LMFeedSuraasa> {
                                   )
                                 ]
                               : null,
+                          title: Padding(
+                            padding: const EdgeInsets.only(left: 4.0),
+                            child: LMFeedText(
+                              text: "Feed",
+                              style: LMFeedTextStyle(
+                                textStyle: TextStyle(
+                                  color: suraasaTheme.onContainer,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ),
+                          style: appBar.style?.copyWith(
+                            height: 64,
+                          )
                         );
                       },
                       config: const LMFeedScreenConfig(
