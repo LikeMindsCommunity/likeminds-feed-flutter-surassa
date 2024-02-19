@@ -19,6 +19,13 @@ Widget suraasaPostFooterBuilder(BuildContext context,
                 text: LMFeedPostUtils.getLikeCountTextWithCount(
                   postViewData.likeCount,
                 ),
+                style: const LMFeedTextStyle(
+                  textStyle: TextStyle(
+                    fontSize: LikeMindsTheme.kFontSmallMed,
+                    color: onSurface600,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
               ),
             ),
           ),
@@ -36,6 +43,13 @@ Widget suraasaPostFooterBuilder(BuildContext context,
                     '${postViewData.commentCount} ${LMFeedPostUtils.getCommentCountText(
                   postViewData.commentCount,
                 )}',
+                style: const LMFeedTextStyle(
+                  textStyle: TextStyle(
+                    fontSize: LikeMindsTheme.kFontSmallMed,
+                    color: onSurface600,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
               ),
             ),
           )

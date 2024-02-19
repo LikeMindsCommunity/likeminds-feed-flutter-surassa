@@ -45,7 +45,6 @@ class _ReportScreenState extends State<ReportScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
     return Scaffold(
       appBar: LMFeedAppBar(
         style: LMFeedAppBarStyle(
@@ -77,7 +76,7 @@ class _ReportScreenState extends State<ReportScreen> {
                       padding: EdgeInsets.symmetric(horizontal: 6.0),
                       child: LMFeedText(
                           text:
-                              'Thank you for looking out for yourself and your fellow Nova users by reporting what violates the rules. Let us know what’s happening, and we’ll look into it.',
+                              'Thank you for looking out for yourself and your fellow Suraasa users by reporting what violates the rules. Let us know what’s happening, and we’ll look into it.',
                           style: LMFeedTextStyle(
                             textStyle: TextStyle(
                               fontSize: 14,
@@ -95,7 +94,7 @@ class _ReportScreenState extends State<ReportScreen> {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
                             return CircularProgressIndicator(
-                              color: theme.primaryColor,
+                              color: suraasaTheme.primaryColor,
                             );
                           } else if (snapshot.connectionState ==
                                   ConnectionState.done &&
@@ -131,9 +130,9 @@ class _ReportScreenState extends State<ReportScreen> {
                                                 label: LMFeedText(
                                                   text: e.name,
                                                   style: LMFeedTextStyle(
-                                                    textStyle: theme
-                                                        .textTheme.bodyLarge!
-                                                        .copyWith(
+                                                    textStyle: suraasaTheme
+                                                        .contentStyle.textStyle
+                                                        ?.copyWith(
                                                       color: selectedTags
                                                               .contains(e.id)
                                                           ? Colors.white
@@ -144,7 +143,7 @@ class _ReportScreenState extends State<ReportScreen> {
                                                 backgroundColor: selectedTags
                                                         .contains(e.id)
                                                     ? kPrimaryColor
-                                                    : theme.colorScheme.surface,
+                                                    : suraasaTheme.container,
                                                 color:
                                                     MaterialStateProperty.all(
                                                         Colors.transparent),
@@ -155,8 +154,8 @@ class _ReportScreenState extends State<ReportScreen> {
                                                   side: BorderSide(
                                                     color: selectedTags
                                                             .contains(e.id)
-                                                        ? theme
-                                                            .colorScheme.primary
+                                                        ? suraasaTheme
+                                                            .primaryColor
                                                         : Colors.transparent,
                                                   ),
                                                 ),
@@ -196,19 +195,19 @@ class _ReportScreenState extends State<ReportScreen> {
                                     color: kPrimaryColor,
                                   ),
                                 ),
-                                focusColor: theme.colorScheme.primary,
+                                focusColor: suraasaTheme.primaryColor,
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12.0),
                                   borderSide: BorderSide(
-                                    color: theme.colorScheme.primary,
+                                    color: suraasaTheme.primaryColor,
                                   ),
                                 ),
                                 labelText: 'Reason',
-                                labelStyle: theme.textTheme.labelMedium,
+                                labelStyle: suraasaTheme.contentStyle.textStyle,
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12.0),
                                   borderSide: BorderSide(
-                                    color: theme.colorScheme.primary,
+                                    color: suraasaTheme.primaryColor,
                                   ),
                                 ),
                               ),
@@ -225,8 +224,8 @@ class _ReportScreenState extends State<ReportScreen> {
                 style: LMFeedButtonStyle(
                   height: 56,
                   backgroundColor: selectedTags.isEmpty
-                      ? theme.colorScheme.primary.withOpacity(0.2)
-                      : theme.colorScheme.primary,
+                      ? suraasaTheme.primaryColor.withOpacity(0.2)
+                      : suraasaTheme.primaryColor,
                   borderRadius: 12,
                 ),
                 text: LMFeedText(
@@ -234,8 +233,8 @@ class _ReportScreenState extends State<ReportScreen> {
                   style: LMFeedTextStyle(
                     textStyle: TextStyle(
                         color: selectedTags.isEmpty
-                            ? theme.colorScheme.primary
-                            : theme.colorScheme.onPrimaryContainer,
+                            ? suraasaTheme.primaryColor
+                            : suraasaTheme.container,
                         fontSize: 16,
                         fontWeight: FontWeight.w500),
                   ),
