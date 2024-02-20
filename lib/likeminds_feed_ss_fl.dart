@@ -35,6 +35,9 @@ class LMFeedSuraasa extends StatefulWidget {
       domain: domain,
       lmFeedClient: lmFeedClient,
       config: LMFeedConfig(
+        postDetailConfig: const LMPostDetailScreenConfig(
+          showCommentCountOnList: false,
+        ),
         composeConfig: const LMFeedComposeScreenConfig(
           topicRequiredToCreatePost: true,
         ),

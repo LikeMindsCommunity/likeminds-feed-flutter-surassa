@@ -73,14 +73,16 @@ class _ReportScreenState extends State<ReportScreen> {
                       height: 24,
                     ),
                     const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 6.0),
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
                       child: LMFeedText(
                           text:
                               'Thank you for looking out for yourself and your fellow Suraasa users by reporting what violates the rules. Let us know what’s happening, and we’ll look into it.',
                           style: LMFeedTextStyle(
                             textStyle: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
+                              color: textColor,
+                              fontSize: 16,
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.w400,
                             ),
                             overflow: TextOverflow.visible,
                           )),
@@ -101,9 +103,10 @@ class _ReportScreenState extends State<ReportScreen> {
                               snapshot.hasData &&
                               snapshot.data!.success == true) {
                             return Padding(
-                              padding: const EdgeInsets.all(6.0),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0, vertical: 4),
                               child: Wrap(
-                                  spacing: 12.0,
+                                  spacing: 24.0,
                                   alignment: WrapAlignment.start,
                                   runAlignment: WrapAlignment.start,
                                   crossAxisAlignment: WrapCrossAlignment.start,
@@ -130,9 +133,14 @@ class _ReportScreenState extends State<ReportScreen> {
                                                 label: LMFeedText(
                                                   text: e.name,
                                                   style: LMFeedTextStyle(
-                                                    textStyle: suraasaTheme
-                                                        .contentStyle.textStyle
-                                                        ?.copyWith(
+                                                    textStyle: const TextStyle(
+                                                      color: textColor,
+                                                      fontSize: 16,
+                                                      fontFamily: 'Inter',
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                    ).copyWith(
+                                                      fontSize: 14,
                                                       color: selectedTags
                                                               .contains(e.id)
                                                           ? Colors.white
@@ -156,7 +164,7 @@ class _ReportScreenState extends State<ReportScreen> {
                                                             .contains(e.id)
                                                         ? suraasaTheme
                                                             .primaryColor
-                                                        : Colors.transparent,
+                                                        : onSurface700,
                                                   ),
                                                 ),
                                                 padding:
@@ -179,8 +187,8 @@ class _ReportScreenState extends State<ReportScreen> {
                             (deleteReason!.name.toLowerCase() == 'others' ||
                                 deleteReason!.name.toLowerCase() == 'other')
                         ? Container(
-                            margin:
-                                const EdgeInsets.symmetric(horizontal: 24.0),
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 24.0, vertical: 16),
                             child: TextField(
                               cursorColor: Colors.black,
                               style: const TextStyle(
@@ -219,10 +227,11 @@ class _ReportScreenState extends State<ReportScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: LMFeedButton(
                 style: LMFeedButtonStyle(
-                  height: 56,
+                  height: 48,
                   backgroundColor: selectedTags.isEmpty
                       ? suraasaTheme.primaryColor.withOpacity(0.2)
                       : suraasaTheme.primaryColor,
@@ -240,7 +249,7 @@ class _ReportScreenState extends State<ReportScreen> {
                   ),
                 ),
                 onTap: () async {
-                  String? reason = reportReasonController.text;
+                  String? reason = reportReasonController.text.trim();
                   if (deleteReason != null &&
                       (deleteReason!.name.toLowerCase() == 'others' ||
                           deleteReason!.name.toLowerCase() == 'other')) {
