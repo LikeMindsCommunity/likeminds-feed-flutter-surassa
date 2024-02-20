@@ -1,5 +1,6 @@
 library likeminds_feed_ss_fl;
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:likeminds_feed_flutter_core/likeminds_feed_core.dart';
 import 'package:likeminds_feed_ss_fl/src/builder/post/post_builder.dart';
@@ -34,6 +35,9 @@ class LMFeedSuraasa extends StatefulWidget {
       domain: domain,
       lmFeedClient: lmFeedClient,
       config: LMFeedConfig(
+        postDetailConfig: const LMPostDetailScreenConfig(
+          showCommentCountOnList: false,
+        ),
         composeConfig: const LMFeedComposeScreenConfig(
           topicRequiredToCreatePost: true,
         ),
@@ -83,9 +87,25 @@ class _LMFeedSuraasaState extends State<LMFeedSuraasa> {
                       topicBarBuilder: (topicBar) {
                         return topicBar.copyWith(
                           style: topicBar.style?.copyWith(
-                            height: 60,
-                            backgroundColor: feedTheme.backgroundColor,
-                          ),
+                              height: 60,
+                              backgroundColor: feedTheme.backgroundColor,
+                              topicChipText: 'Topic',
+                              topicChipStyle: suraasaTheme
+                                  .topicStyle.inactiveChipStyle
+                                  ?.copyWith(
+                                      textStyle: const TextStyle(
+                                        color: onSurface700,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      icon: const LMFeedIcon(
+                                        type: LMFeedIconType.icon,
+                                        icon: CupertinoIcons.chevron_down,
+                                        style: LMFeedIconStyle(
+                                          color: onSurface700,
+                                          size: 16,
+                                        ),
+                                      ))),
                         );
                       },
                       postBuilder: (context, postWidget, postViewData) =>
@@ -97,28 +117,43 @@ class _LMFeedSuraasaState extends State<LMFeedSuraasa> {
                       ),
                       appBar: (context, appBar) {
                         return appBar.copyWith(
-                          trailing: widget.openChatCallback != null
-                              ? [
-                                  LMFeedButton(
-                                    onTap: () {
-                                      widget.openChatCallback!(context);
-                                    },
-                                    style: const LMFeedButtonStyle(
-                                      icon: LMFeedIcon(
-                                        type: LMFeedIconType.svg,
-                                        assetPath: kAssetChatIcon,
-                                        style: LMFeedIconStyle(
-                                          color: Colors.black,
-                                          size: 24,
-                                          boxPadding: 6,
-                                          boxSize: 36,
+                            trailing: widget.openChatCallback != null
+                                ? [
+                                    LMFeedButton(
+                                      onTap: () {
+                                        widget.openChatCallback!(context);
+                                      },
+                                      style: const LMFeedButtonStyle(
+                                        icon: LMFeedIcon(
+                                          type: LMFeedIconType.svg,
+                                          assetPath: kAssetChatIcon,
+                                          style: LMFeedIconStyle(
+                                            color: Colors.black,
+                                            size: 24,
+                                            boxPadding: 6,
+                                            boxSize: 36,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  )
-                                ]
-                              : null,
-                        );
+                                    )
+                                  ]
+                                : null,
+                            title: Padding(
+                              padding: const EdgeInsets.only(left: 4.0),
+                              child: LMFeedText(
+                                text: "Feed",
+                                style: LMFeedTextStyle(
+                                  textStyle: TextStyle(
+                                    color: suraasaTheme.onContainer,
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            style: appBar.style?.copyWith(
+                              height: 64,
+                            ));
                       },
                       config: const LMFeedScreenConfig(
                         topicSelectionWidgetType: LMFeedTopicSelectionWidgetType

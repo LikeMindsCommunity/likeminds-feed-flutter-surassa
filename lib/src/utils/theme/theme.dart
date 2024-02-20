@@ -13,10 +13,13 @@ const Color kSecondaryColorLight = Color.fromRGBO(237, 240, 254, 1);
 const Color onSurface = Color.fromRGBO(226, 232, 240, 1);
 const Color onSurface500 = Color.fromRGBO(100, 116, 139, 1);
 const Color onSurface400 = Color.fromRGBO(148, 163, 184, 1);
+const Color onSurface600 = Color.fromRGBO(71, 85, 105, 1);
 const Color onSurface700 = Color.fromRGBO(51, 65, 85, 1);
+const Color onSurface800 = Color.fromRGBO(30, 41, 59, 1);
 const Color onSurface900 = Color.fromRGBO(15, 23, 42, 1);
 const Color kBackgroundColor = Color.fromRGBO(255, 255, 255, 1);
 const Color textColor = Color.fromRGBO(30, 41, 59, 1);
+const Color kRedColor = Color.fromRGBO(206, 62, 62, 1);
 
 LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
   primaryColor: kPrimaryColor,
@@ -24,6 +27,27 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
   backgroundColor: kBackgroundColor,
   container: Colors.white,
   onContainer: onSurface900,
+  textFieldStyle: LMFeedTextFieldStyle.basic().copyWith(
+    decoration: const InputDecoration(
+      
+      hintText: 'Type your comment...',
+      hintStyle:  TextStyle(
+        color: onSurface400,
+        fontSize: 16,
+        fontFamily: 'Inter',
+        fontWeight: FontWeight.w400,
+      ),
+      focusedBorder: InputBorder.none,
+      enabledBorder: InputBorder.none,
+      border: InputBorder.none,
+      contentPadding: EdgeInsets.only(
+        left: 16.0,
+        right: 16.0,
+        top: 12.0,
+        bottom: 12.0,
+      ),
+    ),
+  ),
   postStyle: LMFeedPostStyle(
     padding: const EdgeInsets.only(
       top: 16.0,
@@ -62,11 +86,24 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
     ),
   ),
   contentStyle: LMFeedPostContentStyle.basic().copyWith(
+    linkStyle: const TextStyle(
+      fontSize: 16,
+      color: Color(0xFF3B82F6),
+      fontWeight: FontWeight.w600,
+      fontFamily: 'Inter',
+    ),
     padding: const EdgeInsets.symmetric(
       vertical: 8.0,
     ),
     textStyle: const TextStyle(
       color: textColor,
+      fontSize: 16,
+      fontFamily: 'Inter',
+      fontWeight: FontWeight.w400,
+    ),
+    expandText: 'Read More',
+    expandTextStyle: const TextStyle(
+      color: primary500,
       fontSize: 16,
       fontFamily: 'Inter',
       fontWeight: FontWeight.w400,
@@ -79,6 +116,7 @@ LMFeedThemeData suraasaTheme = LMFeedThemeData.light(
         bottom: 16.0,
         top: 8.0,
       ),
+      inActiveIndicatorColor: const Color.fromRGBO(191, 219, 254, 1),
     ),
     documentStyle: const LMFeedPostDocumentStyle(
       height: 90,
